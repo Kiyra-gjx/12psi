@@ -1,13 +1,17 @@
-# `zero-one-xxx`
+# `zero-one-psi`
 
-xxx相关概念参考：
+进销存相关概念参考：
 
-- 
-- 
+- https://wiki.mbalib.com/wiki/%E8%BF%9B%E9%94%80%E5%AD%98
+- https://baike.baidu.com/item/%E8%BF%9B%E9%94%80%E5%AD%98/7151671
 
 ## 项目简介
 
+**`zero-one-psisys`**是一款面向中小企业，高效、省心、高性价比的在线进销存(purchasing, sales, inventory)管理系统，系统满足不同行业需求，是促进企业发展的重要组成部分，是企业经营管理中的重要环节。
 
+项目特点：操作简单、上网就能查库存、下销售单、采购管理、库存管理、库存管理/仓库管理等，一应俱全；库存集中管理，管理员可以给不同的人员分配不同的数据权限和功能权限；智能补货，保证库存充足，价格记忆，避免报价混乱，一键成本重算，解决多批次产品库存成本不同的问题；进销存单据自动生成记账凭证，实现进销存软件与财务软件无缝对接。
+
+功能蓝图：采购管理、库存管理、销售管理、收付款管理、基础资料、业务监控等。
 
 ## 系统架构图
 
@@ -16,7 +20,7 @@ xxx相关概念参考：
 ![architecture](./documents/00、preview-pic/architecture.jpg)
 
 ## 项目结构说明
-> `zero-one-xxx`  
+> `zero-one-psi`  
 >
 > > `.gitignore` -- 忽略提交配置
 > >
@@ -24,11 +28,11 @@ xxx相关概念参考：
 > >
 > > `documents` -- 环境搭建、编码规范、项目需求等等文档资源
 > >
-> > `xxx-java` -- `Java`项目主体
+> > `psi-java` -- `Java`项目主体
 > >
-> > `xxx-cpp` -- `C++`项目主体
+> > `psi-cpp` -- `C++`项目主体
 > >
-> > `xxx-frontend` -- 前端项目主体
+> > `psi-frontend` -- 前端项目主体
 
 ## 软件架构
 
@@ -108,6 +112,7 @@ https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#requirem
 | `wangEditor`         | 富文本编辑器  | v5     | https://www.wangeditor.com/v5/                               |
 | `pdfobject`          | `pdf`预览插件 | 2.3.0  | https://github.com/pipwerks/PDFObject                        |
 | `Vitest`             | 测试框架      | 1.6.0  | https://cn.vitest.dev/<br>https://cn.vuejs.org/guide/scaling-up/testing.html |
+| `pinyin-pro`         | 汉字转拼音库  | latest | https://pinyin-pro.cn/                                       |
 
 ### `CPP`技术栈
 
@@ -188,7 +193,7 @@ https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#requirem
 
 ## 特别鸣谢
 
-`zero-one-xxx`的诞生离不开开源软件和社区的支持，感谢以下开源项目及项目维护者：
+`zero-one-psi`的诞生离不开开源软件和社区的支持，感谢以下开源项目及项目维护者：
 
 - `spring`：https://github.com/spring-projects
 - `alibaba`：https://github.com/alibaba
@@ -200,9 +205,3 @@ https://docs.spring.io/spring-data/mongodb/docs/current/reference/html/#requirem
 - `oatpp`：https://github.com/oatpp/oatpp
 
 同时也感谢其他没有明确写出来的开源组件提供给与维护者。
-
-## 支持一下
-
-如果觉得框架和项目还不错，点个⭐Star，这将是对**01星球**极大的鼓励与支持。
-
-想了解更多关于计算机方向选择、学习建议等相关信息，可以关注[**01星球B站主页~**](https://space.bilibili.com/1653229811?spm_id_from=333.1007.0.0)
