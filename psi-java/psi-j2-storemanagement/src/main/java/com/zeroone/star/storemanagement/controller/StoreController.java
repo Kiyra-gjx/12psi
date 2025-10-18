@@ -1,12 +1,11 @@
 package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.GoodsListDTO;
+import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.j2.store.StoreApis;
-import com.zeroone.star.project.query.j2.store.GoodQuery;
+import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +27,7 @@ public class StoreController implements StoreApis {
     @GetMapping("/list")
     @ApiOperation(value = "查询商品列表")
     @Override
-    public JsonVO<PageDTO<GoodsListDTO>> listGoods(GoodQuery query) {
+    public JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query) {
         return null;
     }
 }
