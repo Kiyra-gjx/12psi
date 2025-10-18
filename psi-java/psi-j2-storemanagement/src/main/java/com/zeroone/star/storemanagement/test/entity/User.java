@@ -1,4 +1,4 @@
-package com.zeroone.star.sample.test.entity;
+package com.zeroone.star.storemanagement.test.entity;
 
 import com.alibaba.excel.annotation.ExcelProperty;
 import lombok.Data;

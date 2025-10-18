@@ -2,7 +2,7 @@ package com.zeroone.star.storemanagement.controller;
 
 import cn.hutool.core.date.DateTime;
 import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
-import com.zeroone.star.sample.test.entity.User;
+import com.zeroone.star.storemanagement.test.entity.User;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.SneakyThrows;

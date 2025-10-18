@@ -3,7 +3,7 @@ package com.zeroone.star.sample;
 import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
 import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
 import com.zeroone.star.project.components.fastdfs.FastDfsFileInfo;
-import com.zeroone.star.sample.test.entity.User;
+import com.zeroone.star.storemanagement.test.entity.User;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
