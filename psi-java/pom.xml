@@ -37,6 +37,7 @@
         <module>psi-gateway</module>
         <module>psi-login</module>
         <module>psi-doc</module>
+        <module>psi-j2-storemanagement</module>
     </modules>
     <properties>
         <!-- 项目版本号 -->
