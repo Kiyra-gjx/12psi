@@ -18,7 +18,6 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2WebMvc;
  */
 @Configuration
 @EnableSwagger2WebMvc
-@EnableKnife4j
 public class SwaggerConfig {
     @Bean
     Docket sampleApi() {
