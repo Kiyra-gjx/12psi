@@ -8,7 +8,7 @@ import lombok.Data;
  * @BelongsPackage: com.zeroone.star.project.dto.j2.store
  * @Author: 高
  * @CreateTime: 2025-10-18 10:46
- * @Description: TODO
+ * @Description: 商品库存详情数据对象
  * @Version: 1.0
  */
 @Data

@@ -15,14 +15,14 @@ import lombok.Data;
 @Data
 @ApiModel("商品列表数据对象")
 public class GoodsListDTO {
-    @ApiModelProperty(value = "商品名称",example = "刀具")
+    @ApiModelProperty(value = "商品名称", example = "刀具")
     private String name;
-    @ApiModelProperty(value = "商品编号",example = "0001")
+    @ApiModelProperty(value = "商品编号", example = "0001")
     private String number;
-    @ApiModelProperty(value = "商品类别",example = "1")
+    @ApiModelProperty(value = "商品类别", example = "1")
     private int category;
-    @ApiModelProperty(value = "商品品牌",example = "飞虎")
+    @ApiModelProperty(value = "商品品牌", example = "飞虎")
     private String brand;
-    @ApiModelProperty(value = "商品条码",example = "111222")
+    @ApiModelProperty(value = "商品条码", example = "111222")
     private String code;
 }
