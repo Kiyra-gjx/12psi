@@ -16,18 +16,37 @@ import lombok.Data;
 @Data
 @ApiModel("商品查询参数")
 public class InventoryQuery extends PageQuery {
-    @ApiModelProperty(value = "商品名称",example = "刀具")
+
+    // ==================== 商品基础信息条件 ====================
+    @ApiModelProperty(value = "商品名称",example = "iphone")
     private String name;
+
     @ApiModelProperty(value = "商品编号",example = "0001")
     private String number;
-    @ApiModelProperty(value = "规格型号",example = "DJ-001")
+
+    @ApiModelProperty(value = "规格型号",example = "17pro")
     private String spec;
-    @ApiModelProperty(value = "商品类别",example = "1")
-    private int category;
-    @ApiModelProperty(value = "商品品牌",example = "飞虎")
+
+    @ApiModelProperty(value = "商品类别id",example = "1")
+    private Integer category;
+
+    @ApiModelProperty(value = "商品类别名称",example = "默认类别")
+    private String categoryName;
+
+    @ApiModelProperty(value = "商品品牌",example = "苹果")
     private String brand;
+
     @ApiModelProperty(value = "商品条码",example = "111222")
     private String code;
-    @ApiModelProperty(value = "仓库信息",example = "1号仓库")
-    private String warehouse;
+    // ==================== 仓库信息条件 ===================
+    @ApiModelProperty(value = "仓库ID",example = "1")
+    private Integer warehouseId;
+
+    @ApiModelProperty(value = "仓库名称",example = "上海仓库")
+    private String warehouseName;
+
+    @ApiModelProperty(
+            value = "库存类型：0-常规库存，1-非零库存，2-预警库存",
+            example = "1")
+    private Integer stockType;
 }

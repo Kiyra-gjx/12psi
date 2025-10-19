@@ -2,7 +2,6 @@ package com.zeroone.star.project.j2.store;
 
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
-import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
