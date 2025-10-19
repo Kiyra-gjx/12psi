@@ -1,6 +1,7 @@
 package com.zeroone.star.project.query.j2.store;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -14,4 +15,12 @@ import lombok.Data;
 @Data
 @ApiModel("批次查询详情参数")
 public class BatchDetailQuery {
+    @ApiModelProperty(value = "单据编号", example = "QTRKD2510181347194")
+    private String number;
+    @ApiModelProperty(value = "单据类型", example = "采购单")
+    private String type;
+    @ApiModelProperty(value = "开始日期", example = "")
+    private String startDate;
+    @ApiModelProperty(value = "结束日期", example = "")
+    private String endDate;
 }
