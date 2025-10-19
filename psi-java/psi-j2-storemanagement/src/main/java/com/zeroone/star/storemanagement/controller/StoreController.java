@@ -1,6 +1,7 @@
 package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.PageDTO;
+import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.j2.store.StoreApis;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
@@ -30,4 +31,11 @@ public class StoreController implements StoreApis {
     public JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query) {
         return null;
     }
+
+    @GetMapping("/batch/detail")
+    @Override
+    public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(String id) {
+        return null;
+    }
+
 }
