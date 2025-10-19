@@ -21,4 +21,6 @@ public interface StoreApis {
      * @return 商品列表数据
      */
     JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query);
+
+
 }
