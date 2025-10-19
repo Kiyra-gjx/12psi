@@ -12,7 +12,7 @@ import java.util.List;
 @Api("商品属性库存对象")
 public class AttrStockDTO {
 
-    @ApiModelProperty(value = "商品属性ID", example = "1")
+    @ApiModelProperty(value = "商品属性ID（内部使用）", example = "1")
     private Integer id;
 
     @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
