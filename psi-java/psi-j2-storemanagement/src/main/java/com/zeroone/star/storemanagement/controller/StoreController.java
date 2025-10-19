@@ -50,10 +50,5 @@ public class StoreController implements StoreApis {
         return null;
     }
 
-    @GetMapping("/batch/detail")
-    @Override
-    public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(String id) {
-        return null;
-    }
 
 }

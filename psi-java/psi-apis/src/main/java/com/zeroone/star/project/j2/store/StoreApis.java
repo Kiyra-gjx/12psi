@@ -41,11 +41,6 @@ public interface StoreApis {
      */
     JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query);
 
-    /**
-     * 获取指定批次详情数据
-     * @param id
-     * @return
-     */
-    JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(String id);
+
 
 }

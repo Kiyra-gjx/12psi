@@ -11,4 +11,6 @@ package com.zeroone.star.project.j2.store;
  * @Version: 1.0
  */
 public interface InventoryQueryApis {
+
+
 }
