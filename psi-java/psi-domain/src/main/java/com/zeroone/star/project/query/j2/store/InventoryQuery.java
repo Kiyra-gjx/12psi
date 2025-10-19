@@ -14,23 +14,26 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-@ApiModel("商品查询参数")
+@ApiModel("商品查询对象")
 public class InventoryQuery extends PageQuery {
 
     // ==================== 商品基础信息条件 ====================
-    @ApiModelProperty(value = "商品名称",example = "iphone")
-    private String name;
+    @ApiModelProperty(value = "商品ID",example = "1")
+    private String goodsId;
+
+    @ApiModelProperty(value = "商品名称（可选）",example = "iphone")
+    private String goodsName;
 
     @ApiModelProperty(value = "商品编号",example = "0001")
-    private String number;
+    private String goodsNumber;
 
     @ApiModelProperty(value = "规格型号",example = "17pro")
-    private String spec;
+    private String goodsSpec;
 
-    @ApiModelProperty(value = "商品类别id",example = "1")
-    private Integer category;
+    @ApiModelProperty(value = "商品类别ID",example = "1")
+    private Integer categoryId;
 
-    @ApiModelProperty(value = "商品类别名称",example = "默认类别")
+    @ApiModelProperty(value = "商品类别名称（可选）",example = "默认类别")
     private String categoryName;
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
@@ -42,7 +45,7 @@ public class InventoryQuery extends PageQuery {
     @ApiModelProperty(value = "仓库ID",example = "1")
     private Integer warehouseId;
 
-    @ApiModelProperty(value = "仓库名称",example = "上海仓库")
+    @ApiModelProperty(value = "仓库名称（可选）",example = "上海仓库")
     private String warehouseName;
 
     @ApiModelProperty(
