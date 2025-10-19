@@ -13,6 +13,6 @@ import lombok.Data;
  */
 @Data
 @ApiModel("商品库存详情数据对象")
-public class GoodsDetailDTO extends GoodsListDTO{
+public class InventoryDetailDTO extends InventoryListDTO {
 
 }

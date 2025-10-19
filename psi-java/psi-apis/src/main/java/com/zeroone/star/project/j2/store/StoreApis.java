@@ -1,8 +1,8 @@
 package com.zeroone.star.project.j2.store;
 
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.GoodsListDTO;
-import com.zeroone.star.project.query.j2.store.GoodQuery;
+import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
+import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
 
 /**
@@ -20,5 +20,5 @@ public interface StoreApis {
      * @param query 查询参数
      * @return 商品列表数据
      */
-    JsonVO<PageDTO<GoodsListDTO>> listGoods(GoodQuery query);
+    JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query);
 }
