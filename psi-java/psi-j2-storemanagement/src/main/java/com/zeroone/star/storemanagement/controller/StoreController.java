@@ -42,14 +42,14 @@ public class StoreController implements StoreApis {
 
     @GetMapping("/inventory/detail")
     @ApiOperation(value = "查询库存详情")
-    @Override
+
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
         return null;
     }
 
     @GetMapping("/batch/list")
     @ApiOperation(value = "查询批次列表")
-    @Override
+
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
         return null;
     }
@@ -60,25 +60,5 @@ public class StoreController implements StoreApis {
         return null;
     }
 
-    @PutMapping("/entry/update")
-    @ApiOperation(value = "修改其他入库单")
-    @Override
-    public JsonVO<String> updateOtherInList(OtherInListDTO otherInListDTO) {
-        return null;
-    }
-
-    @PutMapping("/entry/examine")
-    @ApiOperation(value = "审核入库单")
-    @Override
-    public JsonVO<String> examine(List<Integer> ids) {
-        return null;
-    }
-
-    @PutMapping("/entry/check")
-    @ApiOperation(value = "核对入库单")
-    @Override
-    public JsonVO<String> check(List<Integer> ids) {
-        return null;
-    }
 
 }
