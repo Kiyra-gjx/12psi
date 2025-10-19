@@ -1,6 +1,10 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.PageDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
+import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,4 +21,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/otherin")
 @Api(tags = "其他入库单相关接口")
 public class OtherInController implements OtherInApis {
+    @Override
+    public JsonVO<PageDTO<OtherInListDTO>> listOtherIn(OtherInQuery query) {
+        return null;
+    }
 }
