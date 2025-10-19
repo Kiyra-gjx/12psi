@@ -19,13 +19,13 @@ import java.util.List;
 @ApiModel("库存列表对象")
 public class InventoryListDTO {
     // ================= 商品基础信息 =================
-    @ApiModelProperty(value = "商品ID", example = "1")
+    @ApiModelProperty(value = "商品ID（内部使用）", example = "1")
     private Integer id;
 
     @ApiModelProperty(value = "商品名称", example = "iphone")
     private String name;
 
-    @ApiModelProperty(value = "商品总库存(所有属性库存的合计)", example = "300")
+    @ApiModelProperty(value = "商品总库存（所有属性库存的合计）", example = "300")
     private BigDecimal totalStock;
 
     @ApiModelProperty(value = "库存阈值", example = "30")
@@ -37,11 +37,11 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "规格型号", example = "17pro")
     private String spec;
 
-    @ApiModelProperty(value = "商品类别id", example = "1")
+    @ApiModelProperty(value = "商品类别id（内部使用）", example = "1")
     private int categoryId;
 
-    @ApiModelProperty(value = "商品类别", example = "手机")
-    private int category;
+    @ApiModelProperty(value = "商品分类", example = "手机")
+    private String category;
 
     @ApiModelProperty(value = "商品品牌", example = "苹果")
     private String brand;
