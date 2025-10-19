@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @BelongsPackage: com.zeroone.star.storemanagement.controller
  * @Author: 高
  * @CreateTime: 2025-10-18 12:15
- * @Description: 商品控制器类
+ * @Description: 商品控制器类(弃用)
  * @Version: 1.0
  */
 @RestController
