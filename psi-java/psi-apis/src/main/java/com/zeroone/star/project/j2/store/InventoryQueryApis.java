@@ -24,7 +24,7 @@ public interface InventoryQueryApis {
 
     /**
      * 导出库存详情数据
-     * @param
+     * @param inventoryDetailDTO
      * @return
      */
     ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailDTO inventoryDetailDTO);
