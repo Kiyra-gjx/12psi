@@ -1,6 +1,9 @@
 package com.zeroone.star.project.j2.store;
 
 
+import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
+import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
+import org.springframework.http.ResponseEntity;
 
 /**
  * @BelongsProject: psi-java
@@ -12,5 +15,17 @@ package com.zeroone.star.project.j2.store;
  */
 public interface InventoryQueryApis {
 
+    /**
+     * 导出库存列表数据
+     * @param inventoryListDTO
+     * @return
+     */
+    ResponseEntity<byte[]> exportInventoryListExcel(InventoryListDTO inventoryListDTO);
 
+    /**
+     * 导出库存详情数据
+     * @param
+     * @return
+     */
+    ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailDTO inventoryDetailDTO);
 }
