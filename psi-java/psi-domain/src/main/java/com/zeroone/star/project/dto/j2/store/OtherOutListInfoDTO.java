@@ -7,11 +7,11 @@ import lombok.Data;
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.dto.j2.store
  * @Author: 高
- * @CreateTime: 2025-10-18 18:13
- * @Description: 批次查询数据对象
+ * @CreateTime: 2025-10-19 19:04
+ * @Description: TODO
  * @Version: 1.0
  */
 @Data
-@ApiModel("批次列表数据对象")
-public class BatchListDTO {
+@ApiModel()
+public class OtherOutListInfoDTO {
 }
