@@ -5,7 +5,6 @@ import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.j2.store.StoreApis;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
@@ -14,11 +13,8 @@ import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 /**
  * @BelongsProject: psi-java
@@ -42,14 +38,14 @@ public class StoreController implements StoreApis {
 
     @GetMapping("/inventory/detail")
     @ApiOperation(value = "查询库存详情")
-
+    @Override
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
         return null;
     }
 
     @GetMapping("/batch/list")
     @ApiOperation(value = "查询批次列表")
-
+    @Override
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
         return null;
     }
@@ -59,6 +55,5 @@ public class StoreController implements StoreApis {
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(String id) {
         return null;
     }
-
 
 }
