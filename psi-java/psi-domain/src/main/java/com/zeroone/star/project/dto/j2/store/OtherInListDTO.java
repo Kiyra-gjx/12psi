@@ -4,6 +4,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.dto.j2.store
@@ -49,4 +51,8 @@ public class OtherInListDTO {
     int check;
     @ApiModelProperty(value = "制单人", example = "1")
     int user;
+    @ApiModelProperty(value = "入库单详细信息列表", example = "{goods: 2, attr: \"\", unit: \"个\", warehouse: null, batch: \"\", mfd: \"\", price: 10, nums: 1, serial: [],…}")
+    List<OtherInListInfoDTO> otherInListInfoDTOList;
+    @ApiModelProperty(value = "单据费用列表", example = "{id: 7, type: \"entry\", class: 4, time: \"2025-10-15\", iet: 5, money: 111, data: \"\", settle: 0, state: 0}")
+    List<CostDTO> costDTOList;
 }
