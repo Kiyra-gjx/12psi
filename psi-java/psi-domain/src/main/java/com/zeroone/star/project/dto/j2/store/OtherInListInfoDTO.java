@@ -13,7 +13,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-@ApiModel("")
+@ApiModel("其他入库单数据信息对象")
 public class OtherInListInfoDTO {
     @ApiModelProperty(value = "id", example = "1")
     int id;
