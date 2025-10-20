@@ -35,7 +35,7 @@ public class BatchQueryController implements BatchQueryApis {
 
     /**
      * 获取指定批次详情数据
-     * @param id
+     * @param batchDetailQuery
      * @return
      */
     @RequestMapping("/detailRecord")

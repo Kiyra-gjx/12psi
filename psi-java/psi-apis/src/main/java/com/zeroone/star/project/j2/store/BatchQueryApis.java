@@ -25,7 +25,7 @@ public interface BatchQueryApis {
 
     /**
      * 获取指定批次详情数据
-     * @param id
+     * @param batchDetailQuery
      * @return
      */
     JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery);
