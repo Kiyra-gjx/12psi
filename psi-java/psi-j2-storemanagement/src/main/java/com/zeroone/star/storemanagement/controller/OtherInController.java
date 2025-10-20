@@ -1,7 +1,5 @@
 package com.zeroone.star.storemanagement.controller;
 
-import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
@@ -11,6 +9,9 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -69,6 +70,27 @@ public class OtherInController implements OtherInApis {
             @RequestBody
             @ApiParam(value = "删除编号列表", required = true, example = "[\"1d7b0520e93e72715d5d\", \"1d7b0520e93e72715d52\"]")
             List<String> ids) {
+        return null;
+    }
+
+    @PostMapping("/import")
+    @ApiOperation(value = "导入数据")
+    @Override
+    public JsonVO<String> importExcel(@RequestBody MultipartFile file) {
+        return null;
+    }
+
+    @PostMapping("/exportEasyExcel")
+    @ApiOperation(value = "导出简单报表")
+    @Override
+    public JsonVO<ResponseEntity<byte[]>> exportEasyExcel(List<Integer> ids) {
+        return null;
+    }
+
+    @PostMapping("/exportDetailExcel")
+    @ApiOperation(value = "导出详细报表")
+    @Override
+    public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(List<Integer> ids) {
         return null;
     }
 }
