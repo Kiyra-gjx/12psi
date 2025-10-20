@@ -77,7 +77,7 @@ public class OtherOutController implements OtherOutApis {
     @GetMapping("/list")
     @ApiOperation(value = "获取出库单列表")
     @Override
-    public JsonVO<String> listOtherOut(OtherOutListDTO otherOutListDTO) {
+    public JsonVO<PageDTO<OtherOutListDTO>> listOtherOut(OtherOutQuery query) {
         return null;
     }
 

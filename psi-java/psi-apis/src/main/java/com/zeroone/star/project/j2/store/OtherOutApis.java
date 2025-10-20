@@ -49,10 +49,10 @@ public interface OtherOutApis {
 
     /**
      * 获取其他出库单列表
-     * @param otherOutListDTO 添加的出库单ID列表
+     * @param query 查询出库单列表
      * @return 获取结果
      */
-    JsonVO<String> listOtherOut(OtherOutListDTO otherOutListDTO);
+    JsonVO<PageDTO<OtherOutListDTO>> listOtherOut(OtherOutQuery query);
     /**
      * 获取指定其他出库单详细
      * @param id 获取的出库单ID

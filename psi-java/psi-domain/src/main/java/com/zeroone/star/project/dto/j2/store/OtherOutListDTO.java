@@ -52,8 +52,8 @@ public class OtherOutListDTO {
     private Integer check;
     @ApiModelProperty(value = "制单人", example = "1")
     private Integer user;
-    @ApiModelProperty(value = "出库单详细信息列表", example = "{goods: 2, attr: \"\", unit: \"个\", warehouse: null, batch: \"\", mfd: \"\", price: 10, nums: 1, serial: [],…}")
-    List<OtherInListInfoDTO> otherInListInfoDTOList;
+    @ApiModelProperty(value = "出库单详细信息列表")
+    List<OtherOutListInfoDTO> otherOutListInfoDTOList;
     @ApiModelProperty(value = "单据费用列表", example = "{id: 7, type: \"entry\", class: 4, time: \"2025-10-15\", iet: 5, money: 111, data: \"\", settle: 0, state: 0}")
     List<CostDTO> costDTOList;
 
