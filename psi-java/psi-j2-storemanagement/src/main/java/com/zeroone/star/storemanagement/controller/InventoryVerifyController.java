@@ -32,24 +32,12 @@ public class InventoryVerifyController implements InventoryVerifyApis {
     public JsonVO<PageDTO<InventoryVerifyListDTO>> listInventoryVerify(InventoryVerifyQuery query) {
         return null;
     }
-    @GetMapping("/goods/category")
-    @ApiOperation(value = "查询商品分类")
-    @Override
-    public JsonVO<String> listGoodsCategory() {
-        return null;
-    }
 
-    @GetMapping("/goods/brand")
-    @ApiOperation(value = "查询商品品牌")
-    @Override
-    public JsonVO<String> listGoodsBrand() {
-        return null;
-    }
 
-    @GetMapping("/warehouse")
-    @ApiOperation(value = "查询仓库信息")
+    @GetMapping("/queryProperty")
+    @ApiOperation(value = "查询库存盘点参数属性")
     @Override
-    public JsonVO<String> listWarehouse() {
+    public JsonVO<InventoryVerifyQuery> getinventoryVerifyQueryProperty() {
         return null;
     }
 

@@ -24,23 +24,11 @@ public interface InventoryVerifyApis {
     JsonVO<PageDTO<InventoryVerifyListDTO>> listInventoryVerify(InventoryVerifyQuery query);
 
     /**
-     * 查询商品类别
-     * @return 商品类别数据
-     *
-     */
-    JsonVO<String> listGoodsCategory();
+     * 查询条件查询库存盘点参数属性数据
+     * @return 库存盘点参数对象数据
+     **/
+    JsonVO<InventoryVerifyQuery> getinventoryVerifyQueryProperty();
 
-    /**
-     * 查询商品品牌
-     * @return 商品品牌数据
-     */
-    JsonVO<String> listGoodsBrand();
-
-    /**
-     * 查询仓库信息
-     * @return 仓库信息数据
-     */
-    JsonVO<String> listWarehouse();
 
     /**
      * 导出库存盘点单
