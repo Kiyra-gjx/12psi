@@ -15,7 +15,7 @@ import java.math.BigDecimal;
  * @Version: 1.0
  */
 @Data
-@ApiModel()
+@ApiModel("其他出库单数据信息对象")
 public class OtherOutListInfoDTO {
     @ApiModelProperty(value = "id", example = "1")
     private Integer id;
