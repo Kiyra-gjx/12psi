@@ -1,11 +1,15 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
+import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.http.ResponseEntity;
@@ -71,23 +75,24 @@ public class OtherOutController implements OtherOutApis {
     }
 
     @GetMapping("/get")
-    @ApiOperation(value = "获取出库单")
+    @ApiOperation(value = "获取出库单列表")
     @Override
-    public JsonVO<OtherOutListDTO> getOtherOutList(List<Integer> ids) {
+    public JsonVO<String> listOtherOut(OtherOutListDTO otherOutListDTO) {
         return null;
     }
 
     @GetMapping("/getInfo")
     @ApiOperation(value = "获取出库单详情")
+    @ApiImplicitParam(name = "id", value = "其他出库单编号", required = true, example = "1d7b0520e93e72715d5d6af1fb7d9a37")
     @Override
-    public JsonVO<OtherOutListInfoDTO> getOtherOutListInfo(Integer id) {
+    public JsonVO<String> getOtherOutListInfo(Integer id) {
         return null;
     }
 
     @PostMapping("/add")
     @ApiOperation(value = "添加出库单")
     @Override
-    public JsonVO<String> addOtherInList(OtherInListDTO otherOutListDTO) {
+    public JsonVO<String> addOtherOutList(OtherOutListDTO otherOutListDTO) {
         return JsonVO.success("添加成功");
     }
 
