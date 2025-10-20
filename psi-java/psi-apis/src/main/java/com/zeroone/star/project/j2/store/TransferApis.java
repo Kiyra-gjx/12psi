@@ -18,9 +18,9 @@ import java.util.List;
 public interface TransferApis {
 
     /**
-     * 添加调拨单
+     * 修改调拨单
      * @param dto 调拨单数据
-     * @return 添加结果
+     * @return 修改结果
      */
     JsonVO<String> modifyTransfer(TransferDetailDTO dto);
 
@@ -28,14 +28,14 @@ public interface TransferApis {
      * 批量审核/反审核调拨单
      * @param ids 调拨单id列表
      * @param operation 操作类型（0-未审核，1-已审核）
-     * @return
+     * @return 审核/反审核结果
      */
     JsonVO<String> batchAuditTransfer(List<Integer> ids, Integer operation);
 
     /**
      * 批量删除调拨单
      * @param ids 调拨单id列表
-     * @return
+     * @return 删除结果
      */
     JsonVO<String> removeTransfer(List<Integer> ids);
 
