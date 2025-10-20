@@ -14,7 +14,7 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-@ApiModel("")
+@ApiModel("costDTO")
 public class CostDTO {
     @ApiModelProperty(value = "id", example = "1")
     int id;
