@@ -7,7 +7,9 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -59,5 +61,23 @@ public class TransferController implements TransferApis {
     @Override
     public JsonVO<String> removeTransfer(@RequestParam List<Integer> ids) {
         return JsonVO.success("批量删除调拨单成功，删除 " + ids.size() + " 条单据");
+    }
+
+    @PostMapping("/import")
+    @ApiOperation(value = "导入调拨单")
+    public JsonVO<String> importTransferList(@RequestPart("file") MultipartFile file) {
+        return null;
+    }
+
+    @PostMapping("/export")
+    @ApiOperation(value = "导出调拨单")
+    public ResponseEntity<byte[]> exportTransferList(@RequestBody List<String> idList) {
+        return null;
+    }
+
+    @PostMapping("/exportDetail")
+    @ApiOperation(value = "导出调拨单详情")
+    public ResponseEntity<byte[]> exportTransferDetailList(@RequestBody List<String> idList) {
+        return null;
     }
 }
