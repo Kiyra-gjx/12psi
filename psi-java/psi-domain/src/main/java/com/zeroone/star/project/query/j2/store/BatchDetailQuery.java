@@ -1,5 +1,6 @@
 package com.zeroone.star.project.query.j2.store;
 
+import com.zeroone.star.project.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -14,7 +15,7 @@ import lombok.Data;
  */
 @Data
 @ApiModel("批次查询详情参数")
-public class BatchDetailQuery {
+public class BatchDetailQuery extends PageQuery {
     @ApiModelProperty(value = "单据编号", example = "QTRKD2510181347194")
     private String number;
     @ApiModelProperty(value = "单据类型", example = "采购单")
