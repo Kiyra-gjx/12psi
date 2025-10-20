@@ -1,7 +1,7 @@
 package com.zeroone.star.project.dto.j2.store;
 
 
-import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-@Api("商品属性库存对象")
+@ApiModel("商品属性库存对象")
 public class AttrStockDTO {
 
     @ApiModelProperty(value = "商品属性ID（内部使用）", example = "1")
