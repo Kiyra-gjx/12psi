@@ -6,8 +6,9 @@ import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.vo.JsonVO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
+import com.zeroone.star.project.dto.PageDTO;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
 
 /**
  * @BelongsProject: psi-java
@@ -77,4 +78,10 @@ public interface OtherInApis {
      * @param ids 需要导出的数据的id
      */
     JsonVO<ResponseEntity<byte[]>> exportDetailExcel(List<Integer> ids);
+    /**
+     * 获取其他入库单列表
+     * @param query 查询参数
+     * @return
+     */
+    JsonVO<PageDTO<OtherInListDTO>> listOtherIn(OtherInQuery query);
 }

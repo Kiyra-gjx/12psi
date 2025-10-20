@@ -3,8 +3,10 @@ package com.zeroone.star.storemanagement.controller;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -12,8 +14,10 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
-
 import java.util.List;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * @BelongsProject: psi-java
@@ -91,6 +95,12 @@ public class OtherInController implements OtherInApis {
     @ApiOperation(value = "导出详细报表")
     @Override
     public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(List<Integer> ids) {
+        return null;
+    }
+    @GetMapping("")
+    @ApiOperation(value = "获取其他入库单列表")
+    @Override
+    public JsonVO<PageDTO<OtherInListDTO>> listOtherIn(OtherInQuery query) {
         return null;
     }
 }

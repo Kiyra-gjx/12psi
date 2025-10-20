@@ -10,6 +10,7 @@ import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -42,6 +43,19 @@ public class BatchQueryController implements BatchQueryApis {
     @ApiOperation(value = "获取指定批次详情数据")
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
+        return null;
+    }
+    @GetMapping("/export")
+    @ApiOperation(value = "导出批次Excel")
+    @Override
+    public ResponseEntity<byte[]> exportBatchListExcel(BatchQuery query) {
+        return null;
+    }
+
+    @GetMapping("/exportDetail")
+    @ApiOperation(value = "导出批次详情Excel")
+    @Override
+    public ResponseEntity<byte[]> exportBatchDetailExcel(BatchDetailQuery query) {
         return null;
     }
 }
