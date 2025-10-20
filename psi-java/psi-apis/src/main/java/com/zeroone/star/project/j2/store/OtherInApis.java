@@ -1,6 +1,9 @@
 package com.zeroone.star.project.j2.store;
 
+import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.vo.JsonVO;
 
 import java.util.List;
@@ -34,4 +37,25 @@ public interface OtherInApis {
      * @return 修改结果
      */
     JsonVO<String> check(List<Integer> ids);
+
+    /**
+     * 获取指定其他入库单详细
+     * @param id
+     * @return
+     */
+    JsonVO<OtherInListDetailDTO> getOtherInList(String id);
+
+    /**
+     * 新增其他入库单
+     * @param dto
+     * @return
+     */
+    JsonVO<String> addOtherInList(OtherInListAddDTO dto);
+
+    /**
+     * 删除其他入库单(批量)
+     * @param ids
+     * @return
+     */
+    JsonVO<List<String>> deleteOtherInList(List<String> ids);
 }
