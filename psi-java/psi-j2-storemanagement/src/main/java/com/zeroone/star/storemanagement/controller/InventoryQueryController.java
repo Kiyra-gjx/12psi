@@ -10,6 +10,7 @@ import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -38,4 +39,21 @@ public class InventoryQueryController implements InventoryQueryApis {
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
         return null;
     }
+
+
+    @GetMapping("/export")
+    @ApiOperation(value = "导出库存列表数据Excel")
+    @Override
+    public ResponseEntity<byte[]> exportInventoryListExcel(InventoryListDTO inventoryListDTO) {
+        return null;
+    }
+
+    @GetMapping("/exportDetail")
+    @ApiOperation(value = "导出库存详情数据Excel")
+    @Override
+    public ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailDTO inventoryDetailDTO) {
+        return null;
+    }
+
+
 }
