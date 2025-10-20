@@ -5,7 +5,6 @@ import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.vo.JsonVO;
 import java.util.List;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
-import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
 
