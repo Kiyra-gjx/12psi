@@ -1,15 +1,20 @@
 package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
 
 
 /**
@@ -64,5 +69,24 @@ public class OtherOutController implements OtherOutApis {
         return JsonVO.success("删除成功");
     }
 
+
+    @GetMapping("/export")
+    @ApiOperation(value = "导出其他出库单数据Excel")
+    @Override
+    public ResponseEntity<byte[]> exportOrderListExcel(OtherOutListDTO otherInListDTO) {
+        return null;
+    }
+
+    @GetMapping("/exportDetail")
+    @ApiOperation(value = "导出其他出库单详情数据Excel")
+    @Override
+    public ResponseEntity<byte[]> exportOrderDetailExcel(OtherOutListInfoDTO otherInListInfoDTO) {
+        return null;
+    }
+
+    @PostMapping("/import")
+    @ApiOperation(value = "批量导入其他出库单")
+    @Override
+    public ResponseEntity<JsonVO<String>> importOrderList(MultipartFile file) {return null;}
 
 }
