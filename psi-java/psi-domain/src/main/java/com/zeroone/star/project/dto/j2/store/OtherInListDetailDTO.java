@@ -9,5 +9,5 @@ import lombok.Data;
 public class OtherInListDetailDTO extends OtherInListAddDTO{
 
     @ApiModelProperty(value = "其他入库单ID", example = "1")
-    private String id;
+    private Integer id;
 }
