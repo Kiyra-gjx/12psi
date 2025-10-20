@@ -1,5 +1,7 @@
 package com.zeroone.star.project.j2.store;
 
+import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.vo.JsonVO;
 import java.util.List;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
@@ -43,6 +45,28 @@ public interface OtherOutApis {
      * @return 删除结果
      */
     JsonVO<String> deleteOtherOutList(List<Integer> ids);
+
+    /**
+     * 获取其他出库单列表
+     * @param ids 添加的出库单ID列表
+     * @return 获取结果
+     */
+    JsonVO<OtherOutListDTO> getOtherOutList(List<Integer> ids);
+    /**
+     * 获取指定其他出库单详细
+     * @param id 获取的出库单ID
+     * @return 获取结果
+     */
+    JsonVO<OtherOutListInfoDTO> getOtherOutListInfo(Integer id);
+
+    /**
+     * 新增其他出库单
+     * @param otherOutListDTO 添加参数
+     * @return 新增结果
+     */
+    JsonVO<String> addOtherInList(OtherInListDTO otherOutListDTO);
+
+
 
 
 
