@@ -25,4 +25,11 @@ public interface SwapDTOApis {
     * @return 包含调拨单列表信息的JsonVO对象
     */
     JsonVO<String> querySwapList(List<SwapQuery> swapQuery, SwapQueryCondition condition);
+
+    /**
+     * 新增调拨单
+     * @param swapQuery 调拨单列表
+     * @return 获取调拨单详细
+     */
+    JsonVO<String> addSwapList(SwapQuery swapQuery);
 }
