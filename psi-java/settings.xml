@@ -51,7 +51,7 @@ under the License.
    |
    | Default: ${user.home}/.m2/repository
   -->
-  <localRepository>D:\maven_repository</localRepository>
+  <localRepository>D:\apacheAndOthers\Maven\apache-maven-3.9.9\mvn-resp</localRepository>
   
 
   <!-- interactiveMode
