@@ -12,6 +12,6 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-@ApiModel("批次查询数据对象")
+@ApiModel("批次列表数据对象")
 public class BatchListDTO {
 }

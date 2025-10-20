@@ -8,10 +8,10 @@ import lombok.Data;
  * @BelongsPackage: com.zeroone.star.project.dto.j2.store
  * @Author: 高
  * @CreateTime: 2025-10-18 18:17
- * @Description: 挑拨单数据对象
+ * @Description: 调拨单数据对象
  * @Version: 1.0
  */
 @Data
-@ApiModel("挑拨单数据对象")
+@ApiModel("调拨单数据对象")
 public class TransferListDTO {
 }
