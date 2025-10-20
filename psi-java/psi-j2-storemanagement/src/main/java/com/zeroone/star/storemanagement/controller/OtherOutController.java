@@ -30,9 +30,9 @@ import org.springframework.web.multipart.MultipartFile;
  * @Description: 其他出库单控制器类
  * @Version: 1.0
  */
-//@RestController
-//@RequestMapping("/otherout")
-//@Api(tags = "其他出库单")
+@RestController
+@RequestMapping("/otherout")
+@Api(tags = "其他出库单")
 public class OtherOutController implements OtherOutApis {
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")
@@ -74,7 +74,7 @@ public class OtherOutController implements OtherOutApis {
         return JsonVO.success("删除成功");
     }
 
-    @GetMapping("/get")
+    @GetMapping("/list")
     @ApiOperation(value = "获取出库单列表")
     @Override
     public JsonVO<String> listOtherOut(OtherOutListDTO otherOutListDTO) {
