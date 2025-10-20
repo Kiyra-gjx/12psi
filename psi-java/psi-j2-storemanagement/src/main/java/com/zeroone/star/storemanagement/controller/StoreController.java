@@ -29,28 +29,28 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "store1")
 public class StoreController implements StoreApis {
 
-    @GetMapping("/inventory/list")
+//    @GetMapping("/inventory/list")
     @ApiOperation(value = "查询库存列表")
     @Override
     public JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query) {
         return null;
     }
 
-    @GetMapping("/inventory/detail")
+//    @GetMapping("/inventory/detail")
     @ApiOperation(value = "查询库存详情")
     @Override
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
         return null;
     }
 
-    @GetMapping("/batch/list")
+//    @GetMapping("/batch/list")
     @ApiOperation(value = "查询批次列表")
     @Override
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
         return null;
     }
 
-    @GetMapping("/batch/detail")
+//    @GetMapping("/batch/detail")
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(String id) {
         return null;
