@@ -2,6 +2,7 @@ package com.zeroone.star.project.j2.store;
 
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
+import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
@@ -27,5 +28,5 @@ public interface BatchQueryApis {
      * @param id
      * @return
      */
-    JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(int id);
+    JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery);
 }

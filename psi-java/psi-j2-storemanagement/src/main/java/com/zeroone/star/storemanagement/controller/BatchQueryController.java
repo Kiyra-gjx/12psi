@@ -4,6 +4,7 @@ import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.j2.store.BatchQueryApis;
+import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
@@ -40,7 +41,7 @@ public class BatchQueryController implements BatchQueryApis {
     @RequestMapping("/detailRecord")
     @ApiOperation(value = "获取指定批次详情数据")
     @Override
-    public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(int id) {
+    public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
         return null;
     }
 }
