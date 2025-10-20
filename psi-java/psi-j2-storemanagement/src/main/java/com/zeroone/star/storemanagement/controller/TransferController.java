@@ -22,7 +22,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @RestController
-@RequestMapping("/verify")
+@RequestMapping("/transfer")
 @Api(tags = "调拨单相关接口")
 public class TransferController implements TransferApis {
 

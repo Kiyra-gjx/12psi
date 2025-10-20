@@ -38,7 +38,7 @@ public class BatchQueryController implements BatchQueryApis {
      * @param batchDetailQuery
      * @return
      */
-    @RequestMapping("/detailRecord")
+    @GetMapping("/detail")
     @ApiOperation(value = "获取指定批次详情数据")
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
