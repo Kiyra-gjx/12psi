@@ -1,5 +1,9 @@
 package com.zeroone.star.project.j2.store;
 
+import com.zeroone.star.project.vo.JsonVO;
+
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.j2.store
@@ -9,4 +13,17 @@ package com.zeroone.star.project.j2.store;
  * @Version: 1.0
  */
 public interface OtherOutApis {
+    /**
+     * 审核或反审核
+     * @param ids 审核id列表
+     * @return 修改结果
+     */
+    JsonVO<String> examine(List<Integer> ids);
+
+    /**
+     * 核对或反核对
+     * @param ids 核对id列表
+     * @return 修改结果
+     */
+    JsonVO<String> check(List<Integer> ids);
 }
