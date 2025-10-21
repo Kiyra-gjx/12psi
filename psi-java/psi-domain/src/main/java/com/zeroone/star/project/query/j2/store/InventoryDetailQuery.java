@@ -25,7 +25,7 @@ public class InventoryDetailQuery extends PageQuery {
     @ApiModelProperty(value = "商品属性ID", example = "101",required = true)
     private Integer attrId;
 
-    @ApiModelProperty(value = "单据ID", example = "1",required = true)
+    @ApiModelProperty(value = "单据ID（隐藏属性）", example = "1",required = true)
     private Integer documentId;
 
     @ApiModelProperty(value = "单据编号", example = "PUR-20231001")
@@ -39,5 +39,8 @@ public class InventoryDetailQuery extends PageQuery {
 
     @ApiModelProperty(value = "结束日期（String类型接收）", example = "2025-10-01")
     private String endDate;
+
+    @ApiModelProperty(value = "所属仓库")
+    private List<Integer> warehouse;
 
 }

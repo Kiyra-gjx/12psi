@@ -58,7 +58,7 @@ public class BatchListDTO {
     @ApiModelProperty(value = "备注信息", example = "")
     private String remark;
     // ================= 批次库存信息 =================
-    @ApiModelProperty(value = "不同批次库存列表")
+    @ApiModelProperty(value = "批次信息列表")
     private List<BatchStockDTO> batches;
 
 
