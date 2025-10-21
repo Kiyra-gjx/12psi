@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "批次查询")
 public class BatchQueryController implements BatchQueryApis {
     @GetMapping("/batch/list")
-    @ApiOperation(value = "获取批次列表(条件+分页)")
+    @ApiOperation(value = "获取批次列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
         return null;
@@ -40,20 +40,20 @@ public class BatchQueryController implements BatchQueryApis {
      * @return
      */
     @GetMapping("/detail")
-    @ApiOperation(value = "获取指定批次详情(条件+分页)")
+    @ApiOperation(value = "获取指定批次详情数据")
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
         return null;
     }
     @GetMapping("/export")
-    @ApiOperation(value = "导出批次数据")
+    @ApiOperation(value = "导出批次Excel")
     @Override
     public ResponseEntity<byte[]> exportBatchListExcel(BatchQuery query) {
         return null;
     }
 
     @GetMapping("/exportDetail")
-    @ApiOperation(value = "导出批次详情数据")
+    @ApiOperation(value = "导出批次详情Excel")
     @Override
     public ResponseEntity<byte[]> exportBatchDetailExcel(BatchDetailQuery query) {
         return null;

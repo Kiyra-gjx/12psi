@@ -31,16 +31,16 @@ public class InventoryQuery extends PageQuery {
     private String goodsSpec;
 
     @ApiModelProperty(value = "商品类别ID",example = "1")
-    private Integer categoryId;
+    private Integer goodsCategoryId;
 
     @ApiModelProperty(value = "商品类别名称（可选）",example = "默认类别")
-    private String categoryName;
+    private String goodsCategoryName;
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
-    private String brand;
+    private String goodsBrand;
 
     @ApiModelProperty(value = "商品条码",example = "111222")
-    private String code;
+    private String goodsCode;
     // ==================== 仓库信息条件 ===================
     @ApiModelProperty(value = "仓库ID",example = "1")
     private Integer warehouseId;
@@ -51,5 +51,5 @@ public class InventoryQuery extends PageQuery {
     @ApiModelProperty(
             value = "库存类型：0-常规库存，1-非零库存，2-预警库存",
             example = "1")
-    private Integer stockType;
+    private Integer stockState;
 }
