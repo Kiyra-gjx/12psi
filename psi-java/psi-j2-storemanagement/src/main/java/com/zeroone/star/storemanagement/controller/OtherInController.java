@@ -53,7 +53,7 @@ public class OtherInController implements OtherInApis {
     }
 
     @GetMapping("/list")
-    @ApiOperation(value = "获取指定其他入库单详细")
+    @ApiOperation(value = "获取指定其他入库单详情")
     @ApiImplicitParam(name = "id", value = "其他入库单编号", required = true, example = "1d7b0520e93e72715d5d6af1fb7d9a37")
     @Override
     public JsonVO<OtherInListDetailDTO> getOtherInList(String id) {
@@ -68,7 +68,7 @@ public class OtherInController implements OtherInApis {
     }
 
     @DeleteMapping("/delete")
-    @ApiOperation(value = "删除其他入库单(批量)")
+    @ApiOperation(value = "删除其他入库单（支持批量）")
     @Override
     public JsonVO<List<String>> deleteOtherInList(
             @RequestBody
