@@ -22,19 +22,19 @@ public class BatchDetailDataDTO {
     @ApiModelProperty(value = "id", example = "1")
     private int id;
 
-    @ApiModelProperty(value = "核对状态", example = "[0:未核对|1:已核对]")
+    @ApiModelProperty(value = "核对状态 [0:未核对|1:已核对]", example = "0")
     private int check;
 
     @ApiModelProperty(value = "单据费用", example = "0")
     private int cost;
 
-    @ApiModelProperty(value = "费用状态",example = "[0:未结算|1:部分结算|2:已结算|3:无需结算]")
+    @ApiModelProperty(value = "费用状态 [0:未结算|1:部分结算|2:已结算|3:无需结算]",example = "0")
     private int cse;
 
     @ApiModelProperty(value = "备注信息", example = "")
     private String data;
 
-    @ApiModelProperty(value = "审核状态", example = "[0:未审核|1:已审核]")
+    @ApiModelProperty(value = "审核状态 [0:未审核|1:已审核]", example = "0")
     private int examine;
 
     @ApiModelProperty(value = "单据附件")
@@ -61,13 +61,13 @@ public class BatchDetailDataDTO {
     @ApiModelProperty(value = "供应商", example = "0")
     private int supplier;
 
-    @ApiModelProperty(value = "单据时间", example = "2025-10-18")
+    @ApiModelProperty(value = "单据时间 2025-10-18", example = "")
     private LocaleData time;
 
     @ApiModelProperty(value = "单据成本", example = "12")
     private BigDecimal total;
 
-    @ApiModelProperty(value = "单据类型", example = "[0:其它入库单|1:盘盈单]")
+    @ApiModelProperty(value = "单据类型 [0:其它入库单|1:盘盈单]", example = "0")
     private int type;
 
     @ApiModelProperty(value = "制单人", example = "1")

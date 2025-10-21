@@ -24,7 +24,7 @@ public class BatchDetailDTO {
     @ApiModelProperty(value = "所属id", example = "1")
     private int pid;
 
-    @ApiModelProperty(value = "方向", example = "[0:出|1:入]")
+    @ApiModelProperty(value = "方向 [0:出|1:入]", example = "1")
     private int direction;
 
     @ApiModelProperty(value = "出入数量", example = "1")

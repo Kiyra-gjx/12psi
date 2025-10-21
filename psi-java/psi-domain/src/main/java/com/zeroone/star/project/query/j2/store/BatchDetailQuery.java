@@ -25,9 +25,9 @@ public class BatchDetailQuery extends PageQuery {
     private String number;
     @ApiModelProperty(value = "单据类型", example = "采购单")
     private List<String> type;
-    @ApiModelProperty(value = "开始日期", example = "2025-10-13")
+    @ApiModelProperty(value = "开始日期:2025-10-13", example = "")
     private LocalDate startTime;
-    @ApiModelProperty(value = "结束日期", example = "2025-10-22")
+    @ApiModelProperty(value = "结束日期:2025-10-22", example = "")
     private LocalDate endTime;
     @ApiModelProperty(value = "所属仓库", example = "0")
     private List<Integer> warehouse;
