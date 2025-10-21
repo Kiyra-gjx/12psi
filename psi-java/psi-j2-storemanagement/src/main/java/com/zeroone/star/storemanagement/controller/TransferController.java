@@ -1,6 +1,8 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.j2.store.ModifyTransferRequestDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
+import com.zeroone.star.project.dto.j2.store.TransferResponseDTO;
 import com.zeroone.star.project.j2.store.TransferApis;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
@@ -23,44 +25,46 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/transfer")
-@Api(tags = "调拨单")
+@Api(tags = "调拨单相关接口")
 public class TransferController implements TransferApis {
 
     @PostMapping("/modify-transfer")
     @ApiOperation(value = "修改调拨单")
     @Override
-    public JsonVO<String> modifyTransfer(
-            @ApiParam(value = "调拨单数据", required = true, example = "{\"id\":1,\"warehouse\":\"1号仓库\",\"storehouse\":\"2号仓库\",\"cost\":998.00,\"nums\":1.00,\"remark\":\"紧急调拨\"}")
-            @RequestBody TransferDetailDTO dto) {
-        return JsonVO.success("修改调拨单成功，ID: " + dto.getId());
+    public TransferResponseDTO modifyTransfer(
+            @RequestBody ModifyTransferRequestDTO requestData) {
+
+        TransferResponseDTO response = new TransferResponseDTO();
+        response.setState("success");
+        response.setInfo("4");
+        return response;
     }
 
     @PostMapping("/batch-audit-transfer")
     @ApiOperation(value = "审核/反审核(支持批量)")
     @Override
-    public JsonVO<String> batchAuditTransfer(
-            @ApiParam(value = "调拨单ID列表", required = true, example = "1,2,3")
-            @RequestParam List<Integer> ids,
-            @ApiParam(value = "操作类型（0-未审核，1-已审核）", required = true, example = "1")
+    public TransferResponseDTO batchAuditTransfer(
+            @ApiParam(value = "调拨单ID列表", required = true, example = "{1,2,3}")
+            @RequestBody List<Integer> request,
+            @ApiParam(value = "操作类型（0-反审核，1-审核）", required = true, example = "1")
             @RequestParam Integer operation) {
-        String operationName = operation == 1 ? "审核" : "反审核";
-        return JsonVO.success("批量" + operationName + "成功，操作 " + ids.size() + " 条单据");
+        TransferResponseDTO response = new TransferResponseDTO();
+        response.setState("success");
+        response.setInfo(4);
+        return response;
     }
 
     @PostMapping("/remove-transfer")
-    @ApiOperation(value = "删除调拨单(支持批量)")
-    @ApiImplicitParam(
-            name = "ids",
-            value = "调拨单ID列表",
-            required = true,
-            dataType = "string",
-            example = "1,2,3",
-            paramType = "query",
-            defaultValue = "1,2,3"
-    )
+    @ApiOperation(value = "删除调拨单（支持批量）")
     @Override
-    public JsonVO<String> removeTransfer(@RequestParam List<Integer> ids) {
-        return JsonVO.success("批量删除调拨单成功，删除 " + ids.size() + " 条单据");
+    public TransferResponseDTO removeTransfer(
+            @ApiParam(value = "调拨单ID列表", required = true, example = "{1,2,3}")
+            @RequestBody List<Integer> parm) {
+
+        TransferResponseDTO response = new TransferResponseDTO();
+        response.setState("success");
+        response.setInfo(4);
+        return response;
     }
 
     @PostMapping("/import")
