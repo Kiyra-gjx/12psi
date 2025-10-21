@@ -3,6 +3,7 @@ package com.zeroone.star.project.j2.store;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListUpdateDTO;
 import com.zeroone.star.project.vo.JsonVO;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,7 +25,7 @@ public interface OtherInApis {
      * @param otherInListDTO 修改参数
      * @return 修改结果
      */
-    JsonVO<String> updateOtherInList(OtherInListDTO otherInListDTO);
+    JsonVO<String> updateOtherInList(OtherInListUpdateDTO otherInListUpdateDTO);
 
     /**
      * 审核或反审核
