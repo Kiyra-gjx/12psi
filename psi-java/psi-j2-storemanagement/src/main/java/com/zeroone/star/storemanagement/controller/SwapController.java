@@ -18,7 +18,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transfer")
-@Api(tags = "调拨单相关接口")
+@Api(tags = "调拨单")
 public class SwapController implements SwapDTOApis {
     @PostMapping("/detail-swapInfo")
     @ApiOperation(value = "获取指定调拨单详细信息")
@@ -31,7 +31,7 @@ public class SwapController implements SwapDTOApis {
     }
 
     @PostMapping("/query-swapList")
-    @ApiOperation(value = "根据条件获取调拨单列表")
+    @ApiOperation(value = "获取调拨单列表（条件+分页）")
     @Override
     public JsonVO<String> querySwapList(
             @ApiParam(value = "调拨单列表", required = true)
