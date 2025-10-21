@@ -1,6 +1,6 @@
 package com.zeroone.star.project.j2.store;
 
-import com.zeroone.star.project.dto.j2.store.ShopListDto;
+import com.zeroone.star.project.dto.j2.store.ShopListDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
 import com.zeroone.star.project.dto.j2.store.TransferListDTO;
@@ -39,7 +39,7 @@ public interface TransferApis {
      * @param shopListDto 商品列表
      * @return 包含调拨单详细信息的JsonVO对象
      */
-    JsonVO<String> addTransferList(List<ShopListDto> shopListDto);
+    JsonVO<String> addTransferList(List<ShopListDTO> shopListDto);
 
     /**
      * 添加调拨单

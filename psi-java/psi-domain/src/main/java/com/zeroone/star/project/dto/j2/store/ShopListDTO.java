@@ -6,7 +6,7 @@ import lombok.Data;
 
 @Data
 @ApiModel("商品列表")
-public class ShopListDto {
+public class ShopListDTO {
     @ApiModelProperty(value = "商品名称", example = "刀具")
     private String shopName;
     @ApiModelProperty(value = "商品编号", example = "0003")
