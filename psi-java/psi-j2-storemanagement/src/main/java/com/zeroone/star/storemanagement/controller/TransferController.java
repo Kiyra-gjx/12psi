@@ -1,7 +1,11 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.j2.store.ShopListDto;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
+import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
+import com.zeroone.star.project.dto.j2.store.TransferListDTO;
 import com.zeroone.star.project.j2.store.TransferApis;
+import com.zeroone.star.project.query.j2.store.TransferQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
@@ -25,6 +29,40 @@ import java.util.List;
 @RequestMapping("/transfer")
 @Api(tags = "调拨单")
 public class TransferController implements TransferApis {
+
+    @GetMapping("/detail-transferInfo")
+    @ApiOperation(value = "获取指定调拨单详细信息")
+    @Override
+    public JsonVO<String> detailTransferList(
+            /*如果传入的调拨单详细信息为空，那就啥数据也没即可*/
+            @ApiParam(value = "调拨单详细", required = false, example = "")
+            @RequestBody List<TransferDetailListDTO> transferDetailListDTO) {
+        return null;
+    }
+
+    @GetMapping("/query-transferList")
+    @ApiOperation(value = "获取调拨单列表（条件+分页）")
+    @Override
+    public JsonVO<String> queryTransferList(
+            @ApiParam(value = "调拨单列表", required = true)
+            @RequestBody
+            List<TransferListDTO> transferListDTO,
+            @ApiParam(value = "调拨单查询条件", required = true)
+            @RequestBody
+            TransferQuery  condition) {
+        return null;
+    }
+
+    @PostMapping("/add-transferList")
+    @ApiOperation(value = "新增调拨单")
+    @Override
+    public JsonVO<String> addTransferList(
+            /*根据商品列表新增调拨单，可以批量*/
+            @ApiParam(value = "商品列表", required = false)
+            @RequestBody
+            List<ShopListDto> shopListDto) {
+        return null;
+    }
 
     @PostMapping("/modify-transfer")
     @ApiOperation(value = "修改调拨单")

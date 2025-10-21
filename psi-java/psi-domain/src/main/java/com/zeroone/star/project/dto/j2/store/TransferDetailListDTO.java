@@ -8,7 +8,7 @@ import java.time.LocalDate;
 
 @Data
 @ApiModel("调拨单详细")
-public class SwapListDTO {
+public class TransferDetailListDTO {
     @ApiModelProperty(value = "查询后数据的id", example = "1")
     private Integer id;
     @ApiModelProperty(value = "商品名称", example = "刀具")
