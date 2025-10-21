@@ -1,5 +1,6 @@
 package com.zeroone.star.project.j2.store;
 
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.ShopListDto;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
@@ -22,24 +23,23 @@ import java.util.List;
 public interface TransferApis {
     /**
      * 查看调拨单详细信息
-     * @param transferDetailListDTO 调拨单详细信息DTO
+     * @param shopListDto 商品信息，然后根据此信息去查并返回调拨单详细信息
      * @return 包含调拨单详细信息的JsonVO对象
      */
-    JsonVO<String> detailTransferList(List<TransferDetailListDTO> transferDetailListDTO);
+    JsonVO<TransferDetailListDTO> detailTransferList(ShopListDto shopListDto);
     /*
      * 获取调拨单列表
-     * @param transferListDTO 调拨单列表
-     * swapQueryCondition 调拨单列表查询参数
+     * @param transferQuery调拨单列表查询参数
      * @return 包含调拨单列表信息的JsonVO对象
      */
-    JsonVO<String> queryTransferList(List<TransferListDTO> transferListDTO, TransferQuery transferQuery);
+    JsonVO<PageDTO<TransferListDTO>> queryTransferList(TransferQuery transferQuery);
 
     /**
      * 新增调拨单
      * @param shopListDto 商品列表
      * @return 包含调拨单详细信息的JsonVO对象
      */
-    JsonVO<String> addTransferList(List<ShopListDto> shopListDto);
+    JsonVO<List<TransferDetailListDTO>> addTransferList(List<ShopListDto> shopListDto);
 
     /**
      * 添加调拨单

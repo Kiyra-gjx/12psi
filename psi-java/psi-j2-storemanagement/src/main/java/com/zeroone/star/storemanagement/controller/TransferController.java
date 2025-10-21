@@ -1,5 +1,6 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.ShopListDto;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
@@ -29,34 +30,31 @@ import java.util.List;
 @RequestMapping("/transfer")
 @Api(tags = "调拨单")
 public class TransferController implements TransferApis {
+    @GetMapping("/query-transferList")
+    @ApiOperation(value = "获取调拨单列表（条件+分页）")
+    @Override
+    public JsonVO<PageDTO<TransferListDTO>> queryTransferList(
+            @ApiParam(value = "调拨单查询条件", required = true)
+            @RequestBody
+            TransferQuery transferQuery) {
+        return null;
+    }
 
     @GetMapping("/detail-transferInfo")
     @ApiOperation(value = "获取指定调拨单详细信息")
     @Override
-    public JsonVO<String> detailTransferList(
-            /*如果传入的调拨单详细信息为空，那就啥数据也没即可*/
-            @ApiParam(value = "调拨单详细", required = false, example = "")
-            @RequestBody List<TransferDetailListDTO> transferDetailListDTO) {
-        return null;
-    }
-
-    @GetMapping("/query-transferList")
-    @ApiOperation(value = "获取调拨单列表（条件+分页）")
-    @Override
-    public JsonVO<String> queryTransferList(
-            @ApiParam(value = "调拨单列表", required = true)
+    public JsonVO<TransferDetailListDTO> detailTransferList(
+            /*根据商品信息获取调拨单*/
+            @ApiParam(value = "商品信息", required = false)
             @RequestBody
-            List<TransferListDTO> transferListDTO,
-            @ApiParam(value = "调拨单查询条件", required = true)
-            @RequestBody
-            TransferQuery  condition) {
+            ShopListDto shopListDto) {
         return null;
     }
 
     @PostMapping("/add-transferList")
     @ApiOperation(value = "新增调拨单")
     @Override
-    public JsonVO<String> addTransferList(
+    public JsonVO<List<TransferDetailListDTO>> addTransferList(
             /*根据商品列表新增调拨单，可以批量*/
             @ApiParam(value = "商品列表", required = false)
             @RequestBody
