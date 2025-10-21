@@ -18,7 +18,7 @@ import org.springframework.http.ResponseEntity;
  */
 public interface BatchQueryApis {
     /**
-     * 查询批次列表数据
+     * 获取批次列表
      * @param query
      * @return 批次列表数据
      */

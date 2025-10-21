@@ -43,12 +43,8 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "规格型号", example = "17pro")
     private String spec;
 
-    @ApiModelProperty(value = "商品类别id（内部使用）", example = "1")
-    private int categoryId;
-
-    @ExcelProperty(value = "商品分类", index = 7)
-    @ApiModelProperty(value = "商品分类", example = "手机")
-    private String category;
+    @ApiModelProperty(value = "商品类型对象")
+    private CategoryDataDto categoryData;
 
     @ExcelProperty(value = "商品品牌", index = 8)
     @ApiModelProperty(value = "商品品牌", example = "苹果")

@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.query.j2.store
@@ -26,8 +28,8 @@ public class InventoryDetailQuery extends PageQuery {
     @ApiModelProperty(value = "单据编号", example = "PUR-20231001")
     private String documentNumber;
 
-    @ApiModelProperty(value = "单据类型", example = "采购单")
-    private String documentType;
+    @ApiModelProperty(value = "单据类型（可选多个）")
+    private List<String> types;
 
     @ApiModelProperty(value = "开始日期（String类型接收）", example = "2024-10-01")
     private String startDate;
