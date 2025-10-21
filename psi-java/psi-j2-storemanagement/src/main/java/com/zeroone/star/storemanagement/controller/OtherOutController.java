@@ -1,20 +1,18 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PutMapping;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 /**
@@ -27,7 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @RestController
 @RequestMapping("/otherout")
-@Api(tags = "其他出库单相关接口")
+@Api(tags = "其他出库单")
 public class OtherOutController implements OtherOutApis {
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")
@@ -67,6 +65,27 @@ public class OtherOutController implements OtherOutApis {
         // 6. 恢复库存信息
         // 7. 记录操作日志
         return JsonVO.success("删除成功");
+    }
+
+    @GetMapping("/get")
+    @ApiOperation(value = "获取出库单")
+    @Override
+    public JsonVO<OtherOutListDTO> getOtherOutList(List<Integer> ids) {
+        return null;
+    }
+
+    @GetMapping("/getInfo")
+    @ApiOperation(value = "获取出库单详情")
+    @Override
+    public JsonVO<OtherOutListInfoDTO> getOtherOutListInfo(Integer id) {
+        return null;
+    }
+
+    @PostMapping("/add")
+    @ApiOperation(value = "添加出库单")
+    @Override
+    public JsonVO<String> addOtherInList(OtherInListDTO otherOutListDTO) {
+        return JsonVO.success("添加成功");
     }
 
 
