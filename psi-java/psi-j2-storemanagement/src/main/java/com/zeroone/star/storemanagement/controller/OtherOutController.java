@@ -7,15 +7,12 @@ import com.zeroone.star.project.j2.store.OtherOutApis;
 import com.zeroone.star.project.vo.JsonVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.PutMapping;
+import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
 import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 
 /**
@@ -26,9 +23,9 @@ import org.springframework.web.multipart.MultipartFile;
  * @Description: 其他出库单控制器类
  * @Version: 1.0
  */
-//@RestController
-//@RequestMapping("/otherout")
-//@Api(tags = "其他出库单")
+@RestController
+@RequestMapping("/otherout")
+@Api(tags = "其他出库单")
 public class OtherOutController implements OtherOutApis {
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")
