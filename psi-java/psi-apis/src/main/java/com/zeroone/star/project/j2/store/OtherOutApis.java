@@ -17,14 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 public interface OtherOutApis {
 
     /**
-     * 导出其他入库单数据
+     * 导出其他出库单简单报表
      * @param otherOutListDTO
      * @return
      */
     ResponseEntity<byte[]> exportOrderListExcel(OtherOutListDTO otherOutListDTO);
 
     /**
-     * 导出其他入库单详情数据
+     * 导出其他出库单详细报表
      * @param
      * @return
      */
