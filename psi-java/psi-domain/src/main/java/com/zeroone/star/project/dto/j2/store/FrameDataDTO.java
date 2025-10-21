@@ -17,4 +17,10 @@ public class FrameDataDTO {
     @ApiModelProperty(value = "组织名称", example = "默认组织")
     private String name;
 
+    @ApiModelProperty(value = "组织排序", example = "0")
+    private int sort;
+
+    @ApiModelProperty(value = "备注信息", example = "隐藏组织")
+    private String data;
+
 }

@@ -5,7 +5,7 @@ spring:
     name: ${sn.store}
 seata:
   tx-service-group: tx-business
-  enabled: true
+  enabled: false
   service:
     #seata服务地址
     grouplist:
