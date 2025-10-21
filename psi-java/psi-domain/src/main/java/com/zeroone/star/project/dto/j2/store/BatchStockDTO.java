@@ -4,28 +4,28 @@ package com.zeroone.star.project.dto.j2.store;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-
-/**
- * @BelongsProject: psi-java
- * @BelongsPackage: com.zeroone.star.project.dto.j2.store
- * @Author: 高
- * @CreateTime: 2025-10-19 18:00
- * @Description: TODO
- * @Version: 1.0
- */
-
 
 @Data
 @ApiModel("商品批次库存对象")
 public class BatchStockDTO {
 
-    @ApiModelProperty(value = "商品批次ID（内部使用）", example = "1")
-    private Integer id;
+    @ApiModelProperty(value = "商品批次id（内部使用）", example = "1")
+    private Integer batchId;
 
-    @ApiModelProperty(value = "批次名称", example = "20251001")
+    @ApiModelProperty(value = "所属仓储id", example = "1")
+    private Integer roomId;
+
+    @ApiModelProperty(value = "所属仓库id", example = "1")
+    private Integer warehouseId;
+
+    @ApiModelProperty(value = "所属商品id", example = "1")
+    private Integer goodsId;
+
+    @ApiModelProperty(value = "批次号", example = "20251001")
     private String batchName;
 
     @ApiModelProperty(value = "生产日期", example = "2025-10-01")

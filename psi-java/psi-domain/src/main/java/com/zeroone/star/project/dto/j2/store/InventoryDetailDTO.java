@@ -19,21 +19,21 @@ import java.math.BigDecimal;
 @ApiModel("商品库存详情数据对象")
 public class InventoryDetailDTO {
 
-    @ExcelProperty(value = "所属组织", index = 0)
-    @ApiModelProperty(value = "所属组织名称", example = "默认组织")
-    private String frameName;
+    @ApiModelProperty(value = "仓储记录id", example = "1")
+    private Integer id;
 
-    @ExcelProperty(value = "操作时间", index = 1)
-    @ApiModelProperty(value = "操作时间戳",example = "1690000000000")
-    private Long time;
+    @ApiModelProperty(value = "所属仓储pid", example = "1")
+    private Integer pid;
+
+    @ApiModelProperty(value = "单据时间", example = "2025-10-15")
+    private String time;
 
     @ExcelProperty(value = "单据类型", index = 2)
     @ApiModelProperty(value = "单据类型", example = "采购单")
     private String type;
 
-    @ExcelProperty(value = "单据编号", index = 3)
-    @ApiModelProperty(value = "单据编号", example = "PUR-20231001")
-    private String number;
+    @ApiModelProperty(value = "单据信息")
+    private CostDataDto costData;
 
     @ExcelProperty(value = "操作类型", index = 4)
     @ApiModelProperty(

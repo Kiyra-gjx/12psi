@@ -18,6 +18,12 @@ public class AttrStockDTO {
     @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
     private String name;
 
+    @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
+    private String goodsId;
+
+    @ApiModelProperty(value = "所属商品名称", example = "iphone")
+    private String goodsName;
+
     @ApiModelProperty(value = "商品属性编码", example = "45343453543")
     private String attrCode;
 
