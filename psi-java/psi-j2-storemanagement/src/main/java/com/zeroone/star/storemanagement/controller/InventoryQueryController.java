@@ -24,17 +24,17 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/store")
-@Api(tags = "库存查询相关接口")
+@Api(tags = "库存查询")
 public class InventoryQueryController implements InventoryQueryApis {
     @GetMapping("/inventory/list")
-    @ApiOperation(value = "查询库存列表")
+    @ApiOperation(value = "获取库存列表(条件+分页)")
     @Override
     public JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query) {
         return null;
     }
 
     @GetMapping("/inventory/detail")
-    @ApiOperation(value = "查询库存详情")
+    @ApiOperation(value = "获取指定库存详情(条件+分页)")
     @Override
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
         return null;
@@ -42,14 +42,14 @@ public class InventoryQueryController implements InventoryQueryApis {
 
 
     @GetMapping("/export")
-    @ApiOperation(value = "导出库存列表数据Excel")
+    @ApiOperation(value = "导出库存数据")
     @Override
     public ResponseEntity<byte[]> exportInventoryListExcel(InventoryListDTO inventoryListDTO) {
         return null;
     }
 
     @GetMapping("/exportDetail")
-    @ApiOperation(value = "导出库存详情数据Excel")
+    @ApiOperation(value = "导出库存详情数据")
     @Override
     public ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailDTO inventoryDetailDTO) {
         return null;

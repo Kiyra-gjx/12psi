@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/otherin")
-@Api(tags = "其他入库单相关接口")
+@Api(tags = "其他入库单")
 public class OtherInController implements OtherInApis {
     @PutMapping("/update")
     @ApiOperation(value = "修改其他入库单")
