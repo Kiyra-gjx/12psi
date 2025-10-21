@@ -26,7 +26,7 @@ public interface TransferApis {
      * @return 包含调拨单详细信息的JsonVO对象
      */
     JsonVO<String> detailTransferList(List<TransferDetailListDTO> transferDetailListDTO);
-    /*
+    /**
      * 获取调拨单列表
      * @param transferListDTO 调拨单列表
      * swapQueryCondition 调拨单列表查询参数

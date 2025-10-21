@@ -16,4 +16,21 @@ import java.math.BigDecimal;
 @Data
 @ApiModel("调拨单详情数据对象")
 public class TransferDetailDTO {
+    @ApiModelProperty(value = "调拨单ID", required = true, example = "1")
+    private Integer id;
+
+    @ApiModelProperty(value = "调出仓库", example = "1号仓库")
+    private String warehouse;
+
+    @ApiModelProperty(value = "调入仓库", example = "2号仓库")
+    private String storehouse;
+
+    @ApiModelProperty(value = "成本", example = "998.00")
+    private BigDecimal cost;
+
+    @ApiModelProperty(value = "数量", example = "1.00")
+    private BigDecimal nums;
+
+    @ApiModelProperty(value = "备注信息", example = "紧急调拨")
+    private String remark;
 }
