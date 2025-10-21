@@ -34,21 +34,21 @@ public class OtherInController implements OtherInApis {
     @PutMapping("/update")
     @ApiOperation(value = "修改其他入库单")
     @Override
-    public JsonVO<String> updateOtherInList(OtherInListDTO otherInListDTO) {
+    public JsonVO<String> updateOtherInList(@RequestBody OtherInListDTO otherInListDTO) {
         return null;
     }
 
     @PutMapping("/examine")
     @ApiOperation(value = "审核入库单")
     @Override
-    public JsonVO<String> examine(List<Integer> ids) {
+    public JsonVO<String> examine(@RequestBody List<Integer> ids) {
         return null;
     }
 
     @PutMapping("/check")
     @ApiOperation(value = "核对入库单")
     @Override
-    public JsonVO<String> check(List<Integer> ids) {
+    public JsonVO<String> check(@RequestBody List<Integer> ids) {
         return null;
     }
 
