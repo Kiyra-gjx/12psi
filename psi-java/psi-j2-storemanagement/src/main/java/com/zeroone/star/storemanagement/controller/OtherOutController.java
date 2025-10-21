@@ -26,9 +26,9 @@ import org.springframework.web.multipart.MultipartFile;
  * @Description: 其他出库单控制器类
  * @Version: 1.0
  */
-@RestController
-@RequestMapping("/otherout")
-@Api(tags = "其他出库单相关接口")
+//@RestController
+//@RequestMapping("/otherout")
+//@Api(tags = "其他出库单")
 public class OtherOutController implements OtherOutApis {
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")

@@ -22,12 +22,12 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/verify")
-@Api(tags = "库存盘点相关接口")
+@Api(tags = "库存盘点")
 public class InventoryVerifyController implements InventoryVerifyApis {
 
 
     @GetMapping("/list")
-    @ApiOperation(value = "查询库存盘点列表")
+    @ApiOperation(value = "获取盘盈单数据")
     @Override
     public JsonVO<PageDTO<InventoryVerifyListDTO>> listInventoryVerify(InventoryVerifyQuery query) {
         return null;
@@ -35,14 +35,14 @@ public class InventoryVerifyController implements InventoryVerifyApis {
 
 
     @GetMapping("/queryProperty")
-    @ApiOperation(value = "查询库存盘点参数属性")
+    @ApiOperation(value = "获取盘亏单数据")
     @Override
     public JsonVO<InventoryVerifyQuery> getinventoryVerifyQueryProperty() {
         return null;
     }
 
     @GetMapping("/export")
-    @ApiOperation(value = "导出库存盘点数据Excel")
+    @ApiOperation(value = "导出库存盘点单")
     @Override
     public JsonVO<byte[]> exportInventoryVerifyExcel() {
         return null;
