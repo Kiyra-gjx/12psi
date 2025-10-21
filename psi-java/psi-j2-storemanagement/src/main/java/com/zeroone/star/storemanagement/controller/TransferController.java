@@ -23,7 +23,7 @@ import java.util.List;
  */
 @RestController
 @RequestMapping("/transfer")
-@Api(tags = "调拨单相关接口")
+@Api(tags = "调拨单")
 public class TransferController implements TransferApis {
 
     @PostMapping("/modify-transfer")
@@ -36,7 +36,7 @@ public class TransferController implements TransferApis {
     }
 
     @PostMapping("/batch-audit-transfer")
-    @ApiOperation(value = "批量审核/反审核调拨单")
+    @ApiOperation(value = "审核/反审核(支持批量)")
     @Override
     public JsonVO<String> batchAuditTransfer(
             @ApiParam(value = "调拨单ID列表", required = true, example = "1,2,3")
@@ -48,7 +48,7 @@ public class TransferController implements TransferApis {
     }
 
     @PostMapping("/remove-transfer")
-    @ApiOperation(value = "批量删除调拨单")
+    @ApiOperation(value = "删除调拨单(支持批量)")
     @ApiImplicitParam(
             name = "ids",
             value = "调拨单ID列表",
@@ -64,19 +64,19 @@ public class TransferController implements TransferApis {
     }
 
     @PostMapping("/import")
-    @ApiOperation(value = "导入调拨单")
+    @ApiOperation(value = "导入数据")
     public JsonVO<String> importTransferList(@RequestPart("file") MultipartFile file) {
         return null;
     }
 
     @PostMapping("/export")
-    @ApiOperation(value = "导出调拨单")
+    @ApiOperation(value = "导出简单报表")
     public ResponseEntity<byte[]> exportTransferList(@RequestBody List<String> idList) {
         return null;
     }
 
     @PostMapping("/exportDetail")
-    @ApiOperation(value = "导出调拨单详情")
+    @ApiOperation(value = "导出详细报表")
     public ResponseEntity<byte[]> exportTransferDetailList(@RequestBody List<String> idList) {
         return null;
     }
