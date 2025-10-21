@@ -44,7 +44,7 @@ public class InventoryListDTO {
     private String spec;
 
     @ApiModelProperty(value = "商品类型对象")
-    private CategoryDataDto categoryData;
+    private CategoryDataDTO categoryData;
 
     @ExcelProperty(value = "商品品牌", index = 8)
     @ApiModelProperty(value = "商品品牌", example = "苹果")

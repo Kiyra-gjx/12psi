@@ -33,7 +33,7 @@ public class InventoryDetailDTO {
     private String type;
 
     @ApiModelProperty(value = "单据信息")
-    private CostDataDto costData;
+    private CostDataDTO costData;
 
     @ExcelProperty(value = "操作类型", index = 4)
     @ApiModelProperty(

@@ -44,7 +44,7 @@ public class BatchListDTO {
     private int categoryId;
 
     @ApiModelProperty(value = "商品类型对象")
-    private CategoryDataDto categoryData;
+    private CategoryDataDTO categoryData;
 
     @ApiModelProperty(value = "商品品牌", example = "伊利")
     private String brand;

@@ -3,12 +3,11 @@ package com.zeroone.star.project.dto.j2.store;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.models.auth.In;
 import lombok.Data;
 
 @Data
 @ApiModel("单据信息")
-public class CostDataDto{
+public class CostDataDTO {
 
     @ApiModelProperty(value = "单据ID", example = "1")
     private Integer id;
@@ -26,6 +25,6 @@ public class CostDataDto{
     private String number;
 
     @ApiModelProperty(value = "组织信息")
-    private FrameDataDto frameData;
+    private FrameDataDTO frameData;
 
 }
