@@ -4,7 +4,6 @@ import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListUpdateDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.project.query.j2.store.OtherInQuery;
@@ -35,7 +34,7 @@ public class OtherInController implements OtherInApis {
     @PutMapping("/update")
     @ApiOperation(value = "修改其他入库单")
     @Override
-    public JsonVO<String> updateOtherInList(@RequestBody OtherInListUpdateDTO otherInListUpdateDTO) {
+    public JsonVO<String> updateOtherInList(@RequestBody OtherInListDetailDTO otherInListDetailDTO) {
         return null;
     }
 
