@@ -23,7 +23,7 @@ public interface InventoryQueryApis {
      * @param query 查询参数
      * @return 商品列表数据
      */
-    JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query);
+    JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query);
 
     /**
      * 获取指定库存详情

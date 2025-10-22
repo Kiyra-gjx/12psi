@@ -7,23 +7,25 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@ApiModel("仓库库存对象")
+@ApiModel("存储信息对象")
 public class WarehouseStockDTO {
 
-    @ApiModelProperty(value = "仓库ID（内部使用）", example = "1")
+    @ApiModelProperty(value = "所属存储ID", example = "1")
+    private Integer storedRecordId;
+
+    @ApiModelProperty(value = "所属仓库ID", example = "1")
     private Integer warehouseId;
 
-    @ApiModelProperty(value = "仓库名称", example = "上海仓库")
+    @ApiModelProperty(value = "所属仓库名称", example = "上海仓库")
     private String warehouseName;
 
-    @ApiModelProperty(value = "所属组织id（内部使用）", example = "1")
-    private Integer frameId;
+    @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
+    private Integer goodsId;
 
-    @ApiModelProperty(value = "所属组织名称", example = "默认组织")
-    private String frameName;
+    @ApiModelProperty(value = "商品辅助属性ID（内部使用）", example = "1")
+    private Integer attrId;
 
     @ApiModelProperty(value = "库存数量", example = "100")
     private BigDecimal stockNum;
-
 
 }
