@@ -87,14 +87,14 @@ public class OtherInController implements OtherInApis {
     @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出简单报表")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportEasyExcel(String ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportEasyExcel(@ApiParam(value = "例：\"1+2+4\"") String ids) {
         return null;
     }
 
     @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出详细报表")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(String ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(@ApiParam(value = "例：\"1+2+4\"") String ids) {
         return null;
     }
     @GetMapping("")
