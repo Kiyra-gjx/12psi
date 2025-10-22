@@ -1,7 +1,7 @@
 package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.ShopListDto;
+import com.zeroone.star.project.dto.j2.store.ShopListDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
 import com.zeroone.star.project.dto.j2.store.TransferListDTO;
@@ -47,7 +47,7 @@ public class TransferController implements TransferApis {
             /*根据商品信息获取调拨单*/
             @ApiParam(value = "商品信息", required = false)
             @RequestBody
-            ShopListDto shopListDto) {
+            ShopListDTO shopListDto) {
         return null;
     }
 
@@ -58,7 +58,7 @@ public class TransferController implements TransferApis {
             /*根据商品列表新增调拨单，可以批量*/
             @ApiParam(value = "商品列表", required = false)
             @RequestBody
-            List<ShopListDto> shopListDto) {
+            List<ShopListDTO> shopListDto) {
         return null;
     }
 
