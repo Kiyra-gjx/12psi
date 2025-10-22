@@ -46,14 +46,14 @@ public class BatchQueryController implements BatchQueryApis {
         return null;
     }
     @GetMapping("/export")
-    @ApiOperation(value = "导出批次Excel")
+    @ApiOperation(value = "导出批次数据")
     @Override
     public ResponseEntity<byte[]> exportBatchListExcel(BatchQuery query) {
         return null;
     }
 
     @GetMapping("/exportDetail")
-    @ApiOperation(value = "导出批次详情Excel")
+    @ApiOperation(value = "导出批次详情数据")
     @Override
     public ResponseEntity<byte[]> exportBatchDetailExcel(BatchDetailQuery query) {
         return null;
