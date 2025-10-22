@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.query.j2.store
@@ -19,7 +21,7 @@ public class InventoryQuery extends PageQuery {
 
     // ==================== 商品基础信息条件 ====================
     @ApiModelProperty(value = "商品ID",example = "1")
-    private String goodsId;
+    private Integer goodsId;
 
     @ApiModelProperty(value = "商品名称（可选）",example = "iphone")
     private String goodsName;
@@ -43,10 +45,10 @@ public class InventoryQuery extends PageQuery {
     private String goodsCode;
     // ==================== 仓库信息条件 ===================
     @ApiModelProperty(value = "仓库ID",example = "1")
-    private Integer warehouseId;
+    private List<Integer> warehouseId;
 
     @ApiModelProperty(value = "仓库名称（可选）",example = "上海仓库")
-    private String warehouseName;
+    private List<String> warehouseNames;
 
     @ApiModelProperty(
             value = "库存类型：0-常规库存，1-非零库存，2-预警库存",

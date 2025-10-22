@@ -19,7 +19,7 @@ import java.math.BigDecimal;
 @ApiModel("商品库存详情数据对象")
 public class InventoryDetailDTO {
 
-    @ApiModelProperty(value = "仓储记录id", example = "1")
+    @ApiModelProperty(value = "仓储详情id", example = "1")
     private Integer id;
 
     @ApiModelProperty(value = "所属仓储id", example = "1")
@@ -28,7 +28,7 @@ public class InventoryDetailDTO {
     @ApiModelProperty(value = "单据时间", example = "2025-10-15")
     private String time;
 
-    @ApiModelProperty(value = "所属类id", example = "35")
+    @ApiModelProperty(value = "所属类", example = "35")
     private Integer cls;
 
     @ApiModelProperty(value = "所属详情id", example = "49")

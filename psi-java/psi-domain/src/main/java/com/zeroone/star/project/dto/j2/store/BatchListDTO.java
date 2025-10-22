@@ -25,10 +25,10 @@ public class BatchListDTO {
     @ApiModelProperty(value = "商品名称", example = "牛奶")
     private String name;
 
-    @ApiModelProperty(value = "商品总库存（所有属性库存的合计）", example = "300")
+    @ApiModelProperty(value = "商品总库存", example = "300")
     private BigDecimal totalStock;
 
-    @ApiModelProperty(value = "商品保质期", example = "365（天）")
+    @ApiModelProperty(value = "商品保质期", example = "365")
     private Integer protect;
 
     @ApiModelProperty(value = "库存阈值", example = "30")
@@ -57,13 +57,16 @@ public class BatchListDTO {
 
     @ApiModelProperty(value = "备注信息", example = "")
     private String remark;
+
+    @ApiModelProperty(value = "批次产品", example = "[0:关闭|1:启用]")
+    private Integer batch;
     // ================= 批次库存信息 =================
-    @ApiModelProperty(value = "批次信息列表")
-    private List<BatchStockDTO> batches;
+    @ApiModelProperty(value = "批次号列表")
+    private List<BatchNumberDTO> batches;
 
 
-    // ================= 若无属性时展示仓库库存 =================
-    @ApiModelProperty(value = "仓库库存信息(仅当specs为空时有效)")
+    // ================= 不是批次产品直接展示仓库库存 =================
+    @ApiModelProperty(value = "仓库库存信息（非批次产品使用）")
     private List<WarehouseStockDTO> warehouses;
 
 }

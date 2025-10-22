@@ -29,7 +29,7 @@ public class InventoryQueryController implements InventoryQueryApis {
     @GetMapping("/inventory/list")
     @ApiOperation(value = "获取库存列表（条件+分页）")
     @Override
-    public JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query) {
+    public JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query) {
         return null;
     }
 
