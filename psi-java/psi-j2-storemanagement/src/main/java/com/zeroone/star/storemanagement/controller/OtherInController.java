@@ -72,7 +72,7 @@ public class OtherInController implements OtherInApis {
     @Override
     public JsonVO<List<String>> deleteOtherInList(
             @RequestBody
-            @ApiParam(value = "删除编号列表", required = true, example = "[\"1d7b0520e93e72715d5d\", \"1d7b0520e93e72715d52\"]")
+            @ApiParam(value = "删除编号列表", required = true)
             List<String> ids) {
         return null;
     }
