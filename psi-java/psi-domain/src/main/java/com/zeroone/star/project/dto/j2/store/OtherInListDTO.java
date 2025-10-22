@@ -69,7 +69,7 @@ public class OtherInListDTO {
 
     @ExcelProperty(value = "审核状态", index = 8)
     @ApiModelProperty(value = "审核状态", example = "1")
-    int examine;
+    private Integer examine;
 
     @ExcelProperty(value = "费用状态", index = 9)
     @ApiModelProperty(value = "费用状态", example = "1")

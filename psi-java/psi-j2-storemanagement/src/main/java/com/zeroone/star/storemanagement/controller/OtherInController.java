@@ -72,7 +72,7 @@ public class OtherInController implements OtherInApis {
     @Override
     public JsonVO<List<String>> deleteOtherInList(
             @RequestBody
-            @ApiParam(value = "删除编号列表", required = true, example = "[\"1d7b0520e93e72715d5d\", \"1d7b0520e93e72715d52\"]")
+            @ApiParam(value = "删除编号列表", required = true)
             List<String> ids) {
         return null;
     }
@@ -87,18 +87,18 @@ public class OtherInController implements OtherInApis {
     @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出简单报表")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportEasyExcel(List<Integer> ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportEasyExcel(String ids) {
         return null;
     }
 
     @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出详细报表")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(List<Integer> ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(String ids) {
         return null;
     }
     @GetMapping("")
-    @ApiOperation(value = "获取其他入库单列表")
+    @ApiOperation(value = "获取其他入库单列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<OtherInListDTO>> listOtherIn(OtherInQuery query) {
         return null;
