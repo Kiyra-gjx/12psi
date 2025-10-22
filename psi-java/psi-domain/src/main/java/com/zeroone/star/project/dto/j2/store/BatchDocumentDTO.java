@@ -1,6 +1,8 @@
 package com.zeroone.star.project.dto.j2.store;
 
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,16 +11,13 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Data
-@ApiModel("批次信息")
+@ApiModel("批次单据信息")
 public class BatchDocumentDTO {
 
     @ApiModelProperty(value = "批次ID", example = "22")
     private Integer id;
 
-    @ApiModelProperty(value = "批次号", example = "BATCH20241018001")
-    private String batchNumber;
-
-    @ApiModelProperty(value = "批次备注名称", example = "-")
+    @ApiModelProperty(value = "名称")
     private String name;
 
     @ApiModelProperty(value = "保质期", example = "365")
@@ -32,6 +31,7 @@ public class BatchDocumentDTO {
 
     @ApiModelProperty(value = "总库存数量", example = "200")
     private BigDecimal totalStock;
+
 
     @ApiModelProperty(value = "仓库库存明细")
     private List<WarehouseStockDTO> warehouses;

@@ -58,9 +58,9 @@ public class BatchListDTO {
     @ApiModelProperty(value = "备注信息", example = "")
     private String remark;
 
-    @ApiModelProperty(value = "批次产品", example = "[0:关闭|1:启用]")
+    @ApiModelProperty(value = "批次产品[0:关闭|1:启用]", example = "0")
     private Integer batch;
-    // ================= 批次库存信息 =================
+
     @ApiModelProperty(value = "批次号列表")
     private List<BatchNumberDTO> batches;
 
