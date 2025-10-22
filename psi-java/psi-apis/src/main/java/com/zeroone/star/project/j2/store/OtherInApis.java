@@ -25,10 +25,10 @@ import com.zeroone.star.project.query.j2.store.OtherInQuery;
 public interface OtherInApis {
     /**
      * 修改其他入库单
-     * @param otherInListDTO 修改参数
+     * @param otherInListDetailDTO 修改参数
      * @return 修改结果
      */
-    JsonVO<String> updateOtherInList(OtherInListDTO otherInListDTO);
+    JsonVO<String> updateOtherInList(OtherInListDetailDTO otherInListDetailDTO);
 
     /**
      * 审核或反审核
