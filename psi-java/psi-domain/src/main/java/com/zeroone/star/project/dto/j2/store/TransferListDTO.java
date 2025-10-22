@@ -4,6 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 /**
@@ -17,24 +18,26 @@ import java.time.LocalDate;
 @Data
 @ApiModel("调拨单数据对象（调拨单查询结果）")
 public class TransferListDTO {
-    @ApiModelProperty(value = "所属组织", example = "默认组织")
-    private String organization;
-    @ApiModelProperty(value = "单据时间", example = "2025-10-18")
-    private LocalDate ProductDate;
-    @ApiModelProperty(value = "单据编号", example = "DJ20251018001")
+    @ApiModelProperty(value = "隐藏属性唯一id", required = true ,example = "1")
+    private int id;
+    @ApiModelProperty(value = "所属组织",required = true , example = "默认组织")
+    private String frame;
+    @ApiModelProperty(value = "单据时间",required = true , example = "2025-10-18")
+    private int time;
+    @ApiModelProperty(value = "单据编号",required = true , example = "DJ20251018001")
     private String number;
-    @ApiModelProperty(value = "单据成本", example = "12")
-    private Double Cost;
-    @ApiModelProperty(value = "单据费用", example = "0")
-    private Double Expense;
-    @ApiModelProperty(value = "关联人员", example = "")
-    private String RelatedPerson;
+    @ApiModelProperty(value = "单据成本",required = true , example = "12")
+    private BigDecimal total;
+    @ApiModelProperty(value = "单据费用",required = true , example = "0")
+    private BigDecimal cost;
+    @ApiModelProperty(value = "关联人员",required = true , example = "")
+    private int people;
     @ApiModelProperty(value = "审核状态", example = "未审核")
-    private String AuditStatus;
+    private int examine;
     @ApiModelProperty(value = "费用状态", example = "无需结算")
-    private String ExpenseStatus;
-    @ApiModelProperty(value = "制单人", example = "管理员")
-    private String Maker;
+    private int cse;
+    @ApiModelProperty(value = "制单人",required = true , example = "管理员")
+    private int user;
     @ApiModelProperty(value = "备注信息", example = "")
-    private String Remark;
+    private String data;
 }

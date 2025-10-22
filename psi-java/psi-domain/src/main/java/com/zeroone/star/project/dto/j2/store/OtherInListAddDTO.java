@@ -83,4 +83,7 @@ public class OtherInListAddDTO {
 
     @ApiModelProperty(value = "入库单详细信息列表",required = true)
     List<OtherInListInfoDTO> otherInListInfoDTOList;
+
+    @ApiModelProperty(value = "单据费用列表",required = true, example = "{id: 7, type: \"entry\", class: 4, time: \"2025-10-15\", iet: 5, money: 111, data: \"\", settle: 0, state: 0}")
+    List<CostDTO> costDTOList;
 }
