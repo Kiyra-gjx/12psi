@@ -4,7 +4,11 @@ import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.vo.JsonVO;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import com.zeroone.star.project.dto.PageDTO;
@@ -64,20 +68,24 @@ public interface OtherInApis {
     /**
      *  导入数据
      * @param file 导入的excel文件
+     * @return 导入数据的id
      */
     JsonVO<String> importExcel(MultipartFile file);
 
     /**
      *  导出简单报表
-     * @param ids 需要导出的数据的id
+     * @param ids 需要导出的数据的id,导入格式（暂定）为 "1+2+4+5"（1，2，4，5）为id
+     * @return 一张excel表
      */
-    JsonVO<ResponseEntity<byte[]>> exportEasyExcel(List<Integer> ids);
+    JsonVO<ResponseEntity<byte[]>> exportEasyExcel(String ids);
 
     /**
      *  导出详细报表
-     * @param ids 需要导出的数据的id
+     * @param ids 需要导出的数据的id,导入格式（暂定）为 "1+2+4+5"（1，2，4，5）为id
+     * @return 一个压缩包，存储excel表，每个id各对应一张excel表
      */
-    JsonVO<ResponseEntity<byte[]>> exportDetailExcel(List<Integer> ids);
+    JsonVO<ResponseEntity<byte[]>> exportDetailExcel(String ids);
+
     /**
      * 获取其他入库单列表
      * @param query 查询参数

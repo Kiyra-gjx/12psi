@@ -19,27 +19,27 @@ import java.time.LocalDate;
 @ApiModel("调拨单查询参数对象(查询调拨单的参数)")
 public class TransferQuery extends PageQuery {
     @ApiModelProperty(value = "商品名称", example = "刀具")
-    private String shopName;
-    @ApiModelProperty(value = "商品编号", example = "0003")
-    private Integer shopNumber;
-    @ApiModelProperty(value = "起始日期", example = "2025-10-18")
-    private LocalDate StartDate;
-    @ApiModelProperty(value = "截止日期", example = "2025-10-18")
-    private LocalDate EndDate;
-    @ApiModelProperty(value = "客户", example ="")
-    private String Customer;
+    private String name;
+    @ApiModelProperty(value = "商品编号",example = "0003")
+    private String number;
+    @ApiModelProperty(value = "起始日期",required = true, example = "2025-10-18")
+    private int startTime;
+    @ApiModelProperty(value = "截止日期",required = true, example = "2025-10-18")
+    private int endTime;
+    @ApiModelProperty(value = "客户,需要关联映射", example ="")
+    private String customerName;
     @ApiModelProperty(value = "关联人员", example = "")
-    private String RelatedPerson;
+    private int people;
     @ApiModelProperty(value = "单据类型", example = "")
-    private String DocumentType;
-    @ApiModelProperty(value = "审核状态", example = "")
-    private String AuditStatus;
-    @ApiModelProperty(value = "费用状态", example = "")
-    private String ExpenseStatus;
-    @ApiModelProperty(value = "核对状态", example = "")
-    private String CheckStatus;
+    private String type;
+    @ApiModelProperty(value = "审核状态", example = "未审核")
+    private int examine;
+    @ApiModelProperty(value = "费用状态", example = "无需结算")
+    private int cse;
+    @ApiModelProperty(value = "核对状态[0:未核对|1:已核对]", example = "0")
+    private Integer check;
     @ApiModelProperty(value = "制单人", example = "")
-    private String Maker;
+    private int user;
     @ApiModelProperty(value = "备注信息", example = "")
-    private String Remark;
+    private String data;
 }
