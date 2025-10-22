@@ -98,7 +98,7 @@ public class OtherInController implements OtherInApis {
         return null;
     }
     @GetMapping("")
-    @ApiOperation(value = "获取其他入库单列表")
+    @ApiOperation(value = "获取其他入库单列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<OtherInListDTO>> listOtherIn(OtherInQuery query) {
         return null;
