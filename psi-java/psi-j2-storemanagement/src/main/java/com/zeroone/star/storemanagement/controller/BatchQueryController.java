@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/batch")
 @Api(tags = "批次查询")
 public class BatchQueryController implements BatchQueryApis {
-    @GetMapping("/batch/list")
+    @GetMapping("/list")
     @ApiOperation(value = "获取批次列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
