@@ -1,9 +1,12 @@
 package com.zeroone.star.project.query.j2.store;
 
+import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.project.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * @BelongsProject: psi-java
@@ -20,19 +23,28 @@ public class InventoryDetailQuery extends PageQuery {
     @ApiModelProperty(value = "商品ID", example = "1",required = true)
     private Integer goodsId;
 
+    @ApiModelProperty(value = "商品名称", example = "iphone")
+    private String goodsName;
+
     @ApiModelProperty(value = "商品属性ID", example = "101",required = true)
     private Integer attrId;
+
+    @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
+    private String attrName;
 
     @ApiModelProperty(value = "单据编号", example = "PUR-20231001")
     private String documentNumber;
 
-    @ApiModelProperty(value = "单据类型", example = "采购单")
-    private String documentType;
+    @ApiModelProperty(value = "单据类型（可选多个）")
+    private List<String> documentTypes;
 
     @ApiModelProperty(value = "开始日期（String类型接收）", example = "2024-10-01")
     private String startDate;
 
     @ApiModelProperty(value = "结束日期（String类型接收）", example = "2025-10-01")
     private String endDate;
+
+    @ApiModelProperty(value = "仓库ID")
+    private List<Integer> warehouse;
 
 }

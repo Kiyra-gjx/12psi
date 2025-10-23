@@ -19,14 +19,14 @@ import org.springframework.http.ResponseEntity;
  */
 public interface InventoryQueryApis {
     /**
-     * 查询库存列表数据
+     * 获取库存列表
      * @param query 查询参数
      * @return 商品列表数据
      */
-    JsonVO<PageDTO<InventoryListDTO>> listGoods(InventoryQuery query);
+    JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query);
 
     /**
-     * 获取指定库存详情数据
+     * 获取指定库存详情
      * @param query
      * @return 库存详情数据
      */
