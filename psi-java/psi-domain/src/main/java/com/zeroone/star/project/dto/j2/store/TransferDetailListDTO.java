@@ -3,9 +3,7 @@ package com.zeroone.star.project.dto.j2.store;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Data
 @ApiModel("调拨单详细")
