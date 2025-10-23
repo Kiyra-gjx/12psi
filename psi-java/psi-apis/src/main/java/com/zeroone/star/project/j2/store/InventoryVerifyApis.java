@@ -3,6 +3,8 @@ package com.zeroone.star.project.j2.store;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryVerifyListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.query.j2.store.InventoryVerifyQuery;
 import com.zeroone.star.project.vo.JsonVO;
 
@@ -17,17 +19,17 @@ import com.zeroone.star.project.vo.JsonVO;
 public interface InventoryVerifyApis {
 
     /**
-     * 查询盘存库点数据
+     * 获取盘盈单数据
      * @param query 查询参数
      * @return  库存盘点数据
      */
-    JsonVO<PageDTO<InventoryVerifyListDTO>> listInventoryVerify(InventoryVerifyQuery query);
+    JsonVO<PageDTO<OtherInListInfoDTO>> getInventoryPlus(InventoryVerifyListDTO inventoryVerifyList);
 
     /**
-     * 查询条件查询库存盘点参数属性数据
+     * 获取盘亏单数据
      * @return 库存盘点参数对象数据
      **/
-    JsonVO<InventoryVerifyQuery> getinventoryVerifyQueryProperty();
+    JsonVO<PageDTO<OtherOutListInfoDTO>> getInventoryReduce(InventoryVerifyListDTO inventoryVerifyList);
 
 
     /**
@@ -35,6 +37,6 @@ public interface InventoryVerifyApis {
      * @param
      * @return 库存盘点单excel
      */
-    JsonVO<byte[]> exportInventoryVerifyExcel();
+    JsonVO<byte[]> exportInventoryVerifyExcel(InventoryVerifyListDTO inventoryVerifyList);
 
 }
