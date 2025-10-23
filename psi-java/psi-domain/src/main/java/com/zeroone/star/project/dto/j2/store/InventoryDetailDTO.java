@@ -31,9 +31,6 @@ public class InventoryDetailDTO {
     @ApiModelProperty(value = "所属类", example = "35")
     private Integer cls;
 
-    @ApiModelProperty(value = "所属详情id", example = "49")
-    private Integer info;
-
     @ExcelProperty(value = "单据类型", index = 2)
     @ApiModelProperty(value = "单据类型", example = "采购单")
     private String type;

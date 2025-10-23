@@ -63,5 +63,5 @@ public class BatchQuery extends PageQuery {
     @ApiModelProperty(
             value = "批次类型：0-常规批次，1-非零批次，2-预警批次",
             example = "1")
-    private Integer batchType;
+    private Integer batchState;
 }
