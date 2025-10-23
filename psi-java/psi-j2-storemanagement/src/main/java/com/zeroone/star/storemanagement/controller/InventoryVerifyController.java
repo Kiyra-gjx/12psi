@@ -3,6 +3,8 @@ package com.zeroone.star.storemanagement.controller;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryVerifyListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.InventoryVerifyApis;
 import com.zeroone.star.project.query.j2.store.InventoryVerifyQuery;
 import com.zeroone.star.project.vo.JsonVO;
@@ -25,26 +27,24 @@ import org.springframework.web.bind.annotation.RestController;
 @Api(tags = "库存盘点")
 public class InventoryVerifyController implements InventoryVerifyApis {
 
-
-    @GetMapping("/list")
+    @GetMapping("/inventoryPlus")
     @ApiOperation(value = "获取盘盈单数据")
     @Override
-    public JsonVO<PageDTO<InventoryVerifyListDTO>> listInventoryVerify(InventoryVerifyQuery query) {
+    public JsonVO<PageDTO<OtherInListInfoDTO>> getInventoryPlus(InventoryVerifyListDTO inventoryVerifyList) {
         return null;
     }
 
-
-    @GetMapping("/queryProperty")
+    @GetMapping("/inventoryReduce")
     @ApiOperation(value = "获取盘亏单数据")
     @Override
-    public JsonVO<InventoryVerifyQuery> getinventoryVerifyQueryProperty() {
+    public JsonVO<PageDTO<OtherOutListInfoDTO>> getInventoryReduce(InventoryVerifyListDTO inventoryVerifyList) {
         return null;
     }
 
     @GetMapping("/export")
     @ApiOperation(value = "导出库存盘点单")
     @Override
-    public JsonVO<byte[]> exportInventoryVerifyExcel() {
+    public JsonVO<byte[]> exportInventoryVerifyExcel(InventoryVerifyListDTO inventoryVerifyList) {
         return null;
     }
 }
