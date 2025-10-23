@@ -19,7 +19,7 @@ public class AttrStockDTO {
     private String arrName;
 
     @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
-    private String goodsId;
+    private String pid;
 
     @ApiModelProperty(value = "商品属性条形码", example = "")
     private String attrCode;

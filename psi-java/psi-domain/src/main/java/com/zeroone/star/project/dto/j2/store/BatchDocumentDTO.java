@@ -14,8 +14,11 @@ import java.util.List;
 @ApiModel("批次单据信息")
 public class BatchDocumentDTO {
 
-    @ApiModelProperty(value = "批次ID", example = "22")
+    @ApiModelProperty(value = "批次单据ID", example = "1")
     private Integer id;
+
+    @ApiModelProperty(value = "批次号", example = "22")
+    private Integer batch;
 
     @ApiModelProperty(value = "名称")
     private String name;

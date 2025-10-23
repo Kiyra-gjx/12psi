@@ -27,9 +27,10 @@ public interface TransferApis {
      * @return 包含调拨单详细信息的JsonVO对象
      */
     JsonVO<TransferDetailListDTO> detailTransferList(ShopListDTO shopListDto);
-    /*
+
+    /**
      * 获取调拨单列表
-     * @param transferQuery调拨单列表查询参数
+     * @param transferQuery 调拨单列表查询参数
      * @return 包含调拨单列表信息的JsonVO对象
      */
     JsonVO<PageDTO<TransferListDTO>> queryTransferList(TransferQuery transferQuery);
@@ -52,14 +53,14 @@ public interface TransferApis {
      * 批量审核/反审核调拨单
      * @param ids 调拨单id列表
      * @param operation 操作类型（0-未审核，1-已审核）
-     * @return
+     * @return 审核/反审核结果
      */
     JsonVO<String> batchAuditTransfer(List<Integer> ids, Integer operation);
 
     /**
      * 批量删除调拨单
      * @param ids 调拨单id列表
-     * @return
+     * @return 删除结果
      */
     JsonVO<String> removeTransfer(List<Integer> ids);
 
