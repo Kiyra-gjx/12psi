@@ -18,9 +18,6 @@ public class CostDataDTO {
     @ApiModelProperty(value = "所属组织", example = "1")
     private Integer frame;
 
-    @ApiModelProperty(value = "单据类型", example = "采购单")
-    private String type;
-
     @ApiModelProperty(value = "单据时间", example = "2025-10-15")
     private String time;
 
