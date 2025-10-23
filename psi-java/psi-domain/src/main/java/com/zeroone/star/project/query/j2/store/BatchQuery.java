@@ -6,6 +6,8 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.auth.In;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.query.j2.store
@@ -53,10 +55,10 @@ public class BatchQuery extends PageQuery {
     private String goodsCode;
     // ==================== 仓库信息条件 ===================
     @ApiModelProperty(value = "仓库ID",example = "1")
-    private Integer warehouseId;
+    private List<Integer> warehouseIds;
 
     @ApiModelProperty(value = "仓库名称（可选）",example = "上海仓库")
-    private String warehouseName;
+    private List<String> warehouseName;
 
     @ApiModelProperty(
             value = "批次类型：0-常规批次，1-非零批次，2-预警批次",

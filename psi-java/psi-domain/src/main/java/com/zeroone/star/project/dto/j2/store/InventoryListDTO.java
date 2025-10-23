@@ -28,11 +28,11 @@ public class InventoryListDTO {
     private String name;
 
     @ExcelProperty(value = "库存数量", index = 1)
-    @ApiModelProperty(value = "商品总库存（所有属性库存的合计）", example = "300")
+    @ApiModelProperty(value = "商品总库存数量", example = "300")
     private BigDecimal totalStock;
 
     @ExcelProperty(value = "预警阈值", index = 4)
-    @ApiModelProperty(value = "库存阈值", example = "30")
+    @ApiModelProperty(value = "预警阈值", example = "30")
     private Integer threshold;
 
     @ExcelProperty(value = "商品编号", index = 5)
@@ -43,7 +43,7 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "规格型号", example = "17pro")
     private String spec;
 
-    @ApiModelProperty(value = "商品类型对象")
+    @ApiModelProperty(value = "商品分类")
     private CategoryDataDTO categoryData;
 
     @ExcelProperty(value = "商品品牌", index = 8)
@@ -63,13 +63,12 @@ public class InventoryListDTO {
     private String remark;
 
     // ================= 属性库存信息 =================
-    @ApiModelProperty(value = "商品属性库存列表")
+    @ApiModelProperty(value = "商品辅助属性库存列表")
     private List<AttrStockDTO> specs;
 
     @ExcelProperty(value = "商品名称", index = 2)
     // ================= 若无属性时展示仓库库存 =================
-    @ApiModelProperty(value = "仓库库存信息(仅当specs为空时有效)")
+    @ApiModelProperty(value = "仓库库存明细信息（没有辅助属性时）")
     private List<WarehouseStockDTO> warehouses;
-
 
 }

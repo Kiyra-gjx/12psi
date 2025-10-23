@@ -17,11 +17,12 @@ import java.time.LocalDate;
  */
 @Data
 @ApiModel("调拨单数据对象（调拨单查询结果）")
+/**除额外标注，其余字段都能在is_swap表里找到*/
 public class TransferListDTO {
     @ApiModelProperty(value = "隐藏属性唯一id", required = true ,example = "1")
     private int id;
-    @ApiModelProperty(value = "所属组织",required = true , example = "默认组织")
-    private String frame;
+    @ApiModelProperty(value = "所属组织,is_frame表",required = true , example = "默认组织")
+    private String name;
     @ApiModelProperty(value = "单据时间",required = true , example = "2025-10-18")
     private int time;
     @ApiModelProperty(value = "单据编号",required = true , example = "DJ20251018001")
