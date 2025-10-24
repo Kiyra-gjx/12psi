@@ -20,7 +20,7 @@ public interface InventoryVerifyApis {
 
     /**
      * 获取盘盈单数据
-     * @param query 查询参数
+     * @param inventoryVerifyList 查询参数
      * @return  库存盘点数据
      */
     JsonVO<PageDTO<OtherInListInfoDTO>> getInventoryPlus(InventoryVerifyListDTO inventoryVerifyList);
