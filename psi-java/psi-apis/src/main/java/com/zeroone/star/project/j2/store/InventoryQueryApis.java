@@ -9,6 +9,8 @@ import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.j2.store
@@ -35,15 +37,15 @@ public interface InventoryQueryApis {
 
     /**
      * 导出库存列表数据
-     * @param inventoryListDTO
+     * @param idList
      * @return
      */
-    ResponseEntity<byte[]> exportInventoryListExcel(InventoryListDTO inventoryListDTO);
+    ResponseEntity<byte[]> exportInventoryListExcel(List<String> idList);
 
     /**
      * 导出库存详情数据
-     * @param inventoryDetailDTO
+     * @param idList
      * @return
      */
-    ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailDTO inventoryDetailDTO);
+    ResponseEntity<byte[]> exportInventoryDetailExcel(List<String> idList);
 }
