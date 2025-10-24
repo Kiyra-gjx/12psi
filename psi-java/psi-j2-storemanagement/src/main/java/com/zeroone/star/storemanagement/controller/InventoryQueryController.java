@@ -26,14 +26,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/store")
 @Api(tags = "库存查询")
 public class InventoryQueryController implements InventoryQueryApis {
-    @GetMapping("/inventory/list")
+    @GetMapping("/query/list/select")
     @ApiOperation(value = "获取库存列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query) {
+
         return null;
     }
 
-    @GetMapping("/inventory/detail")
+    @GetMapping("/query/list/select/detail")
     @ApiOperation(value = "获取指定库存详情（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {

@@ -19,16 +19,16 @@ import java.util.List;
 @ApiModel("批次列表数据对象")
 public class BatchListDTO {
     // ================= 商品基础信息 =================
-    @ApiModelProperty(value = "商品ID（内部使用）", example = "1")
+    @ApiModelProperty(value = "商品id（内部使用）", example = "1")
     private Integer id;
 
     @ApiModelProperty(value = "商品名称", example = "牛奶")
     private String name;
 
-    @ApiModelProperty(value = "商品总库存", example = "300")
+    @ApiModelProperty(value = "库存数量", example = "300")
     private BigDecimal totalStock;
 
-    @ApiModelProperty(value = "商品保质期", example = "365")
+    @ApiModelProperty(value = "保质期", example = "365")
     private Integer protect;
 
     @ApiModelProperty(value = "库存阈值", example = "30")
@@ -43,7 +43,7 @@ public class BatchListDTO {
     @ApiModelProperty(value = "商品类别id（内部使用）", example = "1")
     private int categoryId;
 
-    @ApiModelProperty(value = "商品类型对象")
+    @ApiModelProperty(value = "商品类型")
     private CategoryDataDTO categoryData;
 
     @ApiModelProperty(value = "商品品牌", example = "伊利")

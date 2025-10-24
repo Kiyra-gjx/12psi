@@ -18,7 +18,7 @@ public class BatchNumberDTO {
     @ApiModelProperty(value = "批次号", example = "BATCH20241018001")
     private String batchNumber;
 
-    @ApiModelProperty(value = "总库存", example = "300")
+    @ApiModelProperty(value = "库存数量", example = "300")
     private BigDecimal totalStock;
 
     @ApiModelProperty(value = "批次单据信息列表")
