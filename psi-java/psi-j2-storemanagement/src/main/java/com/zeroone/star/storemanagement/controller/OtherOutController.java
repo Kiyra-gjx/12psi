@@ -94,23 +94,23 @@ public class OtherOutController implements OtherOutApis {
     }
 
 
-    @GetMapping("/export")
+    @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出其他出库单数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportOrderListExcel(OtherOutListDTO otherInListDTO) {
+    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(String  ids) {
         return null;
     }
 
-    @GetMapping("/exportDetail")
+    @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出其他出库单详情数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportOrderDetailExcel(OtherOutListInfoDTO otherInListInfoDTO) {
+    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(String ids) {
         return null;
     }
 
     @PostMapping("/import")
     @ApiOperation(value = "批量导入其他出库单")
     @Override
-    public ResponseEntity<JsonVO<String>> importOrderList(MultipartFile file) {return null;}
+    public ResponseEntity<JsonVO<String>> importOrderList(@RequestBody MultipartFile file) {return null;}
 
 }
