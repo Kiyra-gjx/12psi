@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * @BelongsProject: psi-java
@@ -17,14 +18,14 @@ import java.time.LocalDate;
  */
 @Data
 @ApiModel("调拨单数据对象（调拨单查询结果）")
-/**除额外标注，其余字段都能在is_swap表里找到*/
+/**除额外标注，其余字段都能在swap表里找到*/
 public class TransferListDTO {
     @ApiModelProperty(value = "隐藏属性唯一id", required = true ,example = "1")
-    private int id;
-    @ApiModelProperty(value = "所属组织,is_frame表",required = true , example = "默认组织")
+    private String id;
+    @ApiModelProperty(value = "所属组织,frame表",required = true , example = "默认组织")
     private String name;
     @ApiModelProperty(value = "单据时间",required = true , example = "2025-10-18")
-    private int time;
+    private LocalDateTime time;
     @ApiModelProperty(value = "单据编号",required = true , example = "DJ20251018001")
     private String number;
     @ApiModelProperty(value = "单据成本",required = true , example = "12")
@@ -32,13 +33,13 @@ public class TransferListDTO {
     @ApiModelProperty(value = "单据费用",required = true , example = "0")
     private BigDecimal cost;
     @ApiModelProperty(value = "关联人员",required = true , example = "")
-    private int people;
+    private String people;
     @ApiModelProperty(value = "审核状态", example = "未审核")
     private int examine;
     @ApiModelProperty(value = "费用状态", example = "无需结算")
     private int cse;
     @ApiModelProperty(value = "制单人",required = true , example = "管理员")
-    private int user;
+    private String user;
     @ApiModelProperty(value = "备注信息", example = "")
     private String data;
 }

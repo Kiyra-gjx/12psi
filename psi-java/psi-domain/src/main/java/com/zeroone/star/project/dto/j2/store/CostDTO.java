@@ -14,26 +14,14 @@ import lombok.Data;
  * @Version: 1.0
  */
 @Data
-@ApiModel("costDTO")
+@ApiModel("单据花费信息")
 public class CostDTO {
-    @ApiModelProperty(value = "id", example = "1")
-    int id;
-    @ApiModelProperty(value = "单据类型", example = "entry")
-    String type;
-    @ApiModelProperty(value = "所属入库单号", example = "1")
-    @JsonProperty("class")
-    int clazz;
-    @ApiModelProperty(value = "单据时间", example = "1760457600")
-    int time;
     @ApiModelProperty(value = "所属收支", example = "5")
-    int iet;
-    @ApiModelProperty(value = "金额", example = "11.0000")
-    float money;
-    @ApiModelProperty(value = "备注", example = "1")
-    String data;
-    @ApiModelProperty(value = "结算金额", example = "0.0000")
-    float settle;
-    @ApiModelProperty(value = "结算状态", example = "1")
-    int state;
+    private int iet;
 
+    @ApiModelProperty(value = "金额", example = "11.0000")
+    private float money;
+
+    @ApiModelProperty(value = "备注", example = "1")
+    private String data;
 }
