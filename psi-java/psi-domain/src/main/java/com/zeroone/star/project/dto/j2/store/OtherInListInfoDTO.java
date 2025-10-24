@@ -16,42 +16,36 @@ import lombok.Data;
 @Data
 @ApiModel("其他入库单数据信息对象")
 public class OtherInListInfoDTO {
-    @ApiModelProperty(value = "id", example = "1")
-    int id;
-
-    @ApiModelProperty(value = "所属入库单号", example = "1")
-    int pid;
-
     @ApiModelProperty(value = "所属商品", example = "1")
-    int goods;
+    private int goods;
 
     @ApiModelProperty(value = "辅助属性", example = "1")
-    String attr;
+    private String attr;
 
     @ApiModelProperty(value = "单位", example = "个")
-    String unit;
+    private String unit;
 
     @ApiModelProperty(value = "仓库", example = "1")
-    int warehouse;
+    private int warehouse;
 
     @ApiModelProperty(value = "批次号", example = "898")
-    String batch;
+    private String batch;
 
     @ApiModelProperty(value = "生产日期", example = "1760457600")
-    int mfd;
+    private int mfd;
 
     @ApiModelProperty(value = "成本", example = "1.0000")
-    float price;
+    private float price;
 
     @ApiModelProperty(value = "数量", example = "1.0000")
-    float nums;
+    private float nums;
 
     @ApiModelProperty(value = "序列号", example = "1")
-    String serial;
+    private String serial;
 
     @ApiModelProperty(value = "总成本", example = "1.0000")
-    float total;
+    private float total;
 
     @ApiModelProperty(value = "备注信息", example = "1")
-    String data;
+    private String data;
 }
