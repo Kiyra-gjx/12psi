@@ -14,6 +14,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.storemanagement.controller
@@ -45,14 +47,14 @@ public class InventoryQueryController implements InventoryQueryApis {
     @GetMapping("/export")
     @ApiOperation(value = "导出库存列表数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportInventoryListExcel(InventoryListDTO inventoryListDTO) {
+    public ResponseEntity<byte[]> exportInventoryListExcel(List<String> idList) {
         return null;
     }
 
     @GetMapping("/exportDetail")
     @ApiOperation(value = "导出库存详情数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailDTO inventoryDetailDTO) {
+    public ResponseEntity<byte[]> exportInventoryDetailExcel(List<String> idList) {
         return null;
     }
 
