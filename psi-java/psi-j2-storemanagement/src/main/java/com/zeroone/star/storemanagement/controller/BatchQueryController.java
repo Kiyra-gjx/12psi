@@ -7,12 +7,15 @@ import com.zeroone.star.project.j2.store.BatchQueryApis;
 import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.service.IBatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.annotation.Resource;
 
 /**
  * @BelongsProject: psi-java
@@ -26,6 +29,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/batch")
 @Api(tags = "批次查询")
 public class BatchQueryController implements BatchQueryApis {
+
+    @Resource
+    private IBatchService batchService;
+
     @GetMapping("/list")
     @ApiOperation(value = "获取批次列表（条件+分页）")
     @Override
@@ -43,8 +50,10 @@ public class BatchQueryController implements BatchQueryApis {
     @ApiOperation(value = "获取指定批次详情数据")
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
-        return null;
+        return batchService.getBatchDetail(batchDetailQuery);
     }
+
+
     @GetMapping("/export")
     @ApiOperation(value = "导出批次数据")
     @Override
