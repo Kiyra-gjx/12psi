@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-public class SreInfo {
+public class SreInfoDO {
     private String Id;
 
     private String pid;

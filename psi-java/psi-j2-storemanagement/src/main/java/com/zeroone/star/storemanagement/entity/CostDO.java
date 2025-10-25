@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class Cost {
+public class CostDO {
 
   private String id;
 

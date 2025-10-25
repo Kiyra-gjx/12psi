@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class Extry {
+public class ExtryDO {
 //其他出库单
         private Integer id;
 

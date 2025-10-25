@@ -2,15 +2,13 @@ package com.zeroone.star.storemanagement.entity;
 
 import lombok.Data;
 
-import java.math.BigDecimal;
-
 /**
  * @author vigorous
  * @date 2025/10/23
- * @description 供应商
+ * @description 人员
  */
 @Data
-public class Supplier {
+public class PeopleDO {
 
     private String id;
 
@@ -20,25 +18,17 @@ public class Supplier {
 
     private String number;
 
+    private String tel;
+
     private String frame;
 
-    private BigDecimal rate;
+    private Integer sex;
 
-    private String user;
+    private String add;
+
+    private String card;
 
     private String data;
 
     private String more;
-
-    private BigDecimal balance;
-
-    private String category;
-
-    private String bank;
-
-    private String tax;
-
-    private String contacts;
-
-    private String account;
 }

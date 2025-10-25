@@ -2,15 +2,19 @@ package com.zeroone.star.storemanagement.entity;
 
 import lombok.Data;
 
+
 @Data
-public class Frame {
+public class CategoryDO {
+
     private String id;
 
     private String pid;
 
     private String name;
 
-    private int sort;
+    private Integer sort;
 
     private String data;
+
+
 }

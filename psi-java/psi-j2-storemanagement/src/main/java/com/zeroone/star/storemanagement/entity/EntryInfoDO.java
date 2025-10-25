@@ -3,8 +3,8 @@ package com.zeroone.star.storemanagement.entity;
 import lombok.Data;
 
 @Data
-public class ExtryInfo {
-//其他出库单详情
+public class EntryInfoDO {
+
     private int id;
 
     private int pid;

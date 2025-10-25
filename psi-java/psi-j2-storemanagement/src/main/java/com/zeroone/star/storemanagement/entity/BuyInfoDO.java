@@ -9,12 +9,13 @@ import java.time.LocalDateTime;
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.storemanagement.entity
  * @Author: nixiangtaiduole!
- * @CreateTime: 2025-10-23  16:52
- * @Description: 采购退货单详情
+ * @CreateTime: 2025-10-23  16:22
+ * @Description: 采购单详情
  * @Version: 1.0
  */
 @Data
-public class BreInfo {
+public class BuyInfoDO {
+
     private String id;
 
     private String pid;
@@ -53,4 +54,5 @@ public class BreInfo {
 
     private String data;
 
+    private BigDecimal retreat;
 }

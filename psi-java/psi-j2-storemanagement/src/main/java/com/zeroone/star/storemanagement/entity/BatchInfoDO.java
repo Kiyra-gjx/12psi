@@ -5,7 +5,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-public class BatchInfo {
+public class BatchInfoDO {
 
     private String id;
 
