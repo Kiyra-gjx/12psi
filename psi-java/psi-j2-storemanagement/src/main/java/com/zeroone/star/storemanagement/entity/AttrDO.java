@@ -4,7 +4,7 @@ package com.zeroone.star.storemanagement.entity;
 import lombok.Data;
 
 @Data
-public class Attr {
+public class AttrDO {
     private String id;
 
     private Integer pit;

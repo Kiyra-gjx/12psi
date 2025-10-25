@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
-public class Batch {
+public class BatchDO {
 
     private String id;
 

@@ -3,7 +3,7 @@ package com.zeroone.star.storemanagement.entity;
 import lombok.Data;
 
 @Data
-public class Warehouse {
+public class WarehouseDO {
 
     private Integer id;
 

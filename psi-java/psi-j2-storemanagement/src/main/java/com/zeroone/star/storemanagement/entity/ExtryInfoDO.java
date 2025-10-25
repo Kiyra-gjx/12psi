@@ -1,11 +1,10 @@
 package com.zeroone.star.storemanagement.entity;
 
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 @Data
-public class EntryInfo {
-
+public class ExtryInfoDO {
+//其他出库单详情
     private int id;
 
     private int pid;
