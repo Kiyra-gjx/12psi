@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.util.Date;
 
 @Data
-public class SwapInfo {
+public class SwapInfoDO {
 
     private String id;
 

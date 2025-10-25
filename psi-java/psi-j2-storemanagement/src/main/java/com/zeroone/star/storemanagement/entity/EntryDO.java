@@ -1,18 +1,12 @@
 package com.zeroone.star.storemanagement.entity;
 
-import com.alibaba.excel.annotation.ExcelProperty;
-import com.zeroone.star.project.dto.j2.store.CostDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
-public class Entry {
+public class EntryDO {
 
         private Integer id;
 

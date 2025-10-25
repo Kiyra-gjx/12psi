@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 
 @Data
 @ApiModel(description = "仓储详情")
-public class RoomInfo {
+public class RoomInfoDO {
     @ApiModelProperty(value = "id")
     private Integer id;
     @ApiModelProperty(value = "所属仓储id")
