@@ -5,5 +5,41 @@
     <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
         SELECT
+            ib.pid AS 批次ID,
+            ib.type AS 单据类型,
+            ib.direction AS 操作方向,
+            CASE ib.direction
+                WHEN 0 THEN '出库'
+                WHEN 1 THEN '入库'
+                END AS 操作方向描述,
+            ib.nums AS 操作数量,
+            ir.time AS 操作时间,
+            ir.info AS 操作类型,
+            -- 修正单据编号查询逻辑
+            CASE ib.type
+                WHEN 'entry' THEN (SELECT number FROM is_entry WHERE id = ib.class)
+                WHEN 'extry' THEN (SELECT number FROM is_extry WHERE id = ib.class)
+                WHEN 'sell' THEN (SELECT number FROM is_sell WHERE id = ib.class)
+                WHEN 'buy' THEN (SELECT number FROM is_buy WHERE id = ib.class)
+                WHEN 'sre' THEN (SELECT number FROM is_sre WHERE id = ib.class)
+                WHEN 'bre' THEN (SELECT number FROM is_bre WHERE id = ib.class)
+                WHEN 'swap' THEN (
+                    SELECT number FROM is_swap WHERE id = ib.class
+                )
+                END AS 单据编号,
+            -- 调拨方向详细信息
+            CASE
+                WHEN ib.type = 'swap' AND ib.direction = 0 THEN
+                    (SELECT CONCAT('从仓库ID:', warehouse, ' 调出') FROM is_swap_info WHERE id = ib.info)
+                WHEN ib.type = 'swap' AND ib.direction = 1 THEN
+                    (SELECT CONCAT('调入仓库ID:', storehouse) FROM is_swap_info WHERE id = ib.info)
+                ELSE ''
+                END AS 调拨详情
+        FROM
+            is_batch_info ib
+                LEFT JOIN
+            is_record ir ON ib.type = ir.type AND ib.class = ir.source
+        WHERE
+            ib.pid = 1; -- 这里替换为要查询的批次ID
     </select>
 </mapper>
