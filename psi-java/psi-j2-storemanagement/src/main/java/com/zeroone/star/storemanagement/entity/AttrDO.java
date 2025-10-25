@@ -7,7 +7,7 @@ import lombok.Data;
 public class AttrDO {
     private String id;
 
-    private Integer pit;
+    private Integer pid;
 
     private String name;
 

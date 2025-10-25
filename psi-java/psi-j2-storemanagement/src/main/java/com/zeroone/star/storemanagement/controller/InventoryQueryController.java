@@ -7,13 +7,17 @@ import com.zeroone.star.project.j2.store.InventoryQueryApis;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.service.IInventoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.models.auth.In;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -25,15 +29,20 @@ import java.util.List;
  * @Version: 1.0
  */
 @RestController
-@RequestMapping("/store")
+@RequestMapping("/inventory")
 @Api(tags = "库存查询")
 public class InventoryQueryController implements InventoryQueryApis {
+
+    @Resource
+    private IInventoryService inventoryService;
+
     @GetMapping("/query/list/select")
     @ApiOperation(value = "获取库存列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query) {
+        JsonVO<PageDTO<InventoryListDTO>> inventoryList = inventoryService.getInventoryList(query);
 
-        return null;
+        return inventoryService.getInventoryList(query);
     }
 
     @GetMapping("/query/list/select/detail")

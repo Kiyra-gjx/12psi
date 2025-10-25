@@ -13,13 +13,13 @@ import java.util.List;
 public class AttrStockDTO {
 
     @ApiModelProperty(value = "商品辅助属性ID（内部使用）", example = "1")
-    private Integer attrId;
+    private String attrId;
 
     @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
     private String arrName;
 
     @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
-    private Integer pid;
+    private String pid;
 
     @ApiModelProperty(value = "商品属性条形码", example = "")
     private String attrCode;

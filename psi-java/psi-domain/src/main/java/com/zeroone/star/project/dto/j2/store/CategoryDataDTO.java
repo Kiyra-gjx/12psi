@@ -9,10 +9,10 @@ import lombok.Data;
 public class CategoryDataDTO {
 
     @ApiModelProperty(value = "商品类别id", example = "1")
-    private Integer id;
+    private String id;
 
     @ApiModelProperty(value = "所属类别", example = "0")
-    private Integer pid;
+    private String pid;
 
     @ApiModelProperty(value = "类别名称", example = "默认类别")
     private String name;

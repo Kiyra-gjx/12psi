@@ -20,8 +20,8 @@ import java.util.List;
 @ApiModel("库存列表对象")
 public class InventoryListDTO {
     // ================= 商品基础信息 =================
-    @ApiModelProperty(value = "商品ID（内部使用）", example = "1")
-    private Integer id;
+    @ApiModelProperty(value = "商品ID", example = "1")
+    private String id;
 
     @ExcelProperty(value = "商品名称", index = 0)
     @ApiModelProperty(value = "商品名称", example = "iphone")
@@ -43,10 +43,7 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "规格型号", example = "17pro")
     private String spec;
 
-    @ExcelProperty(value = "商品类别ID（内部使用）", index = 7)
-    private Integer categoryId;
-
-    @ApiModelProperty(value = "商品分类详细信息")
+    @ApiModelProperty(value = "商品类别")
     private CategoryDataDTO categoryData;
 
     @ExcelProperty(value = "商品品牌", index = 8)
@@ -67,7 +64,7 @@ public class InventoryListDTO {
 
     // ================= 属性库存信息 =================
     @ApiModelProperty(value = "商品辅助属性库存信息")
-    private List<AttrStockDTO> specs;
+    private List<AttrStockDTO> attrs;
 
     @ExcelProperty(value = "商品名称", index = 2)
     // ================= 若无属性时展示仓库库存 =================

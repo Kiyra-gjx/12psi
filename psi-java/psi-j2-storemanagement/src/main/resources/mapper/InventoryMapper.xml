@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.InventoryMapper">
+    <select id="selectInventoryBaseList" resultType="com.zeroone.star.project.dto.j2.store.InventoryListDTO">
+        SELECT
+            g.id,
+            g.name,
+            g.threshold,
+            g.number,
+            g.spec,
+            g.brand,
+            g.unit,
+            g.code,
+            g.`data` as remark,
+            c.id as "categoryData.id",
+            c.pid as "categoryData.pid",
+            c.name as "categoryData.name",
+            COALESCE(SUM(r.nums),0) as totalStock
+        FROM goods g
+        LEFT JOIN category c ON g.category = c.id
+        LEFT JOIN room r  ON g.id = r.goods
+        <where>
+            <if test="query.goodsId != null">
+                AND g.id = #{query.goodsId}
+            </if>
+            <if test="query.goodsName != null and query.goodsName != ''">
+                AND g.name LIKE CONCAT('%',#{query.goodsName},'%')
+            </if>
+            <if test="query.goodsNumber != null and query.goodsNumber != ''">
+                AND g.number = #{query.goodsNumber}
+            </if>
+            <if test="query.goodsSpec != null and query.goodsSpec != ''">
+                AND g.spec LIKE CONCAT('%',#{query.goodsSpec},'%')
+            </if>
+            <if test="query.goodsCategoryId != null">
+                AND g.category  = #{query.goodsCategoryId}
+            </if>
+            <if test="query.goodsBrand != null and query.goodsBrand != ''">
+                AND g.brand = #{query.goodsBrand}
+            </if>
+            <if test="query.goodsCode != null and query.goodsCode != ''">
+                AND g.code = #{query.goodsCode}
+            </if>
+            <if test="query.warehouseId != null and query.warehouseId.size() > 0">
+                AND r.warehouse IN
+                <foreach collection="query.warehouseId" item="id" open="(" close=")" separator=",">
+                    #{id}
+                </foreach>
+            </if>
+            <if test="query.stockState != null">
+                <choose>
+                    <when test="query.stockState == 0">
+                        AND r.nums > 0
+                    </when>
+                    <when test="query.stockState == 1">
+                        AND r.nums = 0
+                    </when>
+                    <when test="query.stockState == 2">
+                        AND r.nums <![CDATA[ <= ]]> g.threshold
+                    </when>
+                </choose>
+            </if>
+        </where>
+        GROUP BY g.id, g.name, g.number, g.spec, g.brand, g.unit, g.code, g.data, g.threshold,
+        c.id, c.pid, c.name
+        ORDER BY g.id DESC
+    </select>
+</mapper>

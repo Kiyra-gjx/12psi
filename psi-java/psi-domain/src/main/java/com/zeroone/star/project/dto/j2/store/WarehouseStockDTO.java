@@ -11,19 +11,19 @@ import java.math.BigDecimal;
 public class WarehouseStockDTO {
 
     @ApiModelProperty(value = "所属存储ID", example = "1")
-    private Integer storedRecordId;
+    private String storedRecordId;
 
     @ApiModelProperty(value = "所属仓库ID", example = "1")
-    private Integer warehouseId;
+    private String warehouseId;
 
     @ApiModelProperty(value = "所属仓库名称", example = "上海仓库")
     private String warehouseName;
 
     @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
-    private Integer goodsId;
+    private String goodsId;
 
     @ApiModelProperty(value = "商品辅助属性ID（内部使用）", example = "1")
-    private Integer attrId;
+    private String attrId;
 
     @ApiModelProperty(value = "库存数量", example = "100")
     private BigDecimal stockNum;
