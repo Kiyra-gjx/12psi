@@ -56,14 +56,14 @@ public class InventoryQueryController implements InventoryQueryApis {
     @GetMapping("/export")
     @ApiOperation(value = "导出库存列表数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportInventoryListExcel(List<String> idList) {
+    public ResponseEntity<byte[]> exportInventoryListExcel(InventoryQuery query) {
         return null;
     }
 
     @GetMapping("/exportDetail")
     @ApiOperation(value = "导出库存详情数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportInventoryDetailExcel(List<String> idList) {
+    public ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailQuery query) {
         return null;
     }
 

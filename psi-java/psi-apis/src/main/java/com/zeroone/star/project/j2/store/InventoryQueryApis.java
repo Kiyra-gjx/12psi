@@ -37,15 +37,15 @@ public interface InventoryQueryApis {
 
     /**
      * 导出库存列表数据
-     * @param idList
+     * @param query
      * @return
      */
-    ResponseEntity<byte[]> exportInventoryListExcel(List<String> idList);
+    ResponseEntity<byte[]> exportInventoryListExcel(InventoryQuery query);
 
     /**
      * 导出库存详情数据
-     * @param idList
+     * @param query
      * @return
      */
-    ResponseEntity<byte[]> exportInventoryDetailExcel(List<String> idList);
+    ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailQuery query);
 }
