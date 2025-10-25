@@ -70,17 +70,17 @@ public interface OtherOutApis {
 
     /**
      * 导出其他出库单简单报表
-     * @param otherOutListDTO
+     * @param ids 需要导出的出库单ID列表
      * @return
      */
-    ResponseEntity<byte[]> exportOrderListExcel(OtherOutListDTO otherOutListDTO);
+    JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(String  ids);
 
     /**
      * 导出其他出库单详细报表
-     * @param
+     * @param ids 需要导出的出库单ID列表
      * @return
      */
-    ResponseEntity<byte[]> exportOrderDetailExcel(OtherOutListInfoDTO otherOutListInfoDTO);
+    JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(String ids);
 
     /**
      * 批量导入其他出库单数据

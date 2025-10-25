@@ -6,16 +6,19 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
- * @BelongsProject: psi-java
- * @BelongsPackage: com.zeroone.star.storemanagement.entity
- * @Author: nixiangtaiduole!
- * @CreateTime: 2025-10-23  16:22
- * @Description: 采购单详情
- * @Version: 1.0
+ * 功能：
+ * <p>
+ * ——————————————————————————————
+ * version   变更日期    修改人
+ * ------------------------------
+ * v1.0.0    2025/10/24    shark
+ * ——————————————————————————————
+ * 修改说明：
+ *
+ * @author: shark
  */
 @Data
-public class BuyInfo {
-
+public class SellInfo {
     private String id;
 
     private String pid;
