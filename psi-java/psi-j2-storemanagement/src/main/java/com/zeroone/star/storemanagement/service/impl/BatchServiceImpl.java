@@ -32,6 +32,6 @@ public class BatchServiceImpl implements IBatchService {
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
         PageDTO<BatchDetailDTO> batchDetailDTOPageDTO = batchMapper.getBatchDetail(batchDetailQuery);
-        return JsonVO.success(batchDetailDTOPageDTO);;
+        return JsonVO.success(batchDetailDTOPageDTO);
     }
 }
