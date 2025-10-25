@@ -45,7 +45,7 @@ public class BatchQuery extends PageQuery {
     @ApiModelProperty(value = "商品类别ID",example = "1")
     private Integer goodsCategoryId;
 
-    @ApiModelProperty(value = "商品类别名称（可选）",example = "默认类别")
+    @ApiModelProperty(value = "商品类别（可选）",example = "默认类别")
     private String goodsCategoryName;
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
@@ -57,7 +57,7 @@ public class BatchQuery extends PageQuery {
     @ApiModelProperty(value = "仓库ID",example = "1")
     private List<Integer> warehouseIds;
 
-    @ApiModelProperty(value = "仓库名称（可选）",example = "上海仓库")
+    @ApiModelProperty(value = "仓库信息（可选）",example = "上海仓库")
     private List<String> warehouseName;
 
     @ApiModelProperty(

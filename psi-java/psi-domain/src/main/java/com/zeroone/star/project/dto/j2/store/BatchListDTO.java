@@ -28,7 +28,7 @@ public class BatchListDTO {
     @ApiModelProperty(value = "库存数量", example = "300")
     private BigDecimal totalStock;
 
-    @ApiModelProperty(value = "保质期", example = "365")
+    @ApiModelProperty(value = "保质期（天）", example = "365")
     private Integer protect;
 
     @ApiModelProperty(value = "库存阈值", example = "30")
@@ -43,7 +43,7 @@ public class BatchListDTO {
     @ApiModelProperty(value = "商品类别id（内部使用）", example = "1")
     private int categoryId;
 
-    @ApiModelProperty(value = "商品类型")
+    @ApiModelProperty(value = "商品分类")
     private CategoryDataDTO categoryData;
 
     @ApiModelProperty(value = "商品品牌", example = "伊利")
@@ -55,7 +55,7 @@ public class BatchListDTO {
     @ApiModelProperty(value = "商品条码", example = "111222")
     private String code;
 
-    @ApiModelProperty(value = "备注信息", example = "")
+    @ApiModelProperty(value = "商品备注", example = "")
     private String remark;
 
     @ApiModelProperty(value = "批次产品[0:关闭|1:启用]", example = "0")
