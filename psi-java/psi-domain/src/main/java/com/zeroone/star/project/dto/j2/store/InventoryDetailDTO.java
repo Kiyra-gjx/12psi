@@ -25,7 +25,7 @@ public class InventoryDetailDTO {
     @ApiModelProperty(value = "所属仓储id", example = "1")
     private Integer pid;
 
-    @ApiModelProperty(value = "单据时间", example = "2025-10-15")
+    @ApiModelProperty(value = "操作时间", example = "2025-10-15")
     private String time;
 
     @ApiModelProperty(value = "所属类", example = "35")
@@ -40,7 +40,7 @@ public class InventoryDetailDTO {
 
     @ExcelProperty(value = "操作类型", index = 4)
     @ApiModelProperty(
-            value = "操作类型[0:出库|1:入库]",
+            value = "操作类型[0:减少|1:增加]",
             example = "1")
     private Integer direction;
 

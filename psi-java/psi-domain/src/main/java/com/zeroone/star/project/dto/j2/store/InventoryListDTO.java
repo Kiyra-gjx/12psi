@@ -43,7 +43,7 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "规格型号", example = "17pro")
     private String spec;
 
-    @ApiModelProperty(value = "商品类别")
+    @ApiModelProperty(value = "商品分类")
     private CategoryDataDTO categoryData;
 
     @ExcelProperty(value = "商品品牌", index = 8)
@@ -59,11 +59,11 @@ public class InventoryListDTO {
     private String code;
 
     @ExcelProperty(value = "商品备注", index = 11)
-    @ApiModelProperty(value = "备注信息", example = "")
+    @ApiModelProperty(value = "商品备注", example = "")
     private String remark;
 
     // ================= 属性库存信息 =================
-    @ApiModelProperty(value = "商品辅助属性库存信息")
+    @ApiModelProperty(value = "商品辅助属性信息")
     private List<AttrStockDTO> attrs;
 
     @ExcelProperty(value = "商品名称", index = 2)

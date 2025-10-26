@@ -67,7 +67,7 @@ public class InventoryServiceImpl  implements IInventoryService {
 
                 // 组装数据
                 resultPage.getRecords().forEach(item -> {
-                    String goodsId = item.getId();
+                    String goodsId = item.getId();//得到商品ID
 
                     // 获取该商品的所有仓库分组
                     Map<String, List<WarehouseStockDTO>> goodsWarehouseMap =
