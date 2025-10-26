@@ -36,7 +36,7 @@ public class BatchServiceImpl implements IBatchService {
         // 为每个批次详情设置所属组织
         // TODO: 后续可以通过其他方式获取实际的组织数据，目前使用默认值
         for (BatchDetailDTO dto : batchDetailList) {
-            dto.setFrame("默认组织"); // 设置默认组织名称
+            dto.setFrame("默认组织"); // 默认组织名称
         }
         // 获取符合条件的总数
         long total = batchMapper.getBatchDetailCount(batchDetailQuery);
