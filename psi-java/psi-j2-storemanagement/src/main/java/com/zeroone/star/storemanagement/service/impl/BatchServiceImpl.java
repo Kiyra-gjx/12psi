@@ -9,6 +9,7 @@ import com.zeroone.star.storemanagement.service.IBatchService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @BelongsProject: psi-java
@@ -29,9 +30,25 @@ public class BatchServiceImpl implements IBatchService {
      * @param batchDetailQuery
      * @return
      */
-    @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
-        PageDTO<BatchDetailDTO> batchDetailDTOPageDTO = batchMapper.getBatchDetail(batchDetailQuery);
-        return JsonVO.success(batchDetailDTOPageDTO);
+        // 调用mapper层获取批次详情列表数据
+        List<BatchDetailDTO> batchDetailList = batchMapper.getBatchDetail(batchDetailQuery);
+        // 获取符合条件的总数
+        long total = batchMapper.getBatchDetailCount(batchDetailQuery);
+        PageDTO<BatchDetailDTO> pageDTO = new PageDTO<>();
+        // 设置数据列表
+        pageDTO.setRows(batchDetailList);
+        // 设置总数
+        pageDTO.setTotal(total);
+        // 计算总页数
+        long pages = 0;
+        if (batchDetailQuery.getPageSize() > 0) {
+            pages = (total + batchDetailQuery.getPageSize() - 1) / batchDetailQuery.getPageSize();
+        }
+        // 设置分页信息
+        pageDTO.setPages(pages);
+        pageDTO.setPageIndex(batchDetailQuery.getPageIndex());
+        pageDTO.setPageSize(batchDetailQuery.getPageSize());
+        return JsonVO.success(pageDTO);
     }
 }
