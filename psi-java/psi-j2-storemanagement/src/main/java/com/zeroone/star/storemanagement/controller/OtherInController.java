@@ -7,10 +7,12 @@ import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.project.query.j2.store.OtherInQuery;
+import com.zeroone.star.storemanagement.service.IOtherInListService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.multipart.MultipartFile;
@@ -31,25 +33,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/otherin")
 @Api(tags = "其他入库单")
 public class OtherInController implements OtherInApis {
+
+    @Autowired
+    IOtherInListService otherInListService;
+
+
     @PutMapping("/update")
     @ApiOperation(value = "修改其他入库单")
     @Override
     public JsonVO<String> updateOtherInList(@RequestBody OtherInListDetailDTO otherInListDetailDTO) {
-        return null;
+        otherInListService.updateOtherInList(otherInListDetailDTO);
+        return JsonVO.success(otherInListDetailDTO.getId().toString());
     }
 
     @PutMapping("/examine")
     @ApiOperation(value = "审核入库单")
     @Override
     public JsonVO<String> examine(@RequestBody List<Integer> ids) {
-        return null;
+        otherInListService.examine(ids);
+        return JsonVO.success(ids.toString());
     }
 
     @PutMapping("/check")
     @ApiOperation(value = "核对入库单")
     @Override
     public JsonVO<String> check(@RequestBody List<Integer> ids) {
-        return null;
+        otherInListService.check(ids);
+        return JsonVO.success(ids.toString());
     }
 
     @GetMapping("/list")

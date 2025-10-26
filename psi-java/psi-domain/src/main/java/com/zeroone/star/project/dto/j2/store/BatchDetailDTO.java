@@ -5,7 +5,6 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 /**
  * @BelongsProject: psi-java
@@ -18,31 +17,28 @@ import java.util.List;
 @Data
 @ApiModel("批次查询详情数据对象")
 public class BatchDetailDTO {
-    @ApiModelProperty(value = "id", example = "1")
-    private int id;
 
-    @ApiModelProperty(value = "所属id", example = "1")
+    @ApiModelProperty(value = "pid所属批次id(查询使用)", example = "1")
     private int pid;
 
-    @ApiModelProperty(value = "方向 [0:出|1:入]", example = "1")
-    private int direction;
+    @ApiModelProperty(value = "所属组织",example = "默认组织")
+    private String frame;
 
-    @ApiModelProperty(value = "出入数量", example = "1")
-    private BigDecimal nums;
+    @ApiModelProperty(value = "操作时间（毫秒时间戳）",example = "1750387200000")
+    private Long time;
 
-    @ApiModelProperty(value = "单据类型", example = "entry")
+    @ApiModelProperty(value = "单据类型", example = "其他入库单")
     private String type;
 
-    @ApiModelProperty(value = "所属详情", example = "8")
-    private int info;
+    @ApiModelProperty(value = "单据编号", example = "QTRKD2510181347194")
+    private String number;
 
-    @ApiModelProperty(value = "所属类", example = "3")
-    private int cls;
+    @ApiModelProperty(value = "操作类型", example = "增加")
+    private String info;
 
-    @ApiModelProperty(value = "扩展信息", example = "type:'其他入库单',direction:'增加'")
-    private List<String> extension;
+    @ApiModelProperty(value = "操作数量", example = "1")
+    private BigDecimal nums;
 
-    @ApiModelProperty(value = "详情数据")
-    private List<BatchDetailDataDTO> sourceData;
+
 
 }
