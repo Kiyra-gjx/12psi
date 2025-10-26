@@ -17,15 +17,18 @@
             WHEN ib.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ib.class)
             ELSE ''
         END AS number,  -- 单据编号
-        ib.direction AS info,  -- 操作类型（BatchDetailDTO的info字段）
+        CASE ib.direction
+            WHEN 0 THEN '减少'  -- 出方向对应减少
+            WHEN 1 THEN '增加'  -- 入方向对应增加
+            ELSE ''
+        END AS info,  -- 操作类型（BatchDetailDTO的info字段）
         ib.nums AS nums  -- 操作数量
         FROM
         is_batch_info ib
         LEFT JOIN
         is_record ir ON ib.type = ir.type AND ib.class = ir.source
         WHERE
-        ib.id IS NOT NULL -- 使用is_batch_info的id作为基础条件
-        <!-- 批次ID条件已移除，因为BatchDetailQuery中没有batch字段 -->
+        ib.pid = #{pid} -- 使用BatchDetailQuery中的pid字段作为条件
         -- 单据类型条件
         <if test="type != null and type.size() > 0">
             AND ib.type IN
@@ -57,9 +60,17 @@
             (ib.type = 'swap' AND ib.class IN (SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{number}, '%')))
             )
         </if>
+        ORDER BY
+        ir.time DESC, -- 操作时间倒序
+        ib.type,
+        number,
+        ib.direction,
+        ib.nums
         -- 分页处理
         <if test="pageIndex != null and pageSize != null">
-            LIMIT #{pageSize} OFFSET #{(pageIndex - 1) * pageSize}
+            <!-- 使用bind标签计算偏移量 -->
+            <bind name="offset" value="(pageIndex - 1) * pageSize" />
+            LIMIT #{pageSize} OFFSET #{offset}
         </if>
     </select>
     
@@ -72,8 +83,7 @@
         LEFT JOIN
         is_record ir ON ib.type = ir.type AND ib.class = ir.source
         WHERE
-        ib.id IS NOT NULL -- 使用is_batch_info的id作为基础条件
-        <!-- 批次ID条件已移除，因为BatchDetailQuery中没有batch字段 -->
+        ib.pid = #{pid} -- 使用BatchDetailQuery中的pid字段作为条件
         -- 单据类型条件
         <if test="type != null and type.size() > 0">
             AND ib.type IN

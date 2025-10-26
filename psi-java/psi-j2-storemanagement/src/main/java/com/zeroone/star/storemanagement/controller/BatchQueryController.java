@@ -50,7 +50,7 @@ public class BatchQueryController implements BatchQueryApis {
     @ApiOperation(value = "获取指定批次详情数据")
     @Override
     public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
-        return batchService.getBatchDetail(batchDetailQuery);
+        return JsonVO.success(batchService.getBatchDetail(batchDetailQuery));
     }
 
 

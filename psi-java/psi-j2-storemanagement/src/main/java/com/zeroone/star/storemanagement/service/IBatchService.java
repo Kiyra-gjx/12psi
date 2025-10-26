@@ -20,5 +20,5 @@ public interface IBatchService {
      * @param batchDetailQuery
      * @return
      */
-    JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery);
+    PageDTO<BatchDetailDTO> getBatchDetail(BatchDetailQuery batchDetailQuery);
 }

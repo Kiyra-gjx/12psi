@@ -30,9 +30,14 @@ public class BatchServiceImpl implements IBatchService {
      * @param batchDetailQuery
      * @return
      */
-    public JsonVO<PageDTO<BatchDetailDTO>> getBatchDetail(BatchDetailQuery batchDetailQuery) {
+    public PageDTO<BatchDetailDTO> getBatchDetail(BatchDetailQuery batchDetailQuery) {
         // 调用mapper层获取批次详情列表数据
         List<BatchDetailDTO> batchDetailList = batchMapper.getBatchDetail(batchDetailQuery);
+        // 为每个批次详情设置所属组织
+        // TODO: 后续可以通过其他方式获取实际的组织数据，目前使用默认值
+        for (BatchDetailDTO dto : batchDetailList) {
+            dto.setFrame("默认组织"); // 设置默认组织名称
+        }
         // 获取符合条件的总数
         long total = batchMapper.getBatchDetailCount(batchDetailQuery);
         PageDTO<BatchDetailDTO> pageDTO = new PageDTO<>();
@@ -49,6 +54,6 @@ public class BatchServiceImpl implements IBatchService {
         pageDTO.setPages(pages);
         pageDTO.setPageIndex(batchDetailQuery.getPageIndex());
         pageDTO.setPageSize(batchDetailQuery.getPageSize());
-        return JsonVO.success(pageDTO);
+        return pageDTO;
     }
 }
