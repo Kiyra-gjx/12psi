@@ -21,13 +21,13 @@ import java.util.List;
 public class InventoryDetailQuery extends PageQuery {
 
     @ApiModelProperty(value = "商品ID", example = "1",required = true)
-    private Integer goodsId;
+    private String goodsId;
 
     @ApiModelProperty(value = "商品名称", example = "iphone")
     private String goodsName;
 
     @ApiModelProperty(value = "商品属性ID", example = "101",required = true)
-    private Integer attrId;
+    private String attrId;
 
     @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
     private String attrName;
@@ -38,13 +38,10 @@ public class InventoryDetailQuery extends PageQuery {
     @ApiModelProperty(value = "单据类型（可选多个）")
     private List<String> documentTypes;
 
-    @ApiModelProperty(value = "开始日期（String类型接收）", example = "2024-10-01")
+    @ApiModelProperty(value = "开始日期", example = "2024-10-01")
     private String startDate;
 
-    @ApiModelProperty(value = "结束日期（String类型接收）", example = "2025-10-01")
+    @ApiModelProperty(value = "结束日期", example = "2025-10-01")
     private String endDate;
-
-    @ApiModelProperty(value = "仓库ID")
-    private List<Integer> warehouse;
 
 }

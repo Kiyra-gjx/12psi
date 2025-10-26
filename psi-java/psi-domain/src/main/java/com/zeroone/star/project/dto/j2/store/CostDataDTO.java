@@ -10,16 +10,12 @@ import lombok.Data;
 public class CostDataDTO {
 
     @ApiModelProperty(value = "单据ID", example = "1")
-    private Integer id;
+    private String id;
 
-    @ApiModelProperty(value = "关联单据", example = "1")
-    private Integer source;
 
     @ApiModelProperty(value = "所属组织", example = "1")
-    private Integer frame;
+    private String frame;
 
-    @ApiModelProperty(value = "操作时间", example = "2025-10-15")
-    private String time;
 
     @ApiModelProperty(value = "单据编号", example = "ZCGD2510151056420")
     private String number;

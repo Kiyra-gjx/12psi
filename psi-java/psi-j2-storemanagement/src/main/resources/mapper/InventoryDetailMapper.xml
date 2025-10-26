@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.InventoryDetailMapper">
+    <select id="selectInventoryDetailList" resultType="com.zeroone.star.project.dto.j2.store.InventoryDetailDTO">
+        SELECT
+        ri.id,
+        r.goods as pid,
+        DATE(ri.time) as time,
+        <!-- 类型转换：数据库存英文，显示为中文，调拨单根据direction细分 -->
+        CASE
+        WHEN ri.type = 'buy' THEN '采购单'
+        WHEN ri.type = 'sell' THEN '销售单'
+        WHEN ri.type = 'bre' THEN '采购退货单'
+        WHEN ri.type = 'sre' THEN '销售退货单'
+        WHEN ri.type = 'swap' AND ri.direction = 0 THEN '调拨单-出'
+        WHEN ri.type = 'swap' AND ri.direction = 1 THEN '调拨单-入'
+        WHEN ri.type = 'entry' THEN '其它入库单'
+        WHEN ri.type = 'extry' THEN '其它出库单'
+        ELSE ri.type
+        END as type,
+        ri.direction,
+        ri.nums,
+        <!-- 动态字段映射 - 根据实际类型映射对应的字段 -->
+        CASE
+        WHEN ri.type = 'buy' THEN b.id
+        WHEN ri.type = 'sell' THEN s.id
+        WHEN ri.type = 'bre' THEN br.id
+        WHEN ri.type = 'sre' THEN sr.id
+        WHEN ri.type = 'swap' THEN sw.id
+        WHEN ri.type = 'entry' THEN e.id
+        WHEN ri.type = 'extry' THEN ex.id
+        ELSE NULL
+        END as "costData.id",
+        CASE
+        WHEN ri.type = 'buy' THEN b.number
+        WHEN ri.type = 'sell' THEN s.number
+        WHEN ri.type = 'bre' THEN br.number
+        WHEN ri.type = 'sre' THEN sr.number
+        WHEN ri.type = 'swap' THEN sw.number
+        WHEN ri.type = 'entry' THEN e.number
+        WHEN ri.type = 'extry' THEN ex.number
+        ELSE NULL
+        END as "costData.number",
+        <!-- 组织信息 -->
+        CASE
+        WHEN ri.type = 'buy' THEN f_b.name
+        WHEN ri.type = 'sell' THEN f_s.name
+        WHEN ri.type = 'bre' THEN f_br.name
+        WHEN ri.type = 'sre' THEN f_sr.name
+        WHEN ri.type = 'swap' THEN f_sw.name
+        WHEN ri.type = 'entry' THEN f_e.name
+        WHEN ri.type = 'extry' THEN f_ex.name
+        ELSE NULL
+        END as "costData.frameData.name"
+
+        FROM room_info ri
+        INNER JOIN room r ON ri.pid = r.id
+
+        <!-- 关键修改：始终关联所有8个单据表，确保所有字段都存在 -->
+        LEFT JOIN buy b ON ri.type = 'buy' AND ri.class = b.id
+        LEFT JOIN frame f_b ON b.frame = f_b.id
+
+        LEFT JOIN sell s ON ri.type = 'sell' AND ri.class = s.id
+        LEFT JOIN frame f_s ON s.frame = f_s.id
+
+        LEFT JOIN bre br ON ri.type = 'bre' AND ri.class = br.id
+        LEFT JOIN frame f_br ON br.frame = f_br.id
+
+        LEFT JOIN sre sr ON ri.type = 'sre' AND ri.class = sr.id
+        LEFT JOIN frame f_sr ON sr.frame = f_sr.id
+
+        LEFT JOIN swap sw ON ri.type = 'swap' AND ri.class = sw.id
+        LEFT JOIN frame f_sw ON sw.frame = f_sw.id
+
+        LEFT JOIN entry e ON ri.type = 'entry' AND ri.class = e.id
+        LEFT JOIN frame f_e ON e.frame = f_e.id
+
+        LEFT JOIN extry ex ON ri.type = 'extry' AND ri.class = ex.id
+        LEFT JOIN frame f_ex ON ex.frame = f_ex.id
+
+        <where>
+            <!-- 商品ID条件 -->
+            AND r.goods = #{query.goodsId}
+
+            <!-- 属性ID条件 -->
+            <if test="query.attrId != null and query.attrId != ''">
+                AND r.attr = #{query.attrId}
+            </if>
+            <if test="query.attrId == null or query.attrId == ''">
+                AND r.attr IS NULL
+            </if>
+
+            <!-- 单据类型过滤：前端传中文，转换为数据库英文，调拨单特殊处理 -->
+            <if test="query.documentTypes != null and query.documentTypes.size() > 0">
+                AND (
+                <foreach collection="query.documentTypes" item="type" separator=" OR ">
+                    <choose>
+                        <when test="type == '采购单'">ri.type = 'buy'</when>
+                        <when test="type == '销售单'">ri.type = 'sell'</when>
+                        <when test="type == '采购退货单'">ri.type = 'bre'</when>
+                        <when test="type == '销售退货单'">ri.type = 'sre'</when>
+                        <when test="type == '调拨单-出'">(ri.type = 'swap' AND ri.direction = 0)</when>
+                        <when test="type == '调拨单-入'">(ri.type = 'swap' AND ri.direction = 1)</when>
+                        <when test="type == '其它入库单'">ri.type = 'entry'</when>
+                        <when test="type == '其它出库单'">ri.type = 'extry'</when>
+                        <otherwise>1=0</otherwise>
+                    </choose>
+                </foreach>
+                )
+            </if>
+
+            <!-- 单据编号精准查询 -->
+            <if test="query.documentNumber != null and query.documentNumber != ''">
+                AND (
+                <trim prefixOverrides="OR">
+                    <if test="query.documentTypes == null or query.documentTypes.contains('采购单')">
+                        OR (ri.type = 'buy' AND b.number = #{query.documentNumber})
+                    </if>
+                    <if test="query.documentTypes == null or query.documentTypes.contains('销售单')">
+                        OR (ri.type = 'sell' AND s.number = #{query.documentNumber})
+                    </if>
+                    <if test="query.documentTypes == null or query.documentTypes.contains('采购退货单')">
+                        OR (ri.type = 'bre' AND br.number = #{query.documentNumber})
+                    </if>
+                    <if test="query.documentTypes == null or query.documentTypes.contains('销售退货单')">
+                        OR (ri.type = 'sre' AND sr.number = #{query.documentNumber})
+                    </if>
+                    <if test="query.documentTypes == null or query.documentTypes.contains('调拨单-出') or query.documentTypes.contains('调拨单-入')">
+                        OR (ri.type = 'swap' AND sw.number = #{query.documentNumber})
+                    </if>
+                    <if test="query.documentTypes == null or query.documentTypes.contains('其它入库单')">
+                        OR (ri.type = 'entry' AND e.number = #{query.documentNumber})
+                    </if>
+                    <if test="query.documentTypes == null or query.documentTypes.contains('其它出库单')">
+                        OR (ri.type = 'extry' AND ex.number = #{query.documentNumber})
+                    </if>
+                </trim>
+                )
+            </if>
+
+            <!-- 时间范围 -->
+            <if test="query.startDate != null and query.startDate != ''">
+                AND DATE(ri.time) >= #{query.startDate}
+            </if>
+            <if test="query.endDate != null and query.endDate != ''">
+                AND DATE(ri.time) <![CDATA[ <= ]]> #{query.endDate}
+            </if>
+        </where>
+        ORDER BY ri.time DESC
+    </select>
+</mapper>
