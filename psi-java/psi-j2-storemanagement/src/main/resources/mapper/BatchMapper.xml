@@ -5,7 +5,7 @@
     <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
         SELECT
-        ib.pid AS pid,  -- 产品ID
+        ib.pid AS pid,  -- 所属批次pid
         MAX(ir.time) AS time,  -- 取最新操作时间
         ib.type AS type,  -- 单据类型
         CASE 
