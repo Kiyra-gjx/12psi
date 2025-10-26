@@ -1,21 +1,18 @@
 package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
-import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
-import com.zeroone.star.project.query.j2.store.OtherInQuery;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.service.IOtherOutListService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-
+import javax.annotation.Resource;
 import java.util.List;
 
 
@@ -31,17 +28,23 @@ import java.util.List;
 @RequestMapping("/otherout")
 @Api(tags = "其他出库单")
 public class OtherOutController implements OtherOutApis {
+
+    @Resource
+    private IOtherOutListService otherOutListService;
+
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")
     @Override
-    public JsonVO<String> examine(List<Integer> ids) {
-        return null;
+    public JsonVO<String> examine(@RequestParam List<Integer> ids) {
+        otherOutListService.examine(ids);
+        return JsonVO.success("success");
     }
     @PutMapping("/check")
     @ApiOperation(value = "核对出库单")
     @Override
-    public JsonVO<String> check(List<Integer> ids) {
-        return null;
+    public JsonVO<String> check(@RequestParam List<Integer> ids) {
+        otherOutListService.check(ids);
+        return JsonVO.success("success");
     }
     @PutMapping("/update")
     @ApiOperation(value = "修改其他出库单")
