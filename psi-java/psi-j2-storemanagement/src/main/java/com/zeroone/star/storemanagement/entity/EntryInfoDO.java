@@ -2,6 +2,8 @@ package com.zeroone.star.storemanagement.entity;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class EntryInfoDO {
 
@@ -19,7 +21,7 @@ public class EntryInfoDO {
 
     private String batch;
 
-    private int mfd;
+    private LocalDateTime mfd;
 
     private float price;
 
