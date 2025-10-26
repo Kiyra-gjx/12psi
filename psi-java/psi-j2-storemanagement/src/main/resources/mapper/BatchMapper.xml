@@ -5,7 +5,8 @@
     <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
         SELECT
-        ir.time AS time,  -- 操作时间
+        ib.pid AS pid,  -- 产品ID
+        MAX(ir.time) AS time,  -- 取最新操作时间
         ib.type AS type,  -- 单据类型
         CASE 
             WHEN ib.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ib.class)
@@ -38,10 +39,10 @@
         </if>
         -- 时间范围条件
         <if test="batchDetailQuery.startTime != null">
-            AND ir.time >= #{batchDetailQuery.startTime}
+            AND ir.time >= UNIX_TIMESTAMP(#{batchDetailQuery.startTime})
         </if>
         <if test="batchDetailQuery.endTime != null">
-            AND ir.time &lt;= #{batchDetailQuery.endTime}
+            AND ir.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
         </if>
         -- 单据编号条件
         <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
@@ -60,12 +61,14 @@
             (ib.type = 'swap' AND ib.class IN (SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%')))
             )
         </if>
-        ORDER BY
-        ir.time,
+        GROUP BY
+        ib.pid,
         ib.type,
         number,
         ib.direction,
         ib.nums
+        ORDER BY
+        time DESC
         -- 分页处理
         <if test="batchDetailQuery.pageIndex != null and batchDetailQuery.pageSize != null">
             <bind name="offset" value="(batchDetailQuery.pageIndex - 1) * batchDetailQuery.pageSize" />
@@ -76,7 +79,18 @@
     <!-- 获取批次详情数据总数 -->
     <select id="getBatchDetailCount" resultType="java.lang.Long"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
-        SELECT COUNT(1)
+        SELECT COUNT(DISTINCT 
+            CASE 
+                WHEN ib.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ib.class)
+                WHEN ib.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ib.class)
+                WHEN ib.type = 'swap' THEN (SELECT number FROM is_swap WHERE id = ib.class)
+                WHEN ib.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ib.class)
+                WHEN ib.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ib.class)
+                WHEN ib.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ib.class)
+                WHEN ib.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ib.class)
+                ELSE ''
+            END
+        )
         FROM
         is_batch_info ib
         LEFT JOIN
@@ -92,10 +106,10 @@
         </if>
         -- 时间范围条件
         <if test="batchDetailQuery.startTime != null">
-            AND ir.time >= #{batchDetailQuery.startTime}
+            AND ir.time >= UNIX_TIMESTAMP(#{batchDetailQuery.startTime})
         </if>
         <if test="batchDetailQuery.endTime != null">
-            AND ir.time &lt;= #{batchDetailQuery.endTime}
+            AND ir.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
         </if>
         -- 单据编号条件
         <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">

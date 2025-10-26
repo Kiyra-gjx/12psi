@@ -18,7 +18,7 @@ import java.math.BigDecimal;
 @ApiModel("批次查询详情数据对象")
 public class BatchDetailDTO {
 
-    @ApiModelProperty(value = "pid", example = "1")
+    @ApiModelProperty(value = "pid所属批次id(查询使用)", example = "1")
     private int pid;
 
     @ApiModelProperty(value = "所属组织",example = "默认组织")
