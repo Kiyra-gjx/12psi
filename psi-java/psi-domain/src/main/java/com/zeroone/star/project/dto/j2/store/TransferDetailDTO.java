@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @ApiModel("调拨单详情数据对象")
 public class TransferDetailDTO {
-    @ApiModelProperty(value = "单据时间", example = "1760803200")
+    @ApiModelProperty(value = "单据时间", example = "2025-10-19")
     private LocalDateTime time;
 
     @ApiModelProperty(value = "单据编号", example = "DBD2510191240397")
