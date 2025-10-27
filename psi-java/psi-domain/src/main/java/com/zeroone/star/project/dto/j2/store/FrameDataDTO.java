@@ -11,9 +11,6 @@ public class FrameDataDTO {
     @ApiModelProperty(value = "组织ID", example = "1")
     private String id;
 
-    @ApiModelProperty(value = "组织所属id", example = "1")
-    private String pid;
-
     @ApiModelProperty(value = "组织名称", example = "默认组织")
     private String name;
 

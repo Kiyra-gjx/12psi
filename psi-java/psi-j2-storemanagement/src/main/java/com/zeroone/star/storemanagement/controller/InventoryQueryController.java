@@ -44,16 +44,15 @@ public class InventoryQueryController implements InventoryQueryApis {
     @ApiOperation(value = "获取库存列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query) {
-        JsonVO<PageDTO<InventoryListDTO>> inventoryList = inventoryService.getInventoryList(query);
-
-        return inventoryService.getInventoryList(query);
+        PageDTO<InventoryListDTO> inventoryList = inventoryService.getInventoryList(query);
+        return JsonVO.success(inventoryList);
     }
 
     @GetMapping("/query/list/select/detail")
     @ApiOperation(value = "获取指定库存详情（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
-        return inventoryDetailService.getInventoryDetail(query);
+        return JsonVO.success(inventoryDetailService.getInventoryDetail(query));
     }
 
 

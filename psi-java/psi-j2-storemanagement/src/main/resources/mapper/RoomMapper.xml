@@ -3,12 +3,12 @@
 <mapper namespace="com.zeroone.star.storemanagement.mapper.RoomMapper">
     <select id="selectWarehouseStockByGoodsIds" resultType="com.zeroone.star.project.dto.j2.store.WarehouseStockDTO">
         SELECT
-        r.id as storedRecordId,
-        r.warehouse as warehouseId,
-        w.name as warehouseName,
-        r.goods as goodsId,
-        r.attr as attrId,
-        r.nums as stockNum
+            r.id as storedRecordId,
+            r.warehouse as warehouseId,
+            w.name as warehouseName,
+            r.goods as goodsId,
+            r.attr as attrId,
+            r.nums as stockNum
         FROM room r
         LEFT JOIN warehouse w ON r.warehouse = w.id
         WHERE r.goods IN

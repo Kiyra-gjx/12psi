@@ -12,11 +12,6 @@ public class CostDataDTO {
     @ApiModelProperty(value = "单据ID", example = "1")
     private String id;
 
-
-    @ApiModelProperty(value = "所属组织", example = "1")
-    private String frame;
-
-
     @ApiModelProperty(value = "单据编号", example = "ZCGD2510151056420")
     private String number;
 
