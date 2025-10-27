@@ -4,8 +4,6 @@ import com.zeroone.star.project.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
-
-import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -19,16 +17,14 @@ import java.util.List;
 @Data
 @ApiModel("批次查询详情参数")
 public class BatchDetailQuery extends PageQuery {
-    @ApiModelProperty(value = "批次ID(隐藏属性)", example = "1")
-    private List<Integer> batch;
+    @ApiModelProperty(value = "批次pid(点开详情时的查询条件,内部使用)", example = "1", required = true)
+    private int pid;
     @ApiModelProperty(value = "单据编号", example = "QTRKD2510181347194")
     private String number;
     @ApiModelProperty(value = "单据类型", example = "采购单")
     private List<String> type;
-    @ApiModelProperty(value = "开始日期:2025-10-13", example = "")
-    private LocalDate startTime;
-    @ApiModelProperty(value = "结束日期:2025-10-22", example = "")
-    private LocalDate endTime;
-    @ApiModelProperty(value = "所属仓库", example = "0")
-    private List<Integer> warehouse;
+    @ApiModelProperty(value = "开始日期", example = "2025-10-13")
+    private String startTime;
+    @ApiModelProperty(value = "结束日期", example = "2025-10-22")
+    private String endTime;
 }

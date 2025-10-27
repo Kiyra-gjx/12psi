@@ -1,33 +1,37 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
+@TableName("extry_info")
 public class ExtryInfoDO {
 //其他出库单详情
-    private int id;
+    private String id;
 
-    private int pid;
+    private String pid;
 
-    private int goods;
+    private String goods;
 
     private String attr;
 
     private String unit;
 
-    private int warehouse;
+    private String warehouse;
 
     private String batch;
 
-    private int mfd;
+    private LocalDateTime mfd;
 
-    private float price;
+    private BigDecimal price;
 
-    private float nums;
+    private BigDecimal nums;
 
     private String serial;
 
-    private float total;
+    private BigDecimal total;
 
     private String data;
 }
