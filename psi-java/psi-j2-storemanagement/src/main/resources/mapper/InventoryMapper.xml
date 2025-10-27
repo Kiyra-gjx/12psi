@@ -50,10 +50,9 @@
             <if test="query.stockState != null">
                 <choose>
                     <when test="query.stockState == 0">
-                        AND r.nums > 0
                     </when>
                     <when test="query.stockState == 1">
-                        AND r.nums = 0
+                        AND r.nums != 0
                     </when>
                     <when test="query.stockState == 2">
                         AND r.nums <![CDATA[ <= ]]> g.threshold
