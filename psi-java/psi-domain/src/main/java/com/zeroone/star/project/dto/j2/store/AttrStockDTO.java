@@ -16,7 +16,7 @@ public class AttrStockDTO {
     private String attrId;
 
     @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
-    private String arrName;
+    private String attrName;
 
     @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
     private String pid;

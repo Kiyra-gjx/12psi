@@ -13,5 +13,5 @@ public interface IInventoryService  {
      * @param query 查询条件
      * @return 库存列表分页数据
      */
-    JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query);
+    PageDTO<InventoryListDTO> getInventoryList(InventoryQuery query);
 }

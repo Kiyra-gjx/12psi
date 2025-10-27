@@ -7,6 +7,7 @@ import com.zeroone.star.project.j2.store.InventoryQueryApis;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.service.IInventoryDetailService;
 import com.zeroone.star.storemanagement.service.IInventoryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,20 +37,22 @@ public class InventoryQueryController implements InventoryQueryApis {
     @Resource
     private IInventoryService inventoryService;
 
+    @Resource
+    private IInventoryDetailService inventoryDetailService;
+
     @GetMapping("/query/list/select")
     @ApiOperation(value = "获取库存列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query) {
-        JsonVO<PageDTO<InventoryListDTO>> inventoryList = inventoryService.getInventoryList(query);
-
-        return inventoryService.getInventoryList(query);
+        PageDTO<InventoryListDTO> inventoryList = inventoryService.getInventoryList(query);
+        return JsonVO.success(inventoryList);
     }
 
     @GetMapping("/query/list/select/detail")
     @ApiOperation(value = "获取指定库存详情（条件+分页）")
     @Override
     public JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query) {
-        return null;
+        return JsonVO.success(inventoryDetailService.getInventoryDetail(query));
     }
 
 

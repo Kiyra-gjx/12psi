@@ -35,10 +35,7 @@ public class InventoryServiceImpl  implements IInventoryService {
     private RoomMapper roomMapper;
 
     @Override
-    public JsonVO<PageDTO<InventoryListDTO>> getInventoryList(InventoryQuery query) {
-
-        try {
-
+    public PageDTO<InventoryListDTO> getInventoryList(InventoryQuery query) {
             //1.xml联表查询基础数据
             Page<InventoryListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
             Page<InventoryListDTO> resultPage = inventoryMapper.selectInventoryBaseList(page, query);
@@ -91,12 +88,6 @@ public class InventoryServiceImpl  implements IInventoryService {
                     }
                 });
             }
-
-            return JsonVO.success(PageDTO.create(resultPage));
-        } catch (Exception e) {
-            log.error("获取库存列表失败", e);
-            return JsonVO.fail(null);
-        }
-
+            return PageDTO.create(resultPage);
     }
 }
