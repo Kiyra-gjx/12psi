@@ -2,12 +2,11 @@ package com.zeroone.star.storemanagement.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zeroone.star.storemanagement.entity.EntryDO;
 import com.zeroone.star.storemanagement.entity.ExtryDO;
 import com.zeroone.star.storemanagement.entity.ExtryInfoDO;
-import com.zeroone.star.storemanagement.mapper.OtherOutListInfoMapper;
-import com.zeroone.star.storemanagement.mapper.OtherOutListMapper;
-import com.zeroone.star.storemanagement.service.IOtherOutListService;
+import com.zeroone.star.storemanagement.mapper.OtherOutInfoMapper;
+import com.zeroone.star.storemanagement.mapper.OtherOutMapper;
+import com.zeroone.star.storemanagement.service.IOtherOutService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,17 +30,17 @@ import java.util.List;
  */
 
 @Service
-public class OtherOutListServiceImpl extends ServiceImpl<OtherOutListMapper, ExtryDO> implements IOtherOutListService {
+public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> implements IOtherOutService {
 
     @Resource
-    private OtherOutListMapper otherOutListMapper;
+    private OtherOutMapper otherOutMapper;
     @Resource
-    private OtherOutListInfoMapper otherOutListInfoMapper;
+    private OtherOutInfoMapper otherOutInfoMapper;
 
     @Override
     public void examine(List<Integer> ids) {
         //TODO : 待实现关联表的审核逻辑
-        ExtryDO extryDO = otherOutListMapper.selectById(ids.get(0));
+        ExtryDO extryDO = otherOutMapper.selectById(ids.get(0));
         if(extryDO != null) {
             update().set("examine", extryDO.getExamine() == 1 ? 0 : 1).eq("id", ids.get(0)).update();
         }
@@ -50,7 +49,7 @@ public class OtherOutListServiceImpl extends ServiceImpl<OtherOutListMapper, Ext
     @Override
     public void check(List<Integer> ids) {
         //TODO : 待实现关联表的核对逻辑
-        ExtryDO extryDO = otherOutListMapper.selectById(ids.get(0));
+        ExtryDO extryDO = otherOutMapper.selectById(ids.get(0));
         if(extryDO != null) {
             update().set("`check`", extryDO.getCheck() == 1 ? 0 : 1).eq("id", ids.get(0)).update();
         }
@@ -58,7 +57,7 @@ public class OtherOutListServiceImpl extends ServiceImpl<OtherOutListMapper, Ext
 
     @Override
     public byte[] exportOrderList(List<Integer> ids) {
-        List<ExtryDO> dataList = otherOutListMapper.selectBatchIds(ids);
+        List<ExtryDO> dataList = otherOutMapper.selectBatchIds(ids);
 
         ByteArrayOutputStream outputStream = null;
         try {
@@ -81,7 +80,7 @@ public class OtherOutListServiceImpl extends ServiceImpl<OtherOutListMapper, Ext
 
     @Override
     public byte[] exportOrderDetails(List<Integer> ids) {
-        List<ExtryInfoDO> detailList = otherOutListInfoMapper.selectByMainIds(ids);
+        List<ExtryInfoDO> detailList = otherOutInfoMapper.selectByMainIds(ids);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             EasyExcel.write(outputStream, ExtryInfoDO.class)
@@ -104,7 +103,7 @@ public class OtherOutListServiceImpl extends ServiceImpl<OtherOutListMapper, Ext
         for (ExtryDO dto : dataList) {
             // 转换并保存入库
             ExtryDO entity = convertToEntity(dto);
-            otherOutListMapper.insert(entity);
+            otherOutMapper.insert(entity);
         }
     }
 

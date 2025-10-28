@@ -22,11 +22,11 @@ import java.util.List;
 public class OtherInListAddDTO {
     @ExcelProperty(value = "供应商", index = 1)
     @ApiModelProperty(value = "供应商",required = false, example = "0")
-    private Integer supplier;
+    private String supplier;
 
     @ExcelProperty(value = "所属组织", index = 0)
     @ApiModelProperty(value = "所属组织", example = "0")
-    int frame;
+    private String frame;
 
     @ExcelProperty(value = "单据日期", index = 3)
     @ApiModelProperty(value = "单据日期",required = true, example = "2023-10-18 18:18:00")
@@ -50,7 +50,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "关联人员", index = 7)
     @ApiModelProperty(value = "关联人员",required = false, example = "0")
-    private Integer people;
+    private String people;
 
     @ApiModelProperty(value = "物流信息",required = false, example = "{\"key\":\"auto\",\"name\":\"自动识别\",\"number\":\"\"}")
     private String logistics;
@@ -79,7 +79,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "制单人", index = 11)
     @ApiModelProperty(value = "制单人",required = true, example = "1")
-    private Integer user;
+    private String user;
 
     @ApiModelProperty(value = "入库单详细信息列表",required = true)
     List<OtherInListInfoDTO> otherInListInfoDTOList;
