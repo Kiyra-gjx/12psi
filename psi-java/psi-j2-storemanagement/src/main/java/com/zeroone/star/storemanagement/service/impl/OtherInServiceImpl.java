@@ -1,19 +1,19 @@
 package com.zeroone.star.storemanagement.service.impl;
 
+import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zeroone.star.project.dto.j2.store.CostDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
-import com.zeroone.star.storemanagement.entity.*;
-import com.zeroone.star.storemanagement.mapper.*;
-import com.zeroone.star.storemanagement.service.IOtherInService;
-import com.alibaba.cloud.commons.lang.StringUtils;
-import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.entity.CostDO;
 import com.zeroone.star.storemanagement.entity.EntryDO;
 import com.zeroone.star.storemanagement.entity.EntryInfoDO;
 import com.zeroone.star.storemanagement.mapper.CostMapper;
+import com.zeroone.star.storemanagement.mapper.OtherInInfoMapper;
+import com.zeroone.star.storemanagement.mapper.OtherInMapper;
+import com.zeroone.star.storemanagement.service.IOtherInService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,7 +55,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
     public void updateOtherInList(OtherInListDetailDTO otherInListDetailDTO) {
         //判断入库单是否存在
         Integer examine = otherInMapper.getExamineById(otherInListDetailDTO.getId());
-        if(examine==null){
+        if (examine == null) {
             throw new RuntimeException("入库单不存在");
         }
         if (examine == 1) {
@@ -63,7 +63,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         }
         //更新入库单
         EntryDO entry = new EntryDO();
-        BeanUtils.copyProperties(otherInListDetailDTO,entry);
+        BeanUtils.copyProperties(otherInListDetailDTO, entry);
         otherInMapper.update(entry);
 
 
@@ -77,7 +77,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         otherInInfoMapper.deleteByPid(otherInListDetailDTO.getId());
         //插入新的入库单详情数据
         Integer maxId = costMapper.getMaxId();
-        maxId = maxId==null?0:maxId;
+        maxId = maxId == null ? 0 : maxId;
         List<EntryInfoDO> entryInfoList = new ArrayList<>();
         for (OtherInListInfoDTO otherInListInfoDTO : otherInListInfoDTOList) {
             EntryInfoDO entryInfo = new EntryInfoDO();
@@ -95,11 +95,11 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         costMapper.deleteBycls(otherInListDetailDTO.getId());
         //插入新的花费单据数据
         maxId = costMapper.getMaxId();
-        maxId = maxId==null?0:maxId;
+        maxId = maxId == null ? 0 : maxId;
         List<CostDO> costList = new ArrayList<>();
         for (CostDTO costDTO : costDTOList) {
             CostDO cost = new CostDO();
-            BeanUtils.copyProperties(costDTO,cost);
+            BeanUtils.copyProperties(costDTO, cost);
             cost.setCls(otherInListDetailDTO.getId());
             cost.setType("entry");
             cost.setTime(entry.getTime());
@@ -140,17 +140,17 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
             throw new RuntimeException("有入库单不存在");
         }
         int status = exmineStatusList.get(0);
-        otherInMapper.updateExamine(ids,status^1);
+        otherInMapper.updateExamine(ids, status ^ 1);
     }
 
     @Override
     public void check(List<Integer> ids) {
-        List< Integer> checkStatusList = otherInMapper.getCheckByIds(ids);
-        if(checkStatusList.size()!=ids.size()){
+        List<Integer> checkStatusList = otherInMapper.getCheckByIds(ids);
+        if (checkStatusList.size() != ids.size()) {
             throw new RuntimeException("有入库单不存在");
         }
         int status = checkStatusList.get(0);
-        otherInMapper.updateCheck(ids,status^1);
+        otherInMapper.updateCheck(ids, status ^ 1);
     }
 
     @Override
@@ -158,12 +158,12 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
     public OtherInListDetailDTO getOtherInListDetail(String id) {
         // TODO 单个查询操作
         // 1.检查用户权限 权限校验可以定义AOP切面实现
-        if(!checkPermission()){
+        if (!checkPermission()) {
             log.info("用户无操作权限");
         }
         // 2.判断入库单是否存在
-        EntryDO exist = otherInListMapper.selectById(id);
-        if(exist == null){
+        EntryDO exist = otherInMapper.selectById(id);
+        if (exist == null) {
             log.info("入库单不存在");
         }
         // 3.查询入库单详细
@@ -187,9 +187,9 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         }
         // 3.新增入库单
         EntryDO entryDO = ms.addDtoToEntry(dto);
-        otherInListMapper.insert(entryDO);
+        otherInMapper.insert(entryDO);
         // 4.记录操作日志
-        logOperation(entryDO.getId(), "新增入库单");
+        logOperation(String.valueOf(entryDO.getId()), "新增入库单");
         return JsonVO.success("新增入库单成功");
     }
 
@@ -201,7 +201,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         List<String> deletedList = new ArrayList<>();
 
         // 1.判断入库单是否存在
-        List<EntryDO> existingLists = otherInListMapper.selectBatchIds(ids);
+        List<EntryDO> existingLists = otherInMapper.selectBatchIds(ids);
         if (existingLists.size() != ids.size()) {
             log.info("部分入库单不存在");
             return deletedList;
@@ -220,7 +220,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
                 log.info("入库单已审核，不能删除，单号: {}", entryDO.getNumber());
             } else {
                 // 4.删除入库单
-                otherInListInfoMapper.deleteById(entryDO.getId());
+                otherInInfoMapper.deleteById(entryDO.getId());
                 count++;
                 // 记录成功删除的入库单编号
                 deletedList.add(entryDO.getNumber());
@@ -299,12 +299,12 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
             return "单据日期不能晚于当前时间";
         }
 
-        OtherInListInfoDTO otherInListInfoDTO= (OtherInListInfoDTO) dto.getOtherInListInfoDTOList();
+        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListInfoDTOList();
         // 关联数据校验
-        if (validateOtherInListInfo(otherInListInfoDTO) == null ) {
+        if (validateOtherInListInfo(otherInListInfoDTO) == null) {
             return "入库单详细信息不能为空";
         }
-        if (validateCost((CostDTO)dto.getCostDTOList()) == null) {
+        if (validateCost((CostDTO) dto.getCostDTOList()) == null) {
             return "单据费用列表不能为空";
         }
 
@@ -320,30 +320,31 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         }
 
         // 必填字段校验
-        if (StringUtils.isBlank(info.getName())) {
-            return "商品名称不能为空";
-        }
-        if (StringUtils.isBlank(info.getNumber())) {
-            return "商品编号不能为空";
-        }
-        if (info.getGoods() <= 0) {
+//        if (StringUtils.isBlank(info.getName())) {
+//            return "商品名称不能为空";
+//        }
+//        if (StringUtils.isBlank(info.getNumber())) {
+//            return "商品编号不能为空";
+//        }
+        if (Integer.parseInt(info.getGoods()) <= 0) {
             return "所属商品ID无效";
         }
+
         if (StringUtils.isBlank(info.getUnit())) {
             return "单位不能为空";
         }
-        if (info.getWarehouse() <= 0) {
+        if (Integer.parseInt(info.getWarehouse()) <= 0) {
             return "仓库ID无效";
         }
 
         // 数值范围校验
-        if (info.getPrice() < 0) {
+        if (info.getPrice().compareTo(BigDecimal.ZERO) < 0) {
             return "商品成本不能为负数";
         }
-        if (info.getNums() <= 0) {
+        if (info.getNums().compareTo(BigDecimal.ZERO) <= 0) {
             return "商品数量必须大于0";
         }
-        if (info.getTotal() < 0) {
+        if (info.getTotal().compareTo(BigDecimal.ZERO) < 0) {
             return "商品总成本不能为负数";
         }
 
@@ -353,8 +354,8 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         }
 
         // 计算一致性校验
-        float expectedTotal = info.getPrice() * info.getNums();
-        if (Math.abs(info.getTotal() - expectedTotal) > 0.01) {
+        BigDecimal expectedTotal = info.getPrice().multiply(info.getNums());
+        if (info.getTotal().subtract(expectedTotal).abs().compareTo(BigDecimal.valueOf(0.01)) > 0) {
             return String.format("商品总成本计算错误，应为%.4f", expectedTotal);
         }
 
@@ -368,7 +369,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         if (cost == null) {
             return "费用信息不能为空";
         }
-        if ( cost.getMoney() < 0) {
+        if (cost.getMoney().compareTo(BigDecimal.ZERO) < 0) {
             return "费用金额不能为负数";
         }
         return null;
@@ -381,7 +382,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
     /**
      * 记录操作日志
      */
-    private void logOperation(Integer transferId, String operation) {
+    private void logOperation(String transferId, String operation) {
         // TODO: 实现操作日志记录
         log.info("操作日志：入库单ID: {}, 操作: {}", transferId, operation);
     }
