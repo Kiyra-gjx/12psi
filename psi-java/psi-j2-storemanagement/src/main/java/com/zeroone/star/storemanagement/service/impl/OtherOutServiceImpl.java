@@ -24,10 +24,7 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -175,8 +172,9 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         // 更新出库单
         ExtryDO extry = new ExtryDO();
         BeanUtils.copyProperties(otherOutListDTO, extry);
-        otherOutMapper.insert(extry);
+        extry.setTime(LocalDateTime.now());
 
+        otherOutMapper.insertBatch(extry);
         // 获取出库单详情列表
         List<OtherOutListInfoDTO> otherOutListInfoDTOList = otherOutListDTO.getOtherOutListInfoDTOList();
         //判断是否为空
@@ -194,7 +192,9 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
             extryInfo.setId((++maxId).toString());
             extryInfoList.add(extryInfo);
         }
-        otherOutMapper.insertBatch(extryInfoList);
+        otherOutInfoMapper.insertBatch(extryInfoList);
+
+
         List<CostDTO>costDTOList = otherOutListDTO.getCostDTOList();
         //插入新的花费单据数据
         maxId = costMapper.getMaxId();
@@ -217,7 +217,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     }
 
     @Override
-    public OtherOutListInfoDTO getOtherOutListInfo(String id) {
+    public JsonVO<OtherOutListInfoDTO> getOtherOutListInfo(String id) {
         // 1.检查用户权限 权限校验可以定义AOP切面实现
         if (!checkPermission()) {
             log.info("用户无操作权限");
@@ -227,11 +227,12 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         if (exist == null) {
             log.info("出库单不存在");
         }
+        ExtryInfoDO extryInfoDO = otherOutInfoMapper.selectById(id);
         // 3.查询入库单详细
-        OtherOutListInfoDTO dto = ms.extryToOtherOutListInfoDTO(exist);
+        OtherOutListInfoDTO dto = ms.extryInfoToOtherOutListInfoDTO(extryInfoDO);
         // 4.记录操作日志
         logOperation(dto.getId(), "查询出库单详细");
-        return dto;
+        return JsonVO.success(dto);
     }
 
     @Override
@@ -239,29 +240,25 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         // 1. 计算分页参数
         // 2. 执行查询
         // 2. 创建MyBatis-Plus分页对象（pageIndex从1开始）
-        Page<OtherOutListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        Page<ExtryDO> page = new Page<>(query.getPageIndex(), query.getPageSize());
 
         // 3. 执行分页查询
-        Page<OtherOutListDTO> resultPage = otherOutMapper.selectByPage(page, query);
+        Page<ExtryDO> extryPage = otherOutMapper.selectExtryBaseList(page, query);
 
-        // 4. 转换DO列表为DTO列表（使用BeanUtils复制属性）
-        List<OtherOutListDTO> dtoList = resultPage.getRecords().stream()
-                .map(doObj -> {
-                    OtherOutListDTO dto = new OtherOutListDTO();
-                    BeanUtils.copyProperties(doObj, dto);
-                    return dto;
-                })
-                .collect(Collectors.toList());
+        List<OtherOutListDTO> dtoList = new ArrayList<>();
+        for (ExtryDO extryDO : extryPage.getRecords()) {
+            OtherOutListDTO dto = new OtherOutListDTO();
+            BeanUtils.copyProperties(extryDO, dto);
+            dto.setTime(extryDO.getTime());
+            dtoList.add(dto);
+        }
 
-        // 5. 构建PageDTO对象
         PageDTO<OtherOutListDTO> pageDTO = new PageDTO<>();
         pageDTO.setPageIndex(query.getPageIndex());
         pageDTO.setPageSize(query.getPageSize());
-        pageDTO.setTotal(resultPage.getTotal());
-        pageDTO.setPages(resultPage.getPages());
+        pageDTO.setTotal(extryPage.getTotal());
+        pageDTO.setPages(extryPage.getPages());
         pageDTO.setRows(dtoList);
-
-        // 6. 返回成功结果
         return JsonVO.success(pageDTO);
     }
 

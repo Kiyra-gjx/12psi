@@ -25,7 +25,7 @@ public interface IOtherOutService extends IService<ExtryDO> {
 
     JsonVO<String> addOtherOutList(OtherOutListDTO otherOutListDTO);
 
-    OtherOutListInfoDTO getOtherOutListInfo(String id);
+    JsonVO<OtherOutListInfoDTO> getOtherOutListInfo(String id);
 
     JsonVO<PageDTO<OtherOutListDTO>> listOtherOut(OtherOutQuery query);
 }

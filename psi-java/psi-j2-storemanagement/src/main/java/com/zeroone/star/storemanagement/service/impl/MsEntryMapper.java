@@ -6,6 +6,7 @@ import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.storemanagement.entity.EntryDO;
 import com.zeroone.star.storemanagement.entity.ExtryDO;
+import com.zeroone.star.storemanagement.entity.ExtryInfoDO;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel = "spring")
@@ -19,10 +20,10 @@ public interface MsEntryMapper {
 
     /**
      * 映射DTO
-     * @param entity 实体
+     * @param entity ExtryInfoDO
      * @return DTO
      */
-    OtherOutListInfoDTO extryToOtherOutListInfoDTO(ExtryDO entity);
+    OtherOutListInfoDTO extryInfoToOtherOutListInfoDTO(ExtryInfoDO entity);
 
     /**
      * 映射实体

@@ -8,5 +8,50 @@
             #{id}
         </foreach>
     </select>
+    <select id="selectExtryBaseList" resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
+        SELECT
+        id, customer, frame, time, number, type,
+        total, cost, examine, cse, check_status, user, data
+        FROM entry
+        <where>
+            <!-- 单据编号模糊查询 -->
+            <if test="query.number != null and query.number != ''">
+                AND number LIKE CONCAT('%', #{query.number}, '%')
+            </if>
+            <!-- 审核状态查询 -->
+            <if test="query.examine != null">
+                AND examine = #{query.examine}
+            </if>
+            <!-- 所属组织查询 -->
+            <if test="query.frame != null">
+                AND frame = #{query.frame}
+            </if>
+            <!-- 时间范围查询 -->
+            <if test="query.startTime != null">
+                AND time &gt;= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND time &lt;= #{query.endTime}
+            </if>
+            <!-- 制单人查询 -->
+            <if test="query.user != null">
+                AND user = #{query.user}
+            </if>
+        </where>
+        ORDER BY time DESC
+    </select>
+    <insert id="insertBatch" parameterType="com.zeroone.star.storemanagement.entity.ExtryDO">
+        INSERT INTO extry (
+            id,customer, frame, time, number, type,
+            total, cost, people, logistics, file,
+            data, more, examine, cse, `check`,
+            user
+        ) VALUES (
+                     #{id},#{customer}, #{frame}, #{time}, #{number}, #{type},
+                     #{total}, #{cost}, #{people}, #{logistics}, #{file},
+                     #{data}, #{more}, #{examine}, #{cse}, #{check},
+                     #{user}
+                 )
+    </insert>
 
 </mapper>
