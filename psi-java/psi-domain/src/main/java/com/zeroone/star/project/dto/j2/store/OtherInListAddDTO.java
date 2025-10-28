@@ -28,8 +28,8 @@ public class OtherInListAddDTO {
     @ApiModelProperty(value = "所属组织", example = "0")
     int frame;
 
-    @ExcelProperty(value = "单据时间", index = 3)
-    @ApiModelProperty(value = "单据时间",required = true, example = "2023-10-18 18:18:00")
+    @ExcelProperty(value = "单据日期", index = 3)
+    @ApiModelProperty(value = "单据日期",required = true, example = "2023-10-18 18:18:00")
     private LocalDateTime time;
 
     @ExcelProperty(value = "单据编号", index = 4)
