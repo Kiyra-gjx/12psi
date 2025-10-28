@@ -5,7 +5,7 @@ import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
-import com.zeroone.star.storemanagement.service.IOtherOutListService;
+import com.zeroone.star.storemanagement.service.IOtherOutService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +37,7 @@ import java.util.stream.Collectors;
 public class OtherOutController implements OtherOutApis {
 
     @Resource
-    private IOtherOutListService otherOutListService;
+    private IOtherOutService otherOutListService;
 
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")

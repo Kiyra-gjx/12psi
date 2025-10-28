@@ -4,7 +4,7 @@ import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 
 import java.util.List;
 
-public interface IOtherInListService {
+public interface IOtherInService {
     void updateOtherInList(OtherInListDetailDTO otherInListDetailDTO);
 
     void examine(List<Integer> ids);

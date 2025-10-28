@@ -7,7 +7,7 @@ import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.project.query.j2.store.OtherInQuery;
-import com.zeroone.star.storemanagement.service.IOtherInListService;
+import com.zeroone.star.storemanagement.service.IOtherInService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -35,7 +35,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class OtherInController implements OtherInApis {
 
     @Autowired
-    IOtherInListService otherInListService;
+    IOtherInService otherInListService;
 
 
     @PutMapping("/update")

@@ -1,42 +1,50 @@
 package com.zeroone.star.storemanagement.service.impl;
 
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zeroone.star.project.components.user.UserDTO;
+import com.zeroone.star.project.components.user.UserHolder;
 import com.zeroone.star.project.dto.j2.store.CostDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
-import com.zeroone.star.storemanagement.entity.CostDO;
-import com.zeroone.star.storemanagement.entity.EntryDO;
-import com.zeroone.star.storemanagement.entity.EntryInfoDO;
-import com.zeroone.star.storemanagement.mapper.CostMapper;
-import com.zeroone.star.storemanagement.mapper.OtherInListInfoMapper;
-import com.zeroone.star.storemanagement.mapper.OtherInListMapper;
-import com.zeroone.star.storemanagement.service.IOtherInListService;
+import com.zeroone.star.storemanagement.entity.*;
+import com.zeroone.star.storemanagement.mapper.*;
+import com.zeroone.star.storemanagement.service.IOtherInService;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OtherInListServiceImpl implements IOtherInListService {
+public class OtherInServiceImpl  implements IOtherInService {
 
     @Autowired
-    OtherInListMapper otherInListMapper;
+    OtherInMapper otherInMapper;
 
     @Autowired
-    OtherInListInfoMapper otherInListInfoMapper;
+    OtherInInfoMapper otherInInfoMapper;
 
     @Autowired
     CostMapper costMapper;
+
+    @Autowired
+    LogMapper logMapper;
+
+    @Autowired
+    RecordMapper recordMapper;
+
+    @Resource
+    UserHolder userHolder;
 
     @Override
     @Transactional
     public void updateOtherInList(OtherInListDetailDTO otherInListDetailDTO) {
         //判断入库单是否存在
-        Integer examine = otherInListMapper.getExamineById(otherInListDetailDTO.getId());
+        Integer examine = otherInMapper.getExamineById(otherInListDetailDTO.getId());
         if(examine==null){
             throw new RuntimeException("入库单不存在");
         }
@@ -46,7 +54,7 @@ public class OtherInListServiceImpl implements IOtherInListService {
         //更新入库单
         EntryDO entry = new EntryDO();
         BeanUtils.copyProperties(otherInListDetailDTO,entry);
-        otherInListMapper.update(entry);
+        otherInMapper.update(entry);
 
 
         //获取入库单详情列表
@@ -56,9 +64,9 @@ public class OtherInListServiceImpl implements IOtherInListService {
             throw new RuntimeException("入库单详情列表不能为空");
         }
         //删除原先的入库单详情数据
-        otherInListInfoMapper.deleteByPid(otherInListDetailDTO.getId());
+        otherInInfoMapper.deleteByPid(otherInListDetailDTO.getId());
         //插入新的入库单详情数据
-        Integer maxId = otherInListInfoMapper.getMaxId();
+        Integer maxId = otherInInfoMapper.getMaxId();
         if(maxId==null){
           maxId=0;
         }
@@ -67,10 +75,10 @@ public class OtherInListServiceImpl implements IOtherInListService {
             EntryInfoDO entryInfo = new EntryInfoDO();
             BeanUtils.copyProperties(otherInListInfoDTO,entryInfo);
             entryInfo.setPid(otherInListDetailDTO.getId());
-            entryInfo.setId(++maxId);
+            entryInfo.setId((++maxId).toString());
             entryInfoList.add(entryInfo);
         }
-        otherInListInfoMapper.insertBatch(entryInfoList);
+        otherInInfoMapper.insertBatch(entryInfoList);
 
 
         //获取单据花费列表
@@ -86,9 +94,7 @@ public class OtherInListServiceImpl implements IOtherInListService {
         for(CostDTO costDTO:costDTOList){
             CostDO cost = new CostDO();
             BeanUtils.copyProperties(costDTO,cost);
-            cost.setIet(String.valueOf(costDTO.getIet()));
-            cost.setMoney(BigDecimal.valueOf(costDTO.getMoney()));
-            cost.setCls(otherInListDetailDTO.getId().toString());
+            cost.setCls(otherInListDetailDTO.getId());
             cost.setType("entry");
             cost.setTime(entry.getTime());
             cost.setSettle(BigDecimal.valueOf(0.0000));
@@ -96,28 +102,49 @@ public class OtherInListServiceImpl implements IOtherInListService {
             cost.setId(String.valueOf(++maxId));
             costList.add(cost);
         }
-        costMapper.insertBatch(costList);
+        //使用mp批量插入costdo TODO
+        //costMapper.insert(costList);
+
+        //更新操作日志表和单据记录表
+        UserDTO user=null;
+        try {
+            user = userHolder.getCurrentUser();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        LogDO log = new LogDO();
+        log.setUser(user.getUsername());
+        log.setTime(entry.getTime());
+        log.setInfo("更新其他入库单"+"["+otherInListDetailDTO.getNumber()+"]");
+        logMapper.insert(log);
+        RecordDO record = new RecordDO();
+        record.setUser(user.getUsername());
+        record.setType("entry");
+        record.setSource(otherInListDetailDTO.getId());
+        record.setTime(entry.getTime());
+        record.setInfo("更新单据");
+        recordMapper.insert(record);
     }
 
     @Override
     public void examine(List<Integer> ids) {
         //查询id在ids中的入库单总数
-        List<Integer> exmineStatusList = otherInListMapper.getExamineByIds(ids);
+        List<Integer> exmineStatusList = otherInMapper.getExamineByIds(ids);
         //判断入库单总数是否等于ids的长度
         if(exmineStatusList.size()!=ids.size()){
             throw new RuntimeException("有入库单不存在");
         }
         int status = exmineStatusList.get(0);
-        otherInListMapper.updateExamine(ids,status^1);
+        otherInMapper.updateExamine(ids,status^1);
     }
 
     @Override
     public void check(List<Integer> ids) {
-        List< Integer> checkStatusList = otherInListMapper.getCheckByIds(ids);
+        List< Integer> checkStatusList = otherInMapper.getCheckByIds(ids);
         if(checkStatusList.size()!=ids.size()){
             throw new RuntimeException("有入库单不存在");
         }
         int status = checkStatusList.get(0);
-        otherInListMapper.updateCheck(ids,status^1);
+        otherInMapper.updateCheck(ids,status^1);
     }
 }

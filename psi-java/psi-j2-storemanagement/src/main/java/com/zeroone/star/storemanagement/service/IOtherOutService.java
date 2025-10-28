@@ -6,7 +6,7 @@ import com.zeroone.star.storemanagement.entity.ExtryDO;
 import java.io.InputStream;
 import java.util.List;
 
-public interface IOtherOutListService extends IService<ExtryDO> {
+public interface IOtherOutService extends IService<ExtryDO> {
     void examine(List<Integer> ids);
 
     void check(List<Integer> ids);
