@@ -16,4 +16,6 @@ public interface OtherInListInfoMapper {
 
     @Select("select max(id) from entry_info")
     Integer getMaxId();
+
+    void deleteById(Integer id);
 }
