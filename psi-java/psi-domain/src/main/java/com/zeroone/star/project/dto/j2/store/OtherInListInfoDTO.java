@@ -18,6 +18,15 @@ import java.time.LocalDateTime;
 @Data
 @ApiModel("其他入库单数据信息对象")
 public class OtherInListInfoDTO {
+    @ApiModelProperty(value = "商品名称", example = "牛奶")
+    private String name;
+
+    @ApiModelProperty(value = "商品编号", example = "0001")
+    private String number;
+
+    @ApiModelProperty(value = "规格型号", example = "500ml")
+    private String spec;
+
     @ApiModelProperty(value = "所属商品", example = "1")
     private int goods;
 
