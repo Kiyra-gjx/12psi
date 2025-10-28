@@ -107,7 +107,7 @@ public class OtherOutController implements OtherOutApis {
     @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出其他出库单数据Excel")
     @Override
-    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestParam String  ids) {
+    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestBody String  ids) {
 
         try {
             List<Integer> idList = Arrays.stream(ids.split(","))
@@ -132,7 +132,7 @@ public class OtherOutController implements OtherOutApis {
     @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出其他出库单详情数据Excel")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestParam String ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestBody String ids) {
         try {
             List<Integer> idList = Arrays.stream(ids.split(","))
                     .map(Integer::parseInt)
