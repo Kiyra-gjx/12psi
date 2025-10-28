@@ -4,8 +4,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
+import java.time.LocalDate;
 
 /**
  * @BelongsProject: psi-java
@@ -19,7 +18,7 @@ import java.util.List;
 @ApiModel("调拨单详情数据对象")
 public class TransferDetailDTO {
     @ApiModelProperty(value = "单据时间", example = "2025-10-19")
-    private LocalDateTime time;
+    private LocalDate time;
 
     @ApiModelProperty(value = "单据编号", example = "DBD2510191240397")
     private String number;
@@ -40,7 +39,7 @@ public class TransferDetailDTO {
         private BigDecimal cost;
 
         @ApiModelProperty(value = "关联人员", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
-        private Integer people;
+        private String people;
 
         @ApiModelProperty(value = "物流信息")
         private String logistics;
@@ -48,7 +47,7 @@ public class TransferDetailDTO {
         @ApiModelProperty(value = "单据附件", accessMode = ApiModelProperty.AccessMode.READ_ONLY)
         private String file;
 
-        @ApiModelProperty(value = "备注信息")
+        @ApiModelProperty(value = "备注信息", example = "test")
         private String data;
     }
 
@@ -74,10 +73,10 @@ public class TransferDetailDTO {
         private String unit;
 
         @ApiModelProperty(value = "调出仓库", example = "2")
-        private Integer warehouse;
+        private String warehouse;
 
         @ApiModelProperty(value = "调入仓库", example = "1")
-        private Integer storehouse;
+        private String storehouse;
 
         @ApiModelProperty(value = "成本", example = "998")
         private BigDecimal price;
