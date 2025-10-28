@@ -1,5 +1,6 @@
 package com.zeroone.star.storemanagement.mapper;
 
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.storemanagement.entity.EntryDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
@@ -7,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import java.util.List;
 
 @Mapper
-public interface OtherInMapper {
+public interface OtherInMapper extends BaseMapper<EntryDO> {
 
     void update(EntryDO entry);
 

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class OtherInServiceImpl  implements IOtherInService {
+public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> implements IOtherInService {
 
     @Autowired
     OtherInMapper otherInMapper;
@@ -31,14 +31,14 @@ public class OtherInServiceImpl  implements IOtherInService {
     @Autowired
     CostMapper costMapper;
 
-    @Autowired
-    LogMapper logMapper;
-
-    @Autowired
-    RecordMapper recordMapper;
-
-    @Resource
-    UserHolder userHolder;
+//    @Autowired
+//    LogMapper logMapper;
+//
+//    @Autowired
+//    RecordMapper recordMapper;
+//
+//    @Resource
+//    UserHolder userHolder;
 
     @Override
     @Transactional
@@ -66,10 +66,8 @@ public class OtherInServiceImpl  implements IOtherInService {
         //删除原先的入库单详情数据
         otherInInfoMapper.deleteByPid(otherInListDetailDTO.getId());
         //插入新的入库单详情数据
-        Integer maxId = otherInInfoMapper.getMaxId();
-        if(maxId==null){
-          maxId=0;
-        }
+        Integer maxId = costMapper.getMaxId();
+        maxId = maxId==null?0:maxId;
         List<EntryInfoDO> entryInfoList = new ArrayList<>();
         for(OtherInListInfoDTO otherInListInfoDTO:otherInListInfoDTOList){
             EntryInfoDO entryInfo = new EntryInfoDO();
@@ -87,9 +85,7 @@ public class OtherInServiceImpl  implements IOtherInService {
         costMapper.deleteBycls(otherInListDetailDTO.getId());
         //插入新的花费单据数据
         maxId = costMapper.getMaxId();
-        if(maxId==null){
-            maxId=0;
-        }
+        maxId = maxId==null?0:maxId;
         List<CostDO> costList = new ArrayList<>();
         for(CostDTO costDTO:costDTOList){
             CostDO cost = new CostDO();
@@ -99,31 +95,30 @@ public class OtherInServiceImpl  implements IOtherInService {
             cost.setTime(entry.getTime());
             cost.setSettle(BigDecimal.valueOf(0.0000));
             cost.setState(0);
-            cost.setId(String.valueOf(++maxId));
+            cost.setId((++maxId).toString());
             costList.add(cost);
         }
-        //使用mp批量插入costdo TODO
-        //costMapper.insert(costList);
+        costMapper.insertBatch(costList);
 
-        //更新操作日志表和单据记录表
-        UserDTO user=null;
-        try {
-            user = userHolder.getCurrentUser();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        LogDO log = new LogDO();
-        log.setUser(user.getUsername());
-        log.setTime(entry.getTime());
-        log.setInfo("更新其他入库单"+"["+otherInListDetailDTO.getNumber()+"]");
-        logMapper.insert(log);
-        RecordDO record = new RecordDO();
-        record.setUser(user.getUsername());
-        record.setType("entry");
-        record.setSource(otherInListDetailDTO.getId());
-        record.setTime(entry.getTime());
-        record.setInfo("更新单据");
-        recordMapper.insert(record);
+//        //更新操作日志表和单据记录表
+//        UserDTO user=null;
+//        try {
+//            user = userHolder.getCurrentUser();
+//        } catch (Exception e) {
+//            throw new RuntimeException(e);
+//        }
+//        LogDO log = new LogDO();
+//        log.setUser(user.getUsername());
+//        log.setTime(entry.getTime());
+//        log.setInfo("更新其他入库单"+"["+otherInListDetailDTO.getNumber()+"]");
+//        logMapper.insert(log);
+//        RecordDO record = new RecordDO();
+//        record.setUser(user.getUsername());
+//        record.setType("entry");
+//        record.setSource(otherInListDetailDTO.getId());
+//        record.setTime(entry.getTime());
+//        record.setInfo("更新单据");
+//        recordMapper.insert(record);
     }
 
     @Override
