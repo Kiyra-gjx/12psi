@@ -1,8 +1,9 @@
 package com.zeroone.star.storemanagement.mapper;
 
-import com.zeroone.star.project.dto.PageDTO;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
+import com.zeroone.star.storemanagement.entity.BatchDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -17,7 +18,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Mapper
-public interface BatchMapper {
+public interface BatchMapper extends BaseMapper<BatchDO> {
 
     /**
      * 获取批次详情数据列表
