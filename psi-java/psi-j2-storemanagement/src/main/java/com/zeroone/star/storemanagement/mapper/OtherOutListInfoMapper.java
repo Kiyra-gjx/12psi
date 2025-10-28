@@ -1,9 +1,10 @@
 package com.zeroone.star.storemanagement.mapper;
 
+
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.zeroone.star.storemanagement.entity.ExtryDO;
+import com.zeroone.star.storemanagement.entity.ExtryInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper
-public interface OtherOutListMapper extends BaseMapper<ExtryDO> {
+public interface OtherOutListInfoMapper extends BaseMapper<ExtryInfoDO> {
 }
