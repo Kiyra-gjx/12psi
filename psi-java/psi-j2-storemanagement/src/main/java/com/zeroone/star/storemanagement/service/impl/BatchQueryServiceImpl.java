@@ -3,9 +3,8 @@ package com.zeroone.star.storemanagement.service.impl;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
-import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.mapper.BatchMapper;
-import com.zeroone.star.storemanagement.service.IBatchService;
+import com.zeroone.star.storemanagement.service.IBatchQueryService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,7 +19,7 @@ import java.util.List;
  * @Version: 1.0
  */
 @Service
-public class BatchServiceImpl implements IBatchService {
+public class BatchQueryServiceImpl implements IBatchQueryService {
 
     @Resource
     private BatchMapper batchMapper;
