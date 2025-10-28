@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.dto.j2.store
@@ -31,8 +33,8 @@ public class OtherInListInfoDTO {
     @ApiModelProperty(value = "批次号", example = "898")
     private String batch;
 
-    @ApiModelProperty(value = "生产日期", example = "1760457600")
-    private int mfd;
+    @ApiModelProperty(value = "生产日期", example = "2023-10-18 18:18:00")
+    private LocalDateTime mfd;
 
     @ApiModelProperty(value = "成本", example = "1.0000")
     private float price;

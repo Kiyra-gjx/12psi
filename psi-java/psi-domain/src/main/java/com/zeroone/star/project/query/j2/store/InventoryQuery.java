@@ -21,7 +21,7 @@ public class InventoryQuery extends PageQuery {
 
     // ==================== 商品基础信息条件 ====================
     @ApiModelProperty(value = "商品ID",example = "1")
-    private Integer goodsId;
+    private String goodsId;
 
     @ApiModelProperty(value = "商品名称（可选）",example = "iphone")
     private String goodsName;
@@ -29,13 +29,13 @@ public class InventoryQuery extends PageQuery {
     @ApiModelProperty(value = "商品编号",example = "0001")
     private String goodsNumber;
 
-    @ApiModelProperty(value = "规格型号",example = "17pro")
+    @ApiModelProperty(value = "商品型号",example = "17pro")
     private String goodsSpec;
 
     @ApiModelProperty(value = "商品类别ID",example = "1")
-    private Integer goodsCategoryId;
+    private String goodsCategoryId;
 
-    @ApiModelProperty(value = "商品类别名称（可选）",example = "默认类别")
+    @ApiModelProperty(value = "商品类别（可选）",example = "默认类别")
     private String goodsCategoryName;
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
@@ -44,10 +44,10 @@ public class InventoryQuery extends PageQuery {
     @ApiModelProperty(value = "商品条码",example = "111222")
     private String goodsCode;
     // ==================== 仓库信息条件 ===================
-    @ApiModelProperty(value = "仓库ID",example = "1")
-    private List<Integer> warehouseId;
+    @ApiModelProperty(value = "仓库id",example = "1")
+    private List<String> warehouseId;
 
-    @ApiModelProperty(value = "仓库名称（可选）",example = "上海仓库")
+    @ApiModelProperty(value = "仓库信息（可选）",example = "上海仓库")
     private List<String> warehouseNames;
 
     @ApiModelProperty(

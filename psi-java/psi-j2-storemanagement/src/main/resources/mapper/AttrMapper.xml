@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.AttrMapper">
+    <select id="selectAttrStockByGoodsIds" resultType="com.zeroone.star.project.dto.j2.store.AttrStockDTO">
+        SELECT
+            a.id as attrId,
+            a.name as attrName,
+            a.pid as pid,
+            a.code as attrCode,
+            COALESCE(SUM(r.nums), 0) as totalStock
+        FROM attr a
+        LEFT JOIN room r ON a.id = r.attr AND a.pid = r.goods
+        WHERE a.pid IN
+        <foreach collection="goodsIds" item="goodsId" open="(" close=")" separator=",">
+            #{goodsId}
+        </foreach>
+        GROUP BY a.id, a.name, a.pid, a.code
+        ORDER BY a.pid, a.id
+    </select>
+</mapper>

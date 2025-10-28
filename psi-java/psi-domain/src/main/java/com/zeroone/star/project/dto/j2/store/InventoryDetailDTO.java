@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * @BelongsProject: psi-java
@@ -20,16 +21,12 @@ import java.math.BigDecimal;
 public class InventoryDetailDTO {
 
     @ApiModelProperty(value = "仓储详情id", example = "1")
-    private Integer id;
+    private String id;
 
-    @ApiModelProperty(value = "所属仓储id", example = "1")
-    private Integer pid;
 
-    @ApiModelProperty(value = "单据时间", example = "2025-10-15")
-    private String time;
+    @ApiModelProperty(value = "操作时间", example = "2025-10-15")
+    private LocalDate time;
 
-    @ApiModelProperty(value = "所属类", example = "35")
-    private Integer cls;
 
     @ExcelProperty(value = "单据类型", index = 2)
     @ApiModelProperty(value = "单据类型", example = "采购单")
@@ -40,7 +37,7 @@ public class InventoryDetailDTO {
 
     @ExcelProperty(value = "操作类型", index = 4)
     @ApiModelProperty(
-            value = "操作类型[0:出库|1:入库]",
+            value = "操作类型[0:减少|1:增加]",
             example = "1")
     private Integer direction;
 
