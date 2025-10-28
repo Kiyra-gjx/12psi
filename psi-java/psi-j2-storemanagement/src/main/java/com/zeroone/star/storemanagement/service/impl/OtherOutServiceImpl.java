@@ -2,10 +2,18 @@ package com.zeroone.star.storemanagement.service.impl;
 
 import com.alibaba.excel.EasyExcel;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.zeroone.star.project.dto.PageDTO;
+import com.zeroone.star.project.dto.j2.store.*;
+import com.zeroone.star.project.query.j2.store.OtherOutQuery;
+import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.entity.*;
 import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.service.IOtherOutService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,10 +22,15 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
-
+@Slf4j
 @Service
 public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> implements IOtherOutService {
 
@@ -30,8 +43,11 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     @Resource
     private RoomMapper roomMapper;
     @Resource
+    private CostMapper costMapper;
+    @Resource
     private BatchMapper batchMapper;
-
+    @Autowired
+    MsEntryMapper ms;
     @Override
     public void examine(List<Integer> ids) {
         //取出出库单ID
@@ -153,6 +169,102 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         }
     }
 
+    @Override
+    public JsonVO<String> addOtherOutList(OtherOutListDTO otherOutListDTO) {
+
+        // 更新出库单
+        ExtryDO extry = new ExtryDO();
+        BeanUtils.copyProperties(otherOutListDTO, extry);
+        otherOutMapper.insert(extry);
+
+        // 获取出库单详情列表
+        List<OtherOutListInfoDTO> otherOutListInfoDTOList = otherOutListDTO.getOtherOutListInfoDTOList();
+        //判断是否为空
+        if (otherOutListInfoDTOList == null || otherOutListInfoDTOList.isEmpty()) {
+            throw new RuntimeException("出库单详情列表不能为空");
+        }
+        //插入新的入库单详情数据
+        Integer maxId = costMapper.getMaxId();
+        maxId = maxId == null ? 0 : maxId;
+        List<ExtryInfoDO> extryInfoList = new ArrayList<>();
+        for (OtherOutListInfoDTO otherOutListInfoDTO : otherOutListInfoDTOList) {
+            ExtryInfoDO extryInfo = new ExtryInfoDO();
+            BeanUtils.copyProperties(otherOutListInfoDTO, extryInfo);
+            extryInfo.setPid(otherOutListDTO.getId());
+            extryInfo.setId((++maxId).toString());
+            extryInfoList.add(extryInfo);
+        }
+        otherOutMapper.insertBatch(extryInfoList);
+        List<CostDTO>costDTOList = otherOutListDTO.getCostDTOList();
+        //插入新的花费单据数据
+        maxId = costMapper.getMaxId();
+        maxId = maxId == null ? 0 : maxId;
+        List<CostDO> costList = new ArrayList<>();
+        for (CostDTO costDTO : costDTOList) {
+            CostDO cost = new CostDO();
+            BeanUtils.copyProperties(costDTO, cost);
+            cost.setCls(otherOutListDTO.getId());
+            cost.setType("extry");
+            cost.setTime(extry.getTime());
+            cost.setSettle(BigDecimal.valueOf(0.0000));
+            cost.setState(0);
+            cost.setId((++maxId).toString());
+            costList.add(cost);
+        }
+            costMapper.insertBatch(costList);
+
+        return JsonVO.success("添加成功");
+    }
+
+    @Override
+    public OtherOutListInfoDTO getOtherOutListInfo(String id) {
+        // 1.检查用户权限 权限校验可以定义AOP切面实现
+        if (!checkPermission()) {
+            log.info("用户无操作权限");
+        }
+        // 2.判断入库单是否存在
+        ExtryDO exist = otherOutMapper.selectById(id);
+        if (exist == null) {
+            log.info("出库单不存在");
+        }
+        // 3.查询入库单详细
+        OtherOutListInfoDTO dto = ms.extryToOtherOutListInfoDTO(exist);
+        // 4.记录操作日志
+        logOperation(dto.getId(), "查询出库单详细");
+        return dto;
+    }
+
+    @Override
+    public JsonVO<PageDTO<OtherOutListDTO>> listOtherOut(OtherOutQuery query) {
+        // 1. 计算分页参数
+        // 2. 执行查询
+        // 2. 创建MyBatis-Plus分页对象（pageIndex从1开始）
+        Page<OtherOutListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+
+        // 3. 执行分页查询
+        Page<OtherOutListDTO> resultPage = otherOutMapper.selectByPage(page, query);
+
+        // 4. 转换DO列表为DTO列表（使用BeanUtils复制属性）
+        List<OtherOutListDTO> dtoList = resultPage.getRecords().stream()
+                .map(doObj -> {
+                    OtherOutListDTO dto = new OtherOutListDTO();
+                    BeanUtils.copyProperties(doObj, dto);
+                    return dto;
+                })
+                .collect(Collectors.toList());
+
+        // 5. 构建PageDTO对象
+        PageDTO<OtherOutListDTO> pageDTO = new PageDTO<>();
+        pageDTO.setPageIndex(query.getPageIndex());
+        pageDTO.setPageSize(query.getPageSize());
+        pageDTO.setTotal(resultPage.getTotal());
+        pageDTO.setPages(resultPage.getPages());
+        pageDTO.setRows(dtoList);
+
+        // 6. 返回成功结果
+        return JsonVO.success(pageDTO);
+    }
+
     private ExtryDO convertToEntity(ExtryDO dto) {
         ExtryDO entity = new ExtryDO();
         entity.setId(dto.getId());
@@ -173,6 +285,16 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         entity.setCheck(dto.getCheck());
         entity.setUser(dto.getUser());
         return entity;
+    }
+    private boolean checkPermission() {
+        return true;
+    }
+    /**
+     * 记录操作日志
+     */
+    private void logOperation(String transferId, String operation) {
+        // TODO: 实现操作日志记录
+        log.info("操作日志：入库单ID: {}, 操作: {}", transferId, operation);
     }
 
 

@@ -19,7 +19,7 @@ import java.util.List;
 @ApiModel("其他出库单数据对象")
 public class OtherOutListDTO {
     @ApiModelProperty(value = "id", example = "1")
-    private Integer id;
+    private String id;
     @ApiModelProperty(value = "供应商", example = "1")
     private Integer customer;
     @ApiModelProperty(value = "所属组织", example = "0")

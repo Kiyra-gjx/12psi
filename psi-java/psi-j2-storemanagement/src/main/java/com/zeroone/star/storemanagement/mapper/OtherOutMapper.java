@@ -2,6 +2,7 @@ package com.zeroone.star.storemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.storemanagement.entity.ExtryDO;
+import com.zeroone.star.storemanagement.entity.ExtryInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -14,4 +15,5 @@ public interface OtherOutMapper extends BaseMapper<ExtryDO> {
 
     List<ExtryDO> selectBatchIds(@Param("ids") List<Integer> ids);
 
+    void insertBatch(List<ExtryInfoDO> extryInfoList);
 }

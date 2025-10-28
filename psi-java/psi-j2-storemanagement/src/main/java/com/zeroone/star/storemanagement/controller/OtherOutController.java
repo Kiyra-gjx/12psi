@@ -2,6 +2,7 @@ package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
@@ -92,7 +93,7 @@ public class OtherOutController implements OtherOutApis {
     @ApiOperation(value = "获取出库单详情")
     @ApiImplicitParam(name = "id", value = "其他出库单编号", required = true, example = "1d7b0520e93e72715d5d6af1fb7d9a37")
     @Override
-    public JsonVO<String> getOtherOutListInfo(String id) {
+    public OtherOutListInfoDTO getOtherOutListInfo(String id) {
         return otherOutListService.getOtherOutListInfo(id);
     }
 

@@ -58,7 +58,7 @@ public interface OtherOutApis {
      * @param id 获取的出库单ID
      * @return 获取结果
      */
-    JsonVO<String> getOtherOutListInfo(String id);
+    OtherOutListInfoDTO getOtherOutListInfo(String id);
 //
     /**
      * 新增其他出库单
