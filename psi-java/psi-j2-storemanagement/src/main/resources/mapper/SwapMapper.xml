@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.SwapMapper">
+
+    <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapDO">
+        UPDATE swap
+        <set>
+            <if test="swap.warehouse != null">warehouse = #{swap.warehouse},</if>
+            <if test="swap.storehouse != null">storehouse = #{swap.storehouse},</if>
+            <if test="swap.price != null">price = #{swap.price},</if>
+            <if test="swap.nums != null">nums = #{swap.nums},</if>
+            <if test="swap.data != null">data = #{swap.data},</if>
+        </set>
+        WHERE id = #{swap.id}
+    </update>
+
+</mapper>
