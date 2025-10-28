@@ -27,7 +27,7 @@ public class OtherInListDTO {
     @ApiModelProperty(value = "单据类型", example = "0")
     private Integer type;
 
-    @ApiModelProperty(value = "单据时间", example = "2025-10-16")
+    @ApiModelProperty(value = "单据日期", example = "2025-10-16")
     private String time;
 
     @ApiModelProperty(value = "单据编号", example = "QTRKD2510161018149")

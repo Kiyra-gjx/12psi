@@ -5,6 +5,8 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.project.dto.j2.store
@@ -17,10 +19,10 @@ import lombok.Data;
 @ApiModel("单据花费信息")
 public class CostDTO {
     @ApiModelProperty(value = "所属收支", example = "5")
-    private int iet;
+    private String iet;
 
     @ApiModelProperty(value = "金额", example = "11.0000")
-    private float money;
+    private BigDecimal money;
 
     @ApiModelProperty(value = "备注", example = "1")
     private String data;

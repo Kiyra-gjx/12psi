@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.BatchMapper">
+
+    <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
+            parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
+        SELECT
+        ib.pid AS pid,  -- 所属批次pid
+        MAX(ir.time) AS time,  -- 取最新操作时间
+        ib.type AS type,  -- 单据类型
+        CASE 
+            WHEN ib.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ib.class)
+            WHEN ib.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ib.class)
+            WHEN ib.type = 'swap' THEN (SELECT number FROM is_swap WHERE id = ib.class)
+            WHEN ib.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ib.class)
+            WHEN ib.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ib.class)
+            WHEN ib.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ib.class)
+            WHEN ib.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ib.class)
+            ELSE ''
+        END AS number,  -- 单据编号
+        CASE ib.direction
+            WHEN 0 THEN '减少'  -- 出方向对应减少
+            WHEN 1 THEN '增加'  -- 入方向对应增加
+            ELSE ''
+        END AS info,  -- 操作类型（BatchDetailDTO的info字段）
+        ib.nums AS nums  -- 操作数量
+        FROM
+        is_batch_info ib
+        LEFT JOIN
+        is_record ir ON ib.type = ir.type AND ib.class = ir.source
+        WHERE
+        ib.pid = #{batchDetailQuery.pid} -- 使用BatchDetailQuery中的pid字段作为条件
+        -- 单据类型条件
+        <if test="batchDetailQuery.type != null and batchDetailQuery.type.size() > 0">
+            AND ib.type IN
+            <foreach collection="batchDetailQuery.type" item="typeValue" open="(" close=")" separator=",">
+                #{typeValue}
+            </foreach>
+        </if>
+        -- 时间范围条件
+        <if test="batchDetailQuery.startTime != null">
+            AND ir.time >= UNIX_TIMESTAMP(#{batchDetailQuery.startTime})
+        </if>
+        <if test="batchDetailQuery.endTime != null">
+            AND ir.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
+        </if>
+        -- 单据编号条件
+        <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
+            AND (
+            -- 入库单
+            (ib.type = 'entry' AND ib.class IN (SELECT id FROM is_entry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 销售单
+            (ib.type = 'sell' AND ib.class IN (SELECT id FROM is_sell WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 采购单
+            (ib.type = 'buy' AND ib.class IN (SELECT id FROM is_buy WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 销售退货单
+            (ib.type = 'sre' AND ib.class IN (SELECT id FROM is_sre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 采购退货单
+            (ib.type = 'bre' AND ib.class IN (SELECT id FROM is_bre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 调拨单
+            (ib.type = 'swap' AND ib.class IN (SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%')))
+            )
+        </if>
+        GROUP BY
+        ib.pid,
+        ib.type,
+        number,
+        ib.direction,
+        ib.nums
+        ORDER BY
+        time DESC
+        -- 分页处理
+        <if test="batchDetailQuery.pageIndex != null and batchDetailQuery.pageSize != null">
+            <bind name="offset" value="(batchDetailQuery.pageIndex - 1) * batchDetailQuery.pageSize" />
+            LIMIT #{batchDetailQuery.pageSize} OFFSET #{offset}
+        </if>
+    </select>
+    
+    <!-- 获取批次详情数据总数 -->
+    <select id="getBatchDetailCount" resultType="java.lang.Long"
+            parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
+        SELECT COUNT(DISTINCT 
+            CASE 
+                WHEN ib.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ib.class)
+                WHEN ib.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ib.class)
+                WHEN ib.type = 'swap' THEN (SELECT number FROM is_swap WHERE id = ib.class)
+                WHEN ib.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ib.class)
+                WHEN ib.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ib.class)
+                WHEN ib.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ib.class)
+                WHEN ib.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ib.class)
+                ELSE ''
+            END
+        )
+        FROM
+        is_batch_info ib
+        LEFT JOIN
+        is_record ir ON ib.type = ir.type AND ib.class = ir.source
+        WHERE
+        ib.pid = #{batchDetailQuery.pid} -- 使用BatchDetailQuery中的pid字段作为条件
+        -- 单据类型条件
+        <if test="batchDetailQuery.type != null and batchDetailQuery.type.size() > 0">
+            AND ib.type IN
+            <foreach collection="batchDetailQuery.type" item="typeValue" open="(" close=")" separator=",">
+                #{typeValue}
+            </foreach>
+        </if>
+        -- 时间范围条件
+        <if test="batchDetailQuery.startTime != null">
+            AND ir.time >= UNIX_TIMESTAMP(#{batchDetailQuery.startTime})
+        </if>
+        <if test="batchDetailQuery.endTime != null">
+            AND ir.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
+        </if>
+        -- 单据编号条件
+        <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
+            AND (
+            -- 入库单
+            (ib.type = 'entry' AND ib.class IN (SELECT id FROM is_entry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 销售单
+            (ib.type = 'sell' AND ib.class IN (SELECT id FROM is_sell WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 采购单
+            (ib.type = 'buy' AND ib.class IN (SELECT id FROM is_buy WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 销售退货单
+            (ib.type = 'sre' AND ib.class IN (SELECT id FROM is_sre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 采购退货单
+            (ib.type = 'bre' AND ib.class IN (SELECT id FROM is_bre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            -- 调拨单
+            (ib.type = 'swap' AND ib.class IN (SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%')))
+            )
+        </if>
+    </select>
+</mapper>
