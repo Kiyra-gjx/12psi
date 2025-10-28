@@ -62,13 +62,11 @@ public class TransferController implements TransferApis {
         return null;
     }
 
-    @PostMapping("/modify-transfer")
+    @PutMapping("/modify-transfer")
     @ApiOperation(value = "修改调拨单")
     @Override
-    public JsonVO<String> modifyTransfer(
-            @ApiParam(value = "调拨单数据", required = true, example = "{\"id\":1,\"warehouse\":\"1号仓库\",\"storehouse\":\"2号仓库\",\"cost\":998.00,\"nums\":1.00,\"remark\":\"紧急调拨\"}")
-            @RequestBody TransferDetailDTO dto) {
-        return JsonVO.success("修改调拨单成功，ID: " + dto.getId());
+    public JsonVO<String> modifyTransfer(@RequestBody TransferDetailDTO dto) {
+        return JsonVO.success("修改调拨单成功，ID: " + dto.getInfo().getId());
     }
 
     @PostMapping("/batch-audit-transfer")
@@ -76,7 +74,7 @@ public class TransferController implements TransferApis {
     @Override
     public JsonVO<String> batchAuditTransfer(
             @ApiParam(value = "调拨单ID列表", required = true, example = "1,2,3")
-            @RequestParam List<Integer> ids,
+            @RequestBody List<Integer> ids,
             @ApiParam(value = "操作类型（0-未审核，1-已审核）", required = true, example = "1")
             @RequestParam Integer operation) {
         String operationName = operation == 1 ? "审核" : "反审核";
@@ -95,7 +93,7 @@ public class TransferController implements TransferApis {
             defaultValue = "1,2,3"
     )
     @Override
-    public JsonVO<String> removeTransfer(@RequestParam List<Integer> ids) {
+    public JsonVO<String> removeTransfer(@RequestBody List<Integer> ids) {
         return JsonVO.success("批量删除调拨单成功，删除 " + ids.size() + " 条单据");
     }
 
