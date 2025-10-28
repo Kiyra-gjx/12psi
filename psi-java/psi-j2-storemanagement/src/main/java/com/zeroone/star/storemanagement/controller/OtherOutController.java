@@ -9,11 +9,18 @@ import com.zeroone.star.storemanagement.service.IOtherOutListService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 /**
@@ -100,20 +107,63 @@ public class OtherOutController implements OtherOutApis {
     @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出其他出库单数据Excel")
     @Override
-    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(String  ids) {
-        return null;
-    }
+    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestParam String  ids) {
+
+        try {
+            List<Integer> idList = Arrays.stream(ids.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+
+            byte[] excelData = otherOutListService.exportOrderList(idList);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String fileName = URLEncoder.encode("其他出库单.xlsx", StandardCharsets.UTF_8.toString());
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            return JsonVO.success(ResponseEntity.ok().headers(headers).body(excelData));
+        } catch (Exception e) {
+            JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+            result.setCode(500);
+            result.setMessage("导出失败：" + e.getMessage());
+            result.setData(ResponseEntity.badRequest().body(new byte[0]));
+            return result;
+    }}
 
     @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出其他出库单详情数据Excel")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(String ids) {
-        return null;
+    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestParam String ids) {
+        try {
+            List<Integer> idList = Arrays.stream(ids.split(","))
+                    .map(Integer::parseInt)
+                    .collect(Collectors.toList());
+
+            byte[] excelData = otherOutListService.exportOrderDetails(idList);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+            String fileName = URLEncoder.encode("其他出库单明细.xlsx", StandardCharsets.UTF_8.toString());
+            headers.setContentDispositionFormData("attachment", fileName);
+
+            return JsonVO.success(ResponseEntity.ok().headers(headers).body(excelData));
+        } catch (Exception e) {
+            JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+            result.setCode(500);
+            result.setMessage("导出失败：" + e.getMessage());
+            result.setData(ResponseEntity.badRequest().body(new byte[0]));
+            return result;}
     }
 
     @PostMapping("/import")
     @ApiOperation(value = "批量导入其他出库单")
     @Override
-    public ResponseEntity<JsonVO<String>> importOrderList(@RequestBody MultipartFile file) {return null;}
+    public ResponseEntity<JsonVO<String>> importOrderList(@RequestBody MultipartFile file) {
+        try {
+            otherOutListService.importOrders(file.getInputStream());
+            return ResponseEntity.ok(JsonVO.success("导入成功"));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(JsonVO.fail("导入失败：" + e.getMessage()));
+        }
+    }
 
 }
