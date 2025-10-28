@@ -18,9 +18,9 @@ import java.math.BigDecimal;
 @ApiModel("其他出库单数据信息对象")
 public class OtherOutListInfoDTO {
     @ApiModelProperty(value = "id", example = "1")
-    private Integer id;
+    private String id;
     @ApiModelProperty(value = "所属出库单ID", example = "1")
-    private Integer pid;
+    private String pid;
     @ApiModelProperty(value = "所属商品", example = "1")
     private Integer goods;
     @ApiModelProperty(value = "辅助属性", example = "红色,L码")

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.OtherOutListMapper">
+    <!-- 新增出库单主表 -->
+    <insert id="insert" parameterType="com.zeroone.star.storemanagement.entity.ExtryDO">
+        INSERT INTO extry (
+            id,customer, frame, time, number, type,
+            total, cost, people, logistics, file,
+            data, more, examine, cse, check,
+            user
+        ) VALUES (
+                     #{id},#{customer}, #{frame}, #{time}, #{number}, #{type},
+                     #{total}, #{cost}, #{people}, #{logistics}, #{file},
+                     #{data}, #{more}, #{examine}, #{cse}, #{check},
+                     #{user}
+                 )
+    </insert>
+
+    <!-- 分页查询出库单列表 -->
+    <select id="selectByPage" resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
+        SELECT
+        id, customer, frame, time, number, type,
+        total, cost, examine, cse, check_status, user, data
+        FROM other_out_list
+        <where>
+            <!-- 单据编号模糊查询 -->
+            <if test="query.number != null and query.number != ''">
+                AND number LIKE CONCAT('%', #{query.number}, '%')
+            </if>
+            <!-- 审核状态查询 -->
+            <if test="query.examine != null">
+                AND examine = #{query.examine}
+            </if>
+            <!-- 所属组织查询 -->
+            <if test="query.frame != null">
+                AND frame = #{query.frame}
+            </if>
+            <!-- 时间范围查询 -->
+            <if test="query.startTime != null">
+                AND time >= #{query.startTime}
+            </if>
+            <if test="query.endTime != null">
+                AND time <= #{query.endTime}
+            </if>
+            <!-- 制单人查询 -->
+            <if test="query.user != null">
+                AND user = #{query.user}
+            </if>
+        </where>
+        ORDER BY time DESC
+    </select>
+
+    <!-- 根据ID查询主表信息 -->
+    <select id="selectById" parameterType="java.lang.String"
+            resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
+        SELECT
+            id, customer, frame, time, number, type,
+            total, cost, people, logistics, file,
+            data, more, examine, cse, check_status, user
+        FROM other_out_list
+        WHERE id = #{id}
+    </select>
+</mapper>

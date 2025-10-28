@@ -18,4 +18,6 @@ public interface CostMapper {
     void deleteBycls(Integer id);
 
     void insertBatch(List<CostDO> costList);
+
+    List<CostDO> selectByCls(String toString);
 }

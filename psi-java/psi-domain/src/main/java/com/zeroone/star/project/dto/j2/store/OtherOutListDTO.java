@@ -53,7 +53,7 @@ public class OtherOutListDTO {
     @ApiModelProperty(value = "制单人", example = "1")
     private Integer user;
     @ApiModelProperty(value = "出库单详细信息列表")
-    List<OtherInListInfoDTO> otherInListInfoDTOList;
+    List<OtherOutListInfoDTO> otherOutListInfoDTOList;
     @ApiModelProperty(value = "单据费用列表")
     List<CostDTO> costDTOList;
 

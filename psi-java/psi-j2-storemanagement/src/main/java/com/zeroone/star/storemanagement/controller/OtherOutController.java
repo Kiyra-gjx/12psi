@@ -78,22 +78,22 @@ public class OtherOutController implements OtherOutApis {
     @ApiOperation(value = "获取出库单列表")
     @Override
     public JsonVO<PageDTO<OtherOutListDTO>> listOtherOut(OtherOutQuery query) {
-        return null;
+        return otherOutListService.listOtherOut(query);
     }
 
     @GetMapping("/getInfo")
     @ApiOperation(value = "获取出库单详情")
     @ApiImplicitParam(name = "id", value = "其他出库单编号", required = true, example = "1d7b0520e93e72715d5d6af1fb7d9a37")
     @Override
-    public JsonVO<String> getOtherOutListInfo(Integer id) {
-        return null;
+    public JsonVO<String> getOtherOutListInfo(String id) {
+        return otherOutListService.getOtherOutListInfo(id);
     }
 
     @PostMapping("/add")
     @ApiOperation(value = "添加出库单")
     @Override
     public JsonVO<String> addOtherOutList(OtherOutListDTO otherOutListDTO) {
-        return JsonVO.success("添加成功");
+        return otherOutListService.addOtherOutList(otherOutListDTO);
     }
 
 
