@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.SwapInfoMapper">
+    <select id="getPidListByIds" resultType="java.lang.String">
+        SELECT pid FROM swap_info WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapInfoDO">
+        UPDATE swap_info
+        <set>
+            <if test="warehouse != null and warehouse != ''">warehouse = #{warehouse},</if>
+            <if test="storehouse != null and storehouse != ''">storehouse = #{storehouse},</if>
+            <if test="price != null">price = #{price},</if>
+            <if test="nums != null">nums = #{nums},</if>
+            <if test="data != null and data != ''">data = #{data},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+</mapper>
