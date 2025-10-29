@@ -4,6 +4,7 @@ import com.zeroone.star.project.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -18,7 +19,7 @@ import java.util.List;
 @ApiModel("批次查询详情参数")
 public class BatchDetailQuery extends PageQuery {
     @ApiModelProperty(value = "批次pid(点开详情时的查询条件,内部使用)", example = "1", required = true)
-    private int pid;
+    private String pid;
     @ApiModelProperty(value = "单据编号", example = "QTRKD2510181347194")
     private String number;
     @ApiModelProperty(value = "单据类型", example = "采购单")

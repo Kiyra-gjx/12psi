@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @BelongsProject: psi-java
@@ -19,13 +20,13 @@ import java.math.BigDecimal;
 public class BatchDetailDTO {
 
     @ApiModelProperty(value = "pid所属批次id(查询使用)", example = "1")
-    private int pid;
+    private String pid;
 
     @ApiModelProperty(value = "所属组织",example = "默认组织")
     private String frame;
 
-    @ApiModelProperty(value = "操作时间（毫秒时间戳）",example = "1750387200000")
-    private Long time;
+    @ApiModelProperty(value = "操作时间（毫秒时间戳）",example = "2025-10-13")
+    private LocalDateTime time;
 
     @ApiModelProperty(value = "单据类型", example = "其他入库单")
     private String type;
