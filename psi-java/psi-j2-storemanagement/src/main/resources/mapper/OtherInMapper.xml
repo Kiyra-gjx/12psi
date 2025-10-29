@@ -32,5 +32,13 @@
             #{item}
         </foreach>
     </select>
+    <select id="getByIds" resultType="com.zeroone.star.storemanagement.entity.EntryDO">
+        select id, supplier, frame, time, number, type, total, cost, people, logistics, file, data, more, examine, cse, `check`, user
+        from entry where id in
+        <foreach item="item" collection="ids" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
 
 </mapper>
