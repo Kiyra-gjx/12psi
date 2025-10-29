@@ -2,6 +2,7 @@ package com.zeroone.star.storemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.storemanagement.entity.ExtryDO;
@@ -20,5 +21,5 @@ public interface OtherOutMapper extends BaseMapper<ExtryDO> {
 
     void insertBatch(ExtryDO extry);
 
-    Page<ExtryDO> selectExtryBaseList(Page<ExtryDO> page, OtherOutQuery query);
+    Page<OtherOutListDTO> selectOtherOutListPage(Page<OtherOutListDTO> page,@Param("query") OtherOutQuery query);
 }

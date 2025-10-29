@@ -240,25 +240,16 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         // 1. 计算分页参数
         // 2. 执行查询
         // 2. 创建MyBatis-Plus分页对象（pageIndex从1开始）
-        Page<ExtryDO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        Page<OtherOutListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
 
         // 3. 执行分页查询
-        Page<ExtryDO> extryPage = otherOutMapper.selectExtryBaseList(page, query);
+        Page<OtherOutListDTO> result = otherOutMapper.selectOtherOutListPage(page, query);
 
-        List<OtherOutListDTO> dtoList = new ArrayList<>();
-        for (ExtryDO extryDO : extryPage.getRecords()) {
-            OtherOutListDTO dto = new OtherOutListDTO();
-            BeanUtils.copyProperties(extryDO, dto);
-            dto.setTime(extryDO.getTime());
-            dtoList.add(dto);
-        }
 
         PageDTO<OtherOutListDTO> pageDTO = new PageDTO<>();
-        pageDTO.setPageIndex(query.getPageIndex());
-        pageDTO.setPageSize(query.getPageSize());
-        pageDTO.setTotal(extryPage.getTotal());
-        pageDTO.setPages(extryPage.getPages());
-        pageDTO.setRows(dtoList);
+        pageDTO.setPageSize(result.getSize());
+        pageDTO.setTotal(result.getTotal());
+        pageDTO.setPages(result.getPages());
         return JsonVO.success(pageDTO);
     }
 
