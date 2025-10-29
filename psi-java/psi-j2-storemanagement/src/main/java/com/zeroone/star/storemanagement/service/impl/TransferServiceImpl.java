@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -102,6 +103,59 @@ public class TransferServiceImpl implements ITransferService {
         } catch (Exception e) {
             log.error("修改调拨单失败", e);
             return JsonVO.fail("修改调拨单失败: " + e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public JsonVO<String> batchAuditTransfer(List<Integer> ids, Integer operation) {
+        try {
+            if (operation != 0 && operation != 1) {
+                return JsonVO.fail("操作参数错误，0-反审核，1-审核");
+            } else if (ids == null || ids.isEmpty()) {
+                return JsonVO.fail("请选择要" + (operation == 1 ? "审核" : "反审核") + "的调拨单");
+            }
+
+            // 1.检查调拨单状态并收集需要审核/反审核的数据
+            List<String> validPidList = new ArrayList<>();
+            String operationName = operation == 1 ? "审核" : "反审核";
+
+            for (Integer id : ids) {
+                // 1.1 获取对应的主表ID
+                String pid = swapInfoMapper.getSwapById(id.toString());
+                if (pid == null) {
+                    return JsonVO.fail("调拨单不存在，ID: " + id);
+                }
+
+                // 1.2 获取当前状态
+                Integer status = swapMapper.getStatusById(pid);
+                if (status == null) {
+                    return JsonVO.fail("调拨单状态异常，ID: " + id);
+                }
+
+                // 1.3 验证状态转换的合法性
+                if ((status ^ operation) != 1) {
+                    return JsonVO.fail("调拨单状态转换异常，ID: " + id + " 当前状态: " + (status == 0 ? "未审核" : "已审核"));
+                }
+
+                validPidList.add(pid);
+            }
+
+            // 2.执行批量审核/反审核操作
+            int auditCount = swapMapper.auditBatchStatus(validPidList, operation);
+
+            if (auditCount == 0) {
+                return JsonVO.fail(operationName + "调拨单失败，未找到符合条件的记录");
+            }
+
+            // 3.记录操作日志
+            log.info("批量{}调拨单成功，操作数量：{}，ID列表：{}", operationName, auditCount, ids);
+
+            return JsonVO.success("成功" + operationName + " " + auditCount + " 个调拨单");
+
+        } catch (Exception e) {
+            log.error("批量审核调拨单失败", e);
+            return JsonVO.fail("批量审核调拨单失败: " + e.getMessage());
         }
     }
 

@@ -81,15 +81,11 @@ public class TransferController implements TransferApis {
     @ApiOperation(value = "审核/反审核(支持批量)")
     @Override
     public JsonVO<String> batchAuditTransfer(
-            @ApiParam(value = "调拨单ID列表", required = true, example = "1,2,3")
+            @ApiParam(value = "调拨单ID列表", required = true, example = "[1,2,3]")
             @RequestBody List<Integer> ids,
             @ApiParam(value = "操作类型（0-未审核，1-已审核）", required = true, example = "1")
             @RequestParam Integer operation) {
-        if (ids == null || ids.isEmpty()) {
-            return JsonVO.fail("请选择要删除的调拨单");
-        }
-
-        return JsonVO.success("审核调拨单成功");
+        return transferService.batchAuditTransfer(ids, operation);
     }
 
     @PostMapping("/remove-transfer")
