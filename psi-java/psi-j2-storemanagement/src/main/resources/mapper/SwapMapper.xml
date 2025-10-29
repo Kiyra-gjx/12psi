@@ -16,6 +16,8 @@
         DELETE FROM swap
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
+              #{id}
+        </foreach>
     </delete>
     <select id="getTransferListDTOList"
             resultType="com.zeroone.star.project.dto.j2.store.TransferListDTO">
