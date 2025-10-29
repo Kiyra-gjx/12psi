@@ -13,7 +13,6 @@ import com.zeroone.star.project.dto.j2.store.TransferListDTO;
 import com.zeroone.star.project.j2.store.TransferApis;
 import com.zeroone.star.project.query.j2.store.TransferQuery;
 import com.zeroone.star.project.vo.JsonVO;
-import com.zeroone.star.storemanagement.entity.Swap;
 import com.zeroone.star.storemanagement.service.ISwapService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
