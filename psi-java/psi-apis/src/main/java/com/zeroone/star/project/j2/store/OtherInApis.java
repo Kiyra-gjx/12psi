@@ -45,7 +45,7 @@ public interface OtherInApis {
      * @param id
      * @return
      */
-    JsonVO<OtherInListDetailDTO> getOtherInList(String id);
+    JsonVO<OtherInListDetailDTO> queryOtherInListDetail(String id);
 
     /**
      * 新增其他入库单
@@ -59,7 +59,7 @@ public interface OtherInApis {
      * @param ids
      * @return
      */
-    JsonVO<List<String>> deleteOtherInList(List<String> ids);
+    JsonVO<List<String>> removeOtherInList(List<Integer> ids);
 
     /**
      *  导入数据

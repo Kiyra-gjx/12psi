@@ -1,6 +1,22 @@
-<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.SwapMapper">
+    <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapDO">
+        UPDATE swap
+        <set>
+            <if test="people != null and people != ''">people = #{people},</if>
+            <if test="logistics != null and logistics != ''">logistics = #{logistics},</if>
+            <if test="file != null and file != ''">file = #{file},</if>
+            <if test="data != null and data != ''">data = #{data},</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteBatchIds">
+        DELETE FROM swap
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+    </delete>
     <select id="getTransferListDTOList"
             resultType="com.zeroone.star.project.dto.j2.store.TransferListDTO">
         select id,frame, time, number, total, cost, people, examine, cse, user, data
