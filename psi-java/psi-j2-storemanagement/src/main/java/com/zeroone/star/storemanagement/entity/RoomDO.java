@@ -1,12 +1,12 @@
 package com.zeroone.star.storemanagement.entity;
 
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
+@TableName("room")
 public class RoomDO {
 
     private String id;

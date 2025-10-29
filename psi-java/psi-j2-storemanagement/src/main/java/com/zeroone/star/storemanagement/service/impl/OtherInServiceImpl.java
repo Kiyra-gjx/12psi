@@ -1,6 +1,7 @@
 package com.zeroone.star.storemanagement.service.impl;
 
 import com.alibaba.cloud.commons.lang.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zeroone.star.project.components.user.UserDTO;
 import com.zeroone.star.project.components.user.UserHolder;
@@ -8,15 +9,27 @@ import com.zeroone.star.project.dto.j2.store.CostDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
+import com.zeroone.star.project.dto.PageDTO;
+import com.zeroone.star.project.dto.j2.store.*;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.entity.*;
 import com.zeroone.star.storemanagement.mapper.*;
+import com.zeroone.star.storemanagement.entity.CostDO;
+import com.zeroone.star.storemanagement.entity.EntryDO;
+import com.zeroone.star.storemanagement.entity.EntryInfoDO;
+import com.zeroone.star.storemanagement.mapper.CostMapper;
+import com.zeroone.star.storemanagement.mapper.OtherInInfoMapper;
+import com.zeroone.star.storemanagement.mapper.OtherInListMapper;
+import com.zeroone.star.storemanagement.mapper.OtherInMapper;
 import com.zeroone.star.storemanagement.service.IOtherInService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.Resource;
+
 import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -59,6 +72,17 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
 
     @Autowired
     ServeInfoMapper serveInfoMapper;
+    @Resource
+    OtherInListMapper otherInListMapper;
+
+//    @Autowired
+//    LogMapper logMapper;
+//
+//    @Autowired
+//    RecordMapper recordMapper;
+//
+//    @Resource
+//    UserHolder userHolder;
 
     @Autowired
     MsEntryMapper ms;
@@ -434,6 +458,27 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         }
 
         return deletedList;
+    }
+
+
+    /**
+     * 获取其他入库单列表（条件查询+分页）
+     * @param query 查询参数对象
+     * @return 包含分页数据的JsonVO对象
+     */
+    @Override
+    public JsonVO<PageDTO<OtherInListDTO>> getOtherInList(OtherInQuery query) {
+        // 创建分页对象
+        Page<OtherInListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        // 调用mapper进行分页查询
+        Page<OtherInListDTO> result = otherInListMapper.selectOtherInListPage(page, query);
+        // 构建返回的分页数据对象
+        PageDTO<OtherInListDTO> pageDTO = new PageDTO<>();
+        pageDTO.setTotal(result.getTotal());
+        pageDTO.setRows(result.getRecords());
+        pageDTO.setPageSize(result.getSize());
+        // 返回成功响应
+        return JsonVO.success(pageDTO);
     }
 
     /**

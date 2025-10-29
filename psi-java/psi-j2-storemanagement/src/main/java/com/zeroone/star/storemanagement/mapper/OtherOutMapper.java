@@ -9,7 +9,6 @@ import java.util.List;
 
 @Mapper
 public interface OtherOutMapper extends BaseMapper<ExtryDO> {
-    void examine(List<Integer> ids);
 
     List<ExtryDO> selectBatchIds(@Param("ids") List<Integer> ids);
 
