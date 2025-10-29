@@ -7,6 +7,7 @@ import com.zeroone.star.project.j2.store.BatchQueryApis;
 import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.service.IBatchListService;
 import com.zeroone.star.storemanagement.service.IBatchService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -33,11 +34,13 @@ public class BatchQueryController implements BatchQueryApis {
     @Resource
     private IBatchService batchService;
 
+    @Resource
+    private IBatchListService batchListService;
     @GetMapping("/list")
     @ApiOperation(value = "获取批次列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
-        return JsonVO.fail(null);
+        return batchListService.listBatch(query);
     }
 
 

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 @Service
 @Slf4j
-public class IInventoryDetailServiceImpl implements IInventoryDetailService {
+public class InventoryDetailServiceImpl implements IInventoryDetailService {
     @Resource
     private InventoryDetailMapper inventoryDetailMapper;
 

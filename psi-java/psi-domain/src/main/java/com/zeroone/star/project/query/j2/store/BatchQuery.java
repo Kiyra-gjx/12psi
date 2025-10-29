@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModelProperty;
 import io.swagger.models.auth.In;
 import lombok.Data;
 
+import java.time.LocalDate;
 import java.util.List;
 
 /**
@@ -20,48 +21,39 @@ import java.util.List;
 @ApiModel("批次查询对象")
 public class BatchQuery extends PageQuery {
 
-    // ==================== 商品基础信息条件 ====================
     @ApiModelProperty(value = "商品ID",example = "1")
-    private Integer goodsId;
+    private String  goodsId;
 
-    @ApiModelProperty(value = "商品名称（可选）",example = "牛奶")
+    @ApiModelProperty(value = "商品名称",example = "牛奶")
     private String goodsName;
 
     @ApiModelProperty(value = "商品编号",example = "0001")
     private String goodsNumber;
 
-    @ApiModelProperty(value = "批次ID",example = "1")
-    private Integer batchId;
-
     @ApiModelProperty(value = "批次号码",example = "20231001")
     private String batchNumber;
 
     @ApiModelProperty(value = "生产日期",example = "2025-10-15")
-    private String productDate;
+    private LocalDate productDate;
 
     @ApiModelProperty(value = "商品型号",example = "500ml")
     private String goodsSpec;
 
     @ApiModelProperty(value = "商品类别ID",example = "1")
-    private Integer goodsCategoryId;
-
-    @ApiModelProperty(value = "商品类别（可选）",example = "默认类别")
-    private String goodsCategoryName;
+    private String  goodsCategoryId;
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
     private String goodsBrand;
 
     @ApiModelProperty(value = "商品条码",example = "111222")
     private String goodsCode;
-    // ==================== 仓库信息条件 ===================
-    @ApiModelProperty(value = "仓库ID",example = "1")
-    private List<Integer> warehouseIds;
 
-    @ApiModelProperty(value = "仓库信息（可选）",example = "上海仓库")
-    private List<String> warehouseName;
+    @ApiModelProperty(value = "仓库信息",example = "1")
+    private List<String> warehouseIds;
+
 
     @ApiModelProperty(
-            value = "批次类型：0-常规批次，1-非零批次，2-预警批次",
+            value = "批次类型：0-常规批次，1-预警批次",
             example = "1")
     private Integer batchState;
 }
