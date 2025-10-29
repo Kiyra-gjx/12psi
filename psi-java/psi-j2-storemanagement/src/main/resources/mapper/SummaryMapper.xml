@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.SummaryMapper">
+
+
+    <insert id="insert">
+        insert into summary (id, pid, type, class, info, time, goods, attr, warehouse, batch, mfd, serial, direction, price, nums, uct, bct, exist, balance, handle)
+        values (#{id}, #{pid}, #{type}, #{cls}, #{info}, #{time}, #{goods}, #{attr}, #{warehouse}, #{batch}, #{mfd}, #{serial}, #{direction}, #{price}, #{nums}, #{uct}, #{bct}, #{exist}, #{balance}, #{handle})
+    </insert>
+</mapper>

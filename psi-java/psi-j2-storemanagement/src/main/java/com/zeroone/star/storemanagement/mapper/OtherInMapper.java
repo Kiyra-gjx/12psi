@@ -5,6 +5,7 @@ import com.zeroone.star.storemanagement.entity.EntryDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
+import java.util.Collection;
 import java.util.List;
 
 @Mapper
@@ -22,4 +23,6 @@ public interface OtherInMapper extends BaseMapper<EntryDO> {
 
     @Select("select examine from entry where id = #{id}")
     Integer getExamineById(String id);
+
+    List<EntryDO> getByIds(List<Integer> ids);
 }
