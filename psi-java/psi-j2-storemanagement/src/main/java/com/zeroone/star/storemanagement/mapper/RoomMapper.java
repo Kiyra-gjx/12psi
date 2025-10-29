@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.util.List;
 
-public interface RoomMapper  {
+public interface RoomMapper extends BaseMapper<RoomDO> {
 
 
     List<WarehouseStockDTO> selectWarehouseStockByGoodsIds(@Param("goodsIds") List<String> goodsIds);
@@ -19,10 +19,10 @@ public interface RoomMapper  {
     RoomDO getByGoods(String goods);
 
     @Insert("insert into room(id,warehouse, goods, attr, nums) values(#{id},#{warehouse}, #{goods}, #{attr}, #{nums})")
-    void insert(RoomDO roomDO);
+    int insert(RoomDO roomDO);
 
     @Update("update room set warehouse = #{warehouse}, goods = #{goods}, attr = #{attr}, nums = #{nums} where id = #{id}")
-    void updateById(RoomDO roomDO);
+    int updateById(RoomDO roomDO);
 
     @Delete("delete from room where id = #{id}")
     void deleteById(String id);
