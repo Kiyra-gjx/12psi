@@ -32,5 +32,80 @@
             #{item}
         </foreach>
     </select>
-
+    <select id="selectOtherInListPage" >
+        select DISTINCT
+        e.id,
+        e.frame,
+        IFNULL(s.name, '') AS supplier,
+        e.type,
+        e.time,
+        e.number,
+        e.total,
+        e.cost,
+        IFNULL(p.name, '') AS people,
+        e.examine,
+        e.cse,
+        e.check,
+        e.user,
+        e.data
+        FROM entry e
+        LEFT JOIN supplier s ON e.supplier = s.id
+        LEFT JOIN people p ON e.people = p.id
+        LEFT JOIN entry_info ei ON e.id = ei.pid
+        LEFT JOIN good g ON ei.goods = g.id
+        WHERE 1=1
+        <!-- 商品名称查询 -->
+        <if test="query.name != null and query.name != ''">
+            AND g.name LIKE CONCAT('%', #{query.name}, '%')
+        </if>
+        <!-- 单据编号查询 -->
+        <if test="query.number != null and query.number != ''">
+            AND e.number LIKE CONCAT('%', #{query.number}, '%')
+        </if>
+        <!-- 供应商查询 -->
+        <if test="query.supplier != null and query.supplier != ''">
+            AND s.name LIKE CONCAT('%', #{query.supplier}, '%')
+        </if>
+        <!-- 制单人查询 -->
+        <if test="query.user != null and query.user != ''">
+            AND e.user LIKE CONCAT('%', #{query.user}, '%')
+        </if>
+        <!-- 关联人员查询 -->
+        <if test="query.people != null and query.people != ''">
+            AND p.name LIKE CONCAT('%', #{query.people}, '%')
+        </if>
+        <!-- 开始日期查询 -->
+        <if test="query.startTime != null and query.startTime != ''">
+            AND DATE(e.time) &gt;= DATE(#{query.startTime})
+        </if>
+        <!-- 结束日期查询 -->
+        <if test="query.endTime != null and query.endTime != ''">
+            AND DATE(e.time) &lt;= DATE(#{query.endTime})
+        </if>
+        <!-- 审核状态查询（-1表示全部，不添加条件） -->
+        <if test="query.examine != null and query.examine != -1">
+            AND e.examine = #{query.examine}
+        </if>
+        <!-- 费用状态查询（-1表示全部，不添加条件） -->
+        <if test="query.cse != null and query.cse != -1">
+            AND e.cse = #{query.cse}
+        </if>
+        <!-- 核对状态查询（-1表示全部，不添加条件） -->
+        <if test="query.check != null and query.check != -1">
+            AND e.check = #{query.check}
+        </if>
+        <!-- 单据类型查询 -->
+        <if test="query.type != null">
+            AND e.type = #{query.type}
+        </if>
+        <!-- 备注信息查询 -->
+        <if test="query.data != null and query.data != ''">
+            AND e.data LIKE CONCAT('%', #{query.data}, '%')
+        </if>
+        <!-- 所属组织查询 -->
+        <if test="query.frame != null and query.frame != ''">
+            AND e.frame = #{query.frame}
+        </if>
+        ORDER BY e.time DESC
+    </select>
 </mapper>
