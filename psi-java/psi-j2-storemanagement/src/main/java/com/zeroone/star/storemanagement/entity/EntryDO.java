@@ -1,6 +1,5 @@
 package com.zeroone.star.storemanagement.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -9,9 +8,9 @@ import java.time.LocalDateTime;
 @Data
 public class EntryDO {
 
-        private Integer id;
+        private String id;
 
-        private Integer supplier;
+        private String supplier;
 
         private String frame;
 
@@ -39,10 +38,8 @@ public class EntryDO {
 
         private Integer cse;
 
-        @TableField("`check`")
         private Integer check;
 
-        @TableField("`user`")
         private String user;
 
 }

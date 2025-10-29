@@ -17,5 +17,11 @@ public interface OtherInInfoMapper {
     @Select("select max(id) from entry_info")
     Integer getMaxId();
 
-    void deleteById(Integer id);
+    List<EntryInfoDO> selectBatchIds(List<Integer> ids);
+
+    void deleteById(String id);
+
+    List<EntryInfoDO> getByIds(List<Integer> ids);
+
+    List<EntryInfoDO> getByPids(List<Integer> pids);
 }
