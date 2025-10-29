@@ -6,43 +6,43 @@
     <!--
         获取批次详情数据列表（分页）
         功能：查询指定批次(pid)的详细操作记录，包含各类单据的批次变动信息
-        数据来源：主要从is_batch_info表获取，关联is_record表获取操作时间信息
+        数据来源：主要从batch_info表获取，关联record表获取操作时间信息
         返回类型：BatchDetailDTO - 包含pid、time、type、number、info、nums等字段
     -->
     <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
         SELECT
-        ib.pid AS pid,                   <!-- 批次唯一标识 -->
-        MAX(ir.time) AS time,           <!-- 操作时间（取最新） -->
-        ib.type AS type,                <!-- 单据类型（entry/buy/sell等） -->
+        bi.pid AS pid,                   <!-- 批次唯一标识 -->
+        MAX(r.time) AS time,           <!-- 操作时间（取最新） -->
+        bi.type AS type,                <!-- 单据类型（entry/buy/sell等） -->
         <!-- 根据单据类型动态查询对应的单据编号-->
         CASE
-        WHEN ib.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ib.class)
-        WHEN ib.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ib.class)
-        WHEN ib.type = 'swap' THEN (SELECT number FROM is_swap WHERE id = ib.class)
-        WHEN ib.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ib.class)
-        WHEN ib.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ib.class)
-        WHEN ib.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ib.class)
-        WHEN ib.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ib.class)
+        WHEN bi.type = 'entry' THEN (SELECT number FROM entry WHERE id = bi.class)
+        WHEN bi.type = 'extry' THEN (SELECT number FROM extry WHERE id = bi.class)
+        WHEN bi.type = 'swap' THEN (SELECT number FROM swap WHERE id = bi.class)
+        WHEN bi.type = 'sell' THEN (SELECT number FROM sell WHERE id = bi.class)
+        WHEN bi.type = 'sre' THEN (SELECT number FROM sre WHERE id = bi.class)
+        WHEN bi.type = 'buy' THEN (SELECT number FROM buy WHERE id = bi.class)
+        WHEN bi.type = 'bre' THEN (SELECT number FROM bre WHERE id = bi.class)
         ELSE ''
         END AS number,                  <!-- 单据编号 -->
         <!-- 方向转换为可读描述 -->
-        CASE ib.direction
+        CASE bi.direction
         WHEN 0 THEN '减少'           <!-- 出方向 -->
         WHEN 1 THEN '增加'           <!-- 入方向 -->
         ELSE ''
         END AS info,                    <!-- 操作类型描述 -->
-        ib.nums AS nums                 <!-- 操作数量 -->
+        bi.nums AS nums                 <!-- 操作数量 -->
         FROM
-        is_batch_info ib                <!-- 批次信息表 -->
+        batch_info bi                <!-- 批次信息表 -->
         LEFT JOIN
-        is_record ir ON ib.type = ir.type AND ib.class = ir.source  <!-- 关联操作记录表 -->
+        record r ON bi.type = r.type AND bi.class = r.source  <!-- 关联操作记录表 -->
         WHERE
-        ib.pid = #{batchDetailQuery.pid} <!-- 筛选指定批次 -->
-
+        bi.pid = #{batchDetailQuery.pid} <!-- 筛选指定批次 -->
+        
         <!-- 单据类型过滤条件 -->
         <if test="batchDetailQuery.type != null and batchDetailQuery.type.size() > 0">
-            AND ib.type IN
+            AND bi.type IN
             <foreach collection="batchDetailQuery.type" item="typeValue" open="(" close=")" separator=",">
                 #{typeValue}
             </foreach>
@@ -50,37 +50,37 @@
 
         <!-- 时间范围过滤条件 -->
         <if test="batchDetailQuery.startTime != null">
-            AND ir.time >= UNIX_TIMESTAMP(#{batchDetailQuery.startTime})
+            AND r.time >= UNIX_TIMESTAMP(#{batchDetailQuery.startTime})
         </if>
         <if test="batchDetailQuery.endTime != null">
-            AND ir.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
+            AND r.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
         </if>
 
         <!-- 单据编号模糊查询条件 -->
         <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
             AND (
             <!-- 入库单 -->
-            (ib.type = 'entry' AND ib.class IN (SELECT id FROM is_entry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            (bi.type = 'entry' AND bi.class IN (SELECT id FROM entry WHERE number LIKE #{batchDetailQuery.number})) OR
             <!-- 销售单 -->
-            (ib.type = 'sell' AND ib.class IN (SELECT id FROM is_sell WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            (bi.type = 'sell' AND bi.class IN (SELECT id FROM sell WHERE number LIKE #{batchDetailQuery.number})) OR
             <!-- 采购单 -->
-            (ib.type = 'buy' AND ib.class IN (SELECT id FROM is_buy WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            (bi.type = 'buy' AND bi.class IN (SELECT id FROM buy WHERE number LIKE #{batchDetailQuery.number})) OR
             <!-- 销售退货单 -->
-            (ib.type = 'sre' AND ib.class IN (SELECT id FROM is_sre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            (bi.type = 'sre' AND bi.class IN (SELECT id FROM sre WHERE number LIKE #{batchDetailQuery.number})) OR
             <!-- 采购退货单 -->
-            (ib.type = 'bre' AND ib.class IN (SELECT id FROM is_bre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))) OR
+            (bi.type = 'bre' AND bi.class IN (SELECT id FROM bre WHERE number LIKE #{batchDetailQuery.number})) OR
             <!-- 调拨单 -->
-            (ib.type = 'swap' AND ib.class IN (SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%')))
+            (bi.type = 'swap' AND bi.class IN (SELECT id FROM swap WHERE number LIKE #{batchDetailQuery.number}))
             )
         </if>
 
         <!-- 分组条件，确保每一条记录代表一个唯一的批次操作 -->
         GROUP BY
-        ib.pid,
-        ib.type,
+        bi.pid,
+        bi.type,
         number,
-        ib.direction,
-        ib.nums
+        bi.direction,
+        bi.nums
 
         <!-- 按操作时间倒序排列，最新操作在前 -->
         ORDER BY
