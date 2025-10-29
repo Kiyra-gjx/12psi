@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
  * @BelongsProject: psi-java
@@ -18,21 +19,21 @@ import java.math.BigDecimal;
 @ApiModel("其他出库单数据信息对象")
 public class OtherOutListInfoDTO {
     @ApiModelProperty(value = "id", example = "1")
-    private Integer id;
+    private String id;
     @ApiModelProperty(value = "所属出库单ID", example = "1")
-    private Integer pid;
+    private String pid;
     @ApiModelProperty(value = "所属商品", example = "1")
-    private Integer goods;
+    private String goods;
     @ApiModelProperty(value = "辅助属性", example = "红色,L码")
     private String attr;
     @ApiModelProperty(value = "单位", example = "个")
     private String unit;
     @ApiModelProperty(value = "仓库", example = "1")
-    private Integer warehouse;
+    private String warehouse;
     @ApiModelProperty(value = "批次号", example = "B20231019001")
     private String batch;
-    @ApiModelProperty(value = "生产日期", example = "1695043200")
-    private Integer mfd;
+    @ApiModelProperty(value = "生产日期", example = "2023-10-18T18:18:00")
+    private LocalDateTime mfd;
     @ApiModelProperty(value = "成本", example = "10.00")
     private BigDecimal price;
     @ApiModelProperty(value = "数量", example = "100")

@@ -2,10 +2,11 @@ package com.zeroone.star.storemanagement.controller;
 
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.j2.store.OtherOutApis;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
-import com.zeroone.star.storemanagement.service.IOtherOutListService;
+import com.zeroone.star.storemanagement.service.IOtherOutService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
@@ -37,7 +38,7 @@ import java.util.stream.Collectors;
 public class OtherOutController implements OtherOutApis {
 
     @Resource
-    private IOtherOutListService otherOutListService;
+    private IOtherOutService otherOutListService;
 
     @PutMapping("/examine")
     @ApiOperation(value = "审核出库单")
@@ -85,29 +86,29 @@ public class OtherOutController implements OtherOutApis {
     @ApiOperation(value = "获取出库单列表")
     @Override
     public JsonVO<PageDTO<OtherOutListDTO>> listOtherOut(OtherOutQuery query) {
-        return null;
+        return otherOutListService.listOtherOut(query);
     }
 
     @GetMapping("/getInfo")
     @ApiOperation(value = "获取出库单详情")
     @ApiImplicitParam(name = "id", value = "其他出库单编号", required = true, example = "1d7b0520e93e72715d5d6af1fb7d9a37")
     @Override
-    public JsonVO<String> getOtherOutListInfo(Integer id) {
-        return null;
+    public JsonVO<OtherOutListInfoDTO> getOtherOutListInfo(String id) {
+        return otherOutListService.getOtherOutListInfo(id);
     }
 
     @PostMapping("/add")
     @ApiOperation(value = "添加出库单")
     @Override
-    public JsonVO<String> addOtherOutList(OtherOutListDTO otherOutListDTO) {
-        return JsonVO.success("添加成功");
+    public JsonVO<String> addOtherOutList(@RequestBody OtherOutListDTO otherOutListDTO) {
+        return otherOutListService.addOtherOutList(otherOutListDTO);
     }
 
 
     @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出其他出库单数据Excel")
     @Override
-    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestParam String  ids) {
+    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestBody String  ids) {
 
         try {
             List<Integer> idList = Arrays.stream(ids.split(","))
@@ -132,7 +133,7 @@ public class OtherOutController implements OtherOutApis {
     @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出其他出库单详情数据Excel")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestParam String ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestBody String ids) {
         try {
             List<Integer> idList = Arrays.stream(ids.split(","))
                     .map(Integer::parseInt)

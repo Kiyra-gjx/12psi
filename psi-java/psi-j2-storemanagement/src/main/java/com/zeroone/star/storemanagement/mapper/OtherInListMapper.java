@@ -1,25 +1,25 @@
 package com.zeroone.star.storemanagement.mapper;
 
-import com.zeroone.star.storemanagement.entity.EntryDO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
+import org.apache.ibatis.annotations.Param;
 
-import java.util.List;
-
-@Mapper
-public interface OtherInListMapper {
-
-    void update(EntryDO entry);
-
-    void updateExamine(List<Integer> ids, int status);
-
-    List<Integer> getExamineByIds(List<Integer> ids);
-
-    List<Integer> getCheckByIds(List<Integer> ids);
-
-    void updateCheck(List<Integer> ids, int status);
-
-    @Select("select examine from entry where id = #{id}")
-    Integer getExamineById(Integer id);
+/**
+ * <p>
+ * 其他入库单 Mapper 接口
+ * </p>
+ *
+ * @author blissette
+ * @since 2025-10-27
+ */
+public interface OtherInListMapper extends BaseMapper<OtherInListDTO> {
+    /**
+     * 分页查询其他入库单
+     * @param page 分页对象
+     * @param query 查询条件参数
+     * @return 分页结果
+     */
+    Page<OtherInListDTO> selectOtherInListPage(Page<OtherInListDTO> page, @Param("query") OtherInQuery query);
 }
