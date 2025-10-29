@@ -8,11 +8,11 @@ import java.time.LocalDateTime;
 @Data
 public class EntryDO {
 
-        private Integer id;
+        private String id;
 
-        private Integer supplier;
+        private String supplier;
 
-        private int frame;
+        private String frame;
 
         private LocalDateTime time;
 
@@ -24,7 +24,7 @@ public class EntryDO {
 
         private BigDecimal cost;
 
-        private Integer people;
+        private String people;
 
         private String logistics;
 
@@ -40,6 +40,6 @@ public class EntryDO {
 
         private Integer check;
 
-        private Integer user;
+        private String user;
 
 }
