@@ -7,7 +7,6 @@ import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.dto.j2.store.BatchNumberDTO;
 import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
-import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.mapper.BatchListMapper;
 import com.zeroone.star.storemanagement.service.IBatchListService;
 import lombok.extern.slf4j.Slf4j;
@@ -25,14 +24,14 @@ public class BatchListServiceImpl implements IBatchListService {
     private BatchListMapper batchListMapper;
 
     @Override
-    public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
-        try {
+    public PageDTO<BatchListDTO> listBatch(BatchQuery query) {
+
             // 第一步：直接分页查询商品列表到BatchListDTO
             Page<BatchListDTO> goodsPage = new Page<>(query.getPageIndex(), query.getPageSize());
             Page<BatchListDTO> goodsResult = batchListMapper.selectBatchGoodsList(goodsPage, query);
 
             if (goodsResult.getRecords().isEmpty()) {
-                return JsonVO.success(PageDTO.create(goodsResult));
+                return PageDTO.create(goodsResult);
             }
 
             // 提取商品ID列表
@@ -43,7 +42,7 @@ public class BatchListServiceImpl implements IBatchListService {
 
             // 第二步：批量查询商品相关的库存和批次数据
             Map<String, List<WarehouseStockDTO>> goodsWarehouseStockMap = getGoodsWarehouseStockMap(goodsIds);
-            Map<String, List<BatchNumberDTO>> goodsBatchMap = getGoodsBatchMap(goodsIds, query);
+            Map<String, List<BatchNumberDTO>> goodsBatchMap = getGoodsBatchMap(goodsIds);
 
             // 第三步：库存和批次信息
             for (BatchListDTO goods : goodsResult.getRecords()) {
@@ -51,12 +50,9 @@ public class BatchListServiceImpl implements IBatchListService {
                 goods.setBatches(goodsBatchMap.getOrDefault(goods.getId(), new ArrayList<>()));
             }
 
-            return JsonVO.success(PageDTO.create(goodsResult));
+            return PageDTO.create(goodsResult);
 
-        } catch (Exception e) {
-            log.error("查询批次列表失败", e);
-            return JsonVO.fail(null);
-        }
+
     }
 
     /**
@@ -71,9 +67,9 @@ public class BatchListServiceImpl implements IBatchListService {
     /**
      * 获取商品的批次信息映射（使用临时字段组装）
      */
-    private Map<String, List<BatchNumberDTO>> getGoodsBatchMap(List<String> goodsIds, BatchQuery query) {
+    private Map<String, List<BatchNumberDTO>> getGoodsBatchMap(List<String> goodsIds) {
         // 查询批次基本信息（包含临时字段）
-        List<BatchNumberDTO> batchRawData = batchListMapper.selectBatchInfoByGoodsIds(goodsIds, query);
+        List<BatchNumberDTO> batchRawData = batchListMapper.selectBatchInfoByGoodsIds(goodsIds);
         if (batchRawData.isEmpty()) {
             return new HashMap<>();
         }
@@ -151,33 +147,5 @@ public class BatchListServiceImpl implements IBatchListService {
 
         return batchDocuments.stream()
                 .collect(Collectors.groupingBy(BatchDocumentDTO::getPid));
-    }
-
-    /**
-     * 获取批次仓库库存信息映射
-     */
-    private Map<String, List<WarehouseStockDTO>> getBatchWarehouseStockMap(List<String> batchIds, List<BatchNumberDTO> batchList) {
-        List<WarehouseStockDTO> batchWarehouseStocks = batchListMapper.selectBatchWarehouseStock(batchIds);
-
-        // 创建批次ID与仓库的映射
-        Map<String, String> batchToRoomMap = batchList.stream()
-                .collect(Collectors.toMap(BatchNumberDTO::getBatchId, BatchNumberDTO::getRoom));
-
-        // 按房间ID分组，然后通过批次与房间的关联找到对应的批次
-        Map<String, List<WarehouseStockDTO>> roomStockMap = batchWarehouseStocks.stream()
-                .collect(Collectors.groupingBy(WarehouseStockDTO::getStoredRecordId));
-
-        // 转换为按批次ID分组
-        Map<String, List<WarehouseStockDTO>> result = new HashMap<>();
-        for (BatchNumberDTO batch : batchList) {
-            String roomId = batch.getRoom();
-            if (roomStockMap.containsKey(roomId)) {
-                result.put(batch.getBatchId(), roomStockMap.get(roomId));
-            } else {
-                result.put(batch.getBatchId(), new ArrayList<>());
-            }
-        }
-
-        return result;
     }
 }

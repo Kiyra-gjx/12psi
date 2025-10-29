@@ -11,5 +11,5 @@ public interface IBatchListService {
     /**
      * 查询批次列表
      */
-    JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query);
+    PageDTO<BatchListDTO> listBatch(BatchQuery query);
 }

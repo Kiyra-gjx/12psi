@@ -26,7 +26,7 @@ public interface BatchListMapper {
     /**
      * 批量查询商品的批次信息
      */
-    List<BatchNumberDTO> selectBatchInfoByGoodsIds(@Param("goodsIds") List<String> goodsIds, @Param("query") BatchQuery query);
+    List<BatchNumberDTO> selectBatchInfoByGoodsIds(@Param("goodsIds") List<String> goodsIds);
 
     /**
      * 批量查询批次对应的单据详情

@@ -25,7 +25,6 @@ public class InventoryDetailQuery extends PageQuery {
     @ApiModelProperty(value = "商品ID", example = "1",required = true)
     private String goodsId;
 
-
     @ApiModelProperty(value = "商品属性ID", example = "101",required = true)
     private String attrId;
 

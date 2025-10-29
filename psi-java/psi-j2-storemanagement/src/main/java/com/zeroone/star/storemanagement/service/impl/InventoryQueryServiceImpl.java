@@ -4,14 +4,17 @@ package com.zeroone.star.storemanagement.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.AttrStockDTO;
+import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
+import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.mapper.AttrMapper;
+import com.zeroone.star.storemanagement.mapper.InventoryDetailMapper;
 import com.zeroone.star.storemanagement.mapper.InventoryMapper;
 import com.zeroone.star.storemanagement.mapper.RoomMapper;
-import com.zeroone.star.storemanagement.service.IInventoryService;
+import com.zeroone.star.storemanagement.service.IInventoryQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +26,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 @Service
 @Slf4j
-public class InventoryServiceImpl  implements IInventoryService {
+public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
     @Resource
     private InventoryMapper inventoryMapper;
@@ -33,6 +36,9 @@ public class InventoryServiceImpl  implements IInventoryService {
 
     @Resource
     private RoomMapper roomMapper;
+
+    @Resource
+    private InventoryDetailMapper inventoryDetailMapper;
 
     @Override
     public PageDTO<InventoryListDTO> getInventoryList(InventoryQuery query) {
@@ -89,5 +95,21 @@ public class InventoryServiceImpl  implements IInventoryService {
                 });
             }
             return PageDTO.create(resultPage);
+    }
+
+
+
+    @Override
+    public PageDTO<InventoryDetailDTO> getInventoryDetail(InventoryDetailQuery query) {
+        //TODO:后续可以使用校验注解优化
+        if (query.getGoodsId() == null) {
+            throw new IllegalArgumentException("商品ID不能为空");
+        }
+
+        Page<InventoryDetailDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        Page<InventoryDetailDTO> resultPage = inventoryDetailMapper.selectInventoryDetailList(page, query);
+
+        return PageDTO.create(resultPage);
+
     }
 }

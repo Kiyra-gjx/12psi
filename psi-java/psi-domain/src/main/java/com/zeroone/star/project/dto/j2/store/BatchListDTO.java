@@ -61,7 +61,6 @@ public class BatchListDTO {
     @ApiModelProperty(value = "批次号列表")
     private List<BatchNumberDTO> batches;
 
-
     @ApiModelProperty(value = "仓库库存信息，主商品的库存信息")
     private List<WarehouseStockDTO> warehouses;
 
