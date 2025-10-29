@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.storemanagement.controller
@@ -106,10 +108,6 @@ public class OtherInController implements OtherInApis {
     public JsonVO<ResponseEntity<byte[]>> exportDetailExcel(@ApiParam(value = "例：\"1+2+4\"") String ids) {
         return null;
     }
-
-
-    @Resource
-    private IOtherInListService otherInListService;
 
     /**
      * 获取其他入库单列表（条件+分页）
