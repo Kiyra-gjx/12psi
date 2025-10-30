@@ -1,5 +1,10 @@
 package com.zeroone.star.storemanagement.controller;
 
+import cn.hutool.core.date.DateTime;
+import com.alibaba.excel.EasyExcel;
+import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
+import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
+import com.zeroone.star.project.components.fastdfs.FastDfsFileInfo;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.ShopListDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
@@ -8,15 +13,27 @@ import com.zeroone.star.project.dto.j2.store.TransferListDTO;
 import com.zeroone.star.project.j2.store.TransferApis;
 import com.zeroone.star.project.query.j2.store.TransferQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.service.ISwapService;
 import com.zeroone.star.storemanagement.service.ITransferService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import lombok.SneakyThrows;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+
+import javax.annotation.Resource;
+import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -95,16 +112,49 @@ public class TransferController implements TransferApis {
         return transferService.deleteTransfer(ids);
     }
 
+    @Resource
+    ISwapService swapService;
+
+    @Resource
+    EasyExcelComponent excel;
+
+    @Resource
+    FastDfsClientComponent dfs;
+
     @PostMapping("/import")
     @ApiOperation(value = "导入数据")
     public JsonVO<String> importTransferList(@RequestPart("file") MultipartFile file) {
+
+        if(file.isEmpty()) {
+            return JsonVO.fail("文件为空");
+        }
+
+
         return null;
     }
 
+    @SneakyThrows
     @PostMapping("/export")
     @ApiOperation(value = "导出简单报表")
     public ResponseEntity<byte[]> exportTransferList(@RequestBody List<String> idList) {
-        return null;
+        if(idList.isEmpty()) {
+            return new ResponseEntity<>("列表为空".getBytes(),HttpStatus.BAD_REQUEST);
+        }
+        ArrayList<TransferListDTO> transferListDTOList = swapService.getTransferListDTOList(idList);
+        if (transferListDTOList.isEmpty()) {
+            return new ResponseEntity<>("无数据".getBytes(),HttpStatus.BAD_REQUEST);
+        }
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        excel.export("简单报表",out,TransferListDTO.class,transferListDTOList);
+
+        HttpHeaders headers = new HttpHeaders();
+        String filename = DateTime.now().toString("yyyyMMddHHmmssS")+ ".xlsx";
+        headers.setContentDispositionFormData("attachment", filename);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        ResponseEntity<byte[]> res = new ResponseEntity<>(out.toByteArray(),headers,HttpStatus.CREATED);
+        out.close();
+        return res;
     }
 
     @PostMapping("/exportDetail")
