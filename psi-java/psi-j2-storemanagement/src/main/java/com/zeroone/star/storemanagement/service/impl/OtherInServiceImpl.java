@@ -385,7 +385,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             log.info("用户无操作权限");
         }
         // 2.判断入库单是否存在
-        EntryDO exist = otherInMapper.selectById(id);
+        EntryDO exist =  otherInMapper.selectById(id);
         if (exist == null) {
             log.info("入库单不存在");
         }

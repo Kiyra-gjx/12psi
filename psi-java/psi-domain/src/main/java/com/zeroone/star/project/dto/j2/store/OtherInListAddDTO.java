@@ -33,7 +33,7 @@ public class OtherInListAddDTO {
     @ApiModelProperty(value = "单据日期",required = true, example = "2023-10-18 18:18:00")
     private LocalDateTime time;
 
-    @ExcelProperty(value = "单据编号", index  = 4)
+    @ExcelProperty(value = "单据编号", index  =4)
     @ApiModelProperty(value = "单据编号",required = true, example = "QTRKD2510151628275")
     private String number;
 
