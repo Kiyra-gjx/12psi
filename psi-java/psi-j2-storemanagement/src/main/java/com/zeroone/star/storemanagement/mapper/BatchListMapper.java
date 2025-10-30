@@ -14,38 +14,23 @@ import java.util.List;
 public interface BatchListMapper {
 
     /**
-     * 分页查询批次商品列表
+     * 分页查询批次商品列表（第一层：商品基本信息）
      */
     Page<BatchListDTO> selectBatchGoodsList(Page<BatchListDTO> page, @Param("query") BatchQuery query);
 
     /**
-     * 批量查询商品的仓库库存信息
+     * 批量查询商品的仓库库存信息（第一层：仓库库存）
      */
     List<WarehouseStockDTO> selectGoodsWarehouseStock(@Param("goodsIds") List<String> goodsIds);
 
     /**
-     * 查询批次的基本信息
+     * 批量查询商品的批次号信息（第二层：批次号）
      */
-    List<BatchNumberDTO> selectBatchBasicInfoByGoodsIds(@Param("goodsIds") List<String> goodsIds);
+    List<BatchNumberDTO> selectBatchNumbersByGoodsIds(@Param("goodsIds") List<String> goodsIds);
 
     /**
-     * 查询批次的库存信息
+     * 批量查询批次详情信息（第三层：批次详情）
      */
-    List<WarehouseStockDTO> selectBatchWarehouseDistribution(@Param("goodsIds") List<String> goodsIds);
-//
-//    /**
-//     * 批量查询批次对应的单据详情
-//     */
-//    List<BatchDocumentDTO> selectBatchDocumentsByBatchIds(@Param("batchIds") List<String> batchIds);
-
-    /**
-     * 批量查询批次对应的单据基本信息
-     */
-    List<BatchDocumentDTO> selectBatchDocumentsBasicInfo(@Param("batchIds") List<String> batchIds);
-
-    /**
-     * 批量查询单据对应的仓库分布
-     */
-    List<WarehouseStockDTO> selectDocumentWarehouseDistribution(@Param("batchIds") List<String> batchIds);
+    List<BatchDocumentDTO> selectBatchDocumentsByGoodsIds(@Param("goodsIds") List<String> goodsIds);
 
 }
