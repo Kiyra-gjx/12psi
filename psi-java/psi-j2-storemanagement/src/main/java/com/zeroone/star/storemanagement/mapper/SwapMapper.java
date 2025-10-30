@@ -3,7 +3,6 @@ package com.zeroone.star.storemanagement.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.project.dto.j2.store.TransferListDTO;
 import com.zeroone.star.storemanagement.entity.SwapDO;
-import com.zeroone.star.storemanagement.entity.SwapInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
@@ -22,6 +21,7 @@ public interface SwapMapper extends BaseMapper<SwapDO> {
      * 更新调拨单信息
      */
     int updateSwap(SwapDO swap);
+
     /**
      * 批量删除
      */
@@ -31,4 +31,9 @@ public interface SwapMapper extends BaseMapper<SwapDO> {
      * 获取调拨单列表
      */
     List<TransferListDTO> getTransferListDTOList(@Param("idList") List<String> idList);
+
+    /**
+     * 批量审核/反审核调拨单
+     */
+    int auditBatchStatus(@Param("pidList") List<String> validPidList, @Param("operation") Integer operation);
 }

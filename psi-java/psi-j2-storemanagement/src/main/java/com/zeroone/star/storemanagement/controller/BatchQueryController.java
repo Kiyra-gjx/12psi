@@ -37,7 +37,7 @@ public class BatchQueryController implements BatchQueryApis {
     @ApiOperation(value = "获取批次列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<BatchListDTO>> listBatch(BatchQuery query) {
-        return JsonVO.fail(null);
+        return JsonVO.success( batchService.listBatch(query));
     }
 
 
