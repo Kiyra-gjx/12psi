@@ -1,4 +1,4 @@
-package com.zeroone.star.storemanagement.service.impl;
+package com.zeroone.star.storemanagement.convertor;
 
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
