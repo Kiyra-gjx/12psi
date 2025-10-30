@@ -12,9 +12,6 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
 
     List<WarehouseStockDTO> selectWarehouseStockByGoodsIds(@Param("goodsIds") List<String> goodsIds);
 
-    @Select("select max(id) from room")
-    Integer getMaxId();
-
     @Select("select id, warehouse, goods, attr, nums from room where goods = #{goods}")
     RoomDO getByGoods(String goods);
 
