@@ -77,7 +77,7 @@ public class OtherInController implements OtherInApis {
     @PostMapping("/add")
     @ApiOperation(value = "新增其他入库单")
     @Override
-    public JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
+    public  JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
         return otherInListService.saveOtherInList(dto);
     }
 
