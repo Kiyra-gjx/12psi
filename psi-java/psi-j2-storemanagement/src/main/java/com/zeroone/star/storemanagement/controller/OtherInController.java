@@ -47,7 +47,7 @@ public class OtherInController implements OtherInApis {
     @Override
     public JsonVO<String> updateOtherInList(@RequestBody OtherInListDetailDTO otherInListDetailDTO) {
         otherInListService.updateOtherInList(otherInListDetailDTO);
-        return JsonVO.success(otherInListDetailDTO.getId().toString());
+        return JsonVO.success(otherInListDetailDTO.getId());
     }
 
     @PutMapping("/examine")
