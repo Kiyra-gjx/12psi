@@ -23,9 +23,6 @@
             <if test="query.goodsId != null">
                 AND g.id = #{query.goodsId}
             </if>
-            <if test="query.goodsName != null and query.goodsName != ''">
-                AND g.name LIKE CONCAT('%',#{query.goodsName},'%')
-            </if>
             <if test="query.goodsNumber != null and query.goodsNumber != ''">
                 AND g.number = #{query.goodsNumber}
             </if>
