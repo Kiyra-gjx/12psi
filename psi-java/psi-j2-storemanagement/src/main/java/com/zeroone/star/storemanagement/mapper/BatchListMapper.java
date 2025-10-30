@@ -24,17 +24,28 @@ public interface BatchListMapper {
     List<WarehouseStockDTO> selectGoodsWarehouseStock(@Param("goodsIds") List<String> goodsIds);
 
     /**
-     * 批量查询商品的批次信息
+     * 查询批次的基本信息
      */
-    List<BatchNumberDTO> selectBatchInfoByGoodsIds(@Param("goodsIds") List<String> goodsIds);
+    List<BatchNumberDTO> selectBatchBasicInfoByGoodsIds(@Param("goodsIds") List<String> goodsIds);
 
     /**
-     * 批量查询批次对应的单据详情
+     * 查询批次的库存信息
      */
-    List<BatchDocumentDTO> selectBatchDocumentsByBatchIds(@Param("batchIds") List<String> batchIds);
+    List<WarehouseStockDTO> selectBatchWarehouseDistribution(@Param("goodsIds") List<String> goodsIds);
+//
+//    /**
+//     * 批量查询批次对应的单据详情
+//     */
+//    List<BatchDocumentDTO> selectBatchDocumentsByBatchIds(@Param("batchIds") List<String> batchIds);
 
     /**
-     * 批量查询批次的仓库库存信息
+     * 批量查询批次对应的单据基本信息
      */
-    List<WarehouseStockDTO> selectBatchWarehouseStock(@Param("batchIds") List<String> batchIds);
+    List<BatchDocumentDTO> selectBatchDocumentsBasicInfo(@Param("batchIds") List<String> batchIds);
+
+    /**
+     * 批量查询单据对应的仓库分布
+     */
+    List<WarehouseStockDTO> selectDocumentWarehouseDistribution(@Param("batchIds") List<String> batchIds);
+
 }

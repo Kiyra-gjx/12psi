@@ -22,10 +22,20 @@
             c.name as "categoryData.name",
             c.sort as "categoryData.sort",
             c.data as "categoryData.data",
-        COALESCE(SUM(r.nums), 0) as totalStock
+            <!-- 子查询计算总库存 -->
+            (
+            SELECT COALESCE(SUM(r2.nums), 0)
+            FROM room r2
+            WHERE r2.goods = g.id
+            <if test="query.warehouseIds != null and query.warehouseIds.size() > 0">
+                AND r2.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" separator="," close=")">
+                    #{warehouseId}
+                </foreach>
+            </if>
+            ) as totalStock
         FROM goods g
         LEFT JOIN category c ON g.category = c.id
-        LEFT JOIN room r ON g.id = r.goods
         WHERE g.batch = 1
         <if test="query.goodsId != null and query.goodsId != ''">
             AND g.id = #{query.goodsId}
@@ -45,28 +55,44 @@
         <if test="query.goodsCode != null and query.goodsCode != ''">
             AND g.code = #{query.goodsCode}
         </if>
+        <!-- 批次相关条件-->
         <if test="query.batchNumber != null and query.batchNumber != ''">
+            AND EXISTS (
+            SELECT 1 FROM batch b
+            WHERE b.goods = g.id
             AND b.number LIKE CONCAT('%', #{query.batchNumber}, '%')
+            )
         </if>
         <if test="query.productDate != null">
-            AND b.time = #{query.productDate}
+            AND EXISTS (
+            SELECT 1 FROM batch b
+            WHERE b.goods = g.id
+            AND DATE(b.time) = #{query.productDate}
+            )
         </if>
         <!-- 预警批次过滤 -->
         <if test="query.batchState != null and query.batchState == 1">
+            AND EXISTS (
+            SELECT 1 FROM batch b
+            WHERE b.goods = g.id
             AND b.nums <![CDATA[ < ]]> g.threshold
+            )
         </if>
-        <!-- 如果是常规批次啥也不管即可 -->
+        <!-- 常规批次：至少有一个有效批次 -->
         <if test="query.batchState == null or query.batchState == 0">
 
         </if>
+        <!-- 仓库条件 -->
         <if test="query.warehouseIds != null and query.warehouseIds.size() > 0">
-            AND r.warehouse IN
+            AND EXISTS (
+            SELECT 1 FROM room r3
+            WHERE r3.goods = g.id
+            AND r3.warehouse IN
             <foreach collection="query.warehouseIds" item="warehouseId" open="(" separator="," close=")">
                 #{warehouseId}
             </foreach>
+            )
         </if>
-
-
         GROUP BY g.id, c.id
         ORDER BY g.name
     </select>
@@ -78,7 +104,6 @@
             r.warehouse as warehouseId,
             w.name as warehouseName,
             r.goods as goodsId,
-            -- r.attr as attrId,
             r.nums as stockNum
         FROM room r
         LEFT JOIN warehouse w ON r.warehouse = w.id
@@ -88,34 +113,44 @@
         </foreach>
     </select>
 
-    <!-- 批量查询商品的批次信息（包含批次在各个仓库的分布） -->
-    <select id="selectBatchInfoByGoodsIds" resultType="com.zeroone.star.project.dto.j2.store.BatchNumberDTO">
+    <!-- 批次基本信息查询-->
+    <select id="selectBatchBasicInfoByGoodsIds" resultType="com.zeroone.star.project.dto.j2.store.BatchNumberDTO">
         SELECT
             b.id as batchId,
             b.number as batchNumber,
             b.time as createTime,
-            b.nums as nums,  <!-- 批次总库存 -->
+            b.nums as nums,
             b.goods as goodsId,
-            b.room as room,
-            <!-- 仓库分布信息（临时字段，用于组装warehouses） -->
-            r.id as "warehouseStock.storedRecordId",
-            r.warehouse as "warehouseStock.warehouseId",
-            w.name as "warehouseStock.warehouseName",
-            r.goods as "warehouseStock.goodsId",
-            r.nums as "warehouseStock.stockNum"
+            b.room as room
         FROM batch b
-        LEFT JOIN room r ON b.goods = r.goods  <!-- 通过goods关联找到所有相关库存 -->
-        LEFT JOIN warehouse w ON r.warehouse = w.id
-        LEFT JOIN goods g ON b.goods = g.id
         WHERE b.goods IN
         <foreach collection="goodsIds" item="goodsId" open="(" separator="," close=")">
             #{goodsId}
         </foreach>
-        ORDER BY b.time DESC, r.warehouse
+        ORDER BY b.time DESC
     </select>
 
-    <!-- 批量查询批次对应的单据详情 -->
-    <select id="selectBatchDocumentsByBatchIds" resultType="com.zeroone.star.project.dto.j2.store.BatchDocumentDTO">
+    <!-- 批量查询批次对应的仓库分布 -->
+    <select id="selectBatchWarehouseDistribution" resultType="com.zeroone.star.project.dto.j2.store.WarehouseStockDTO">
+        SELECT
+            r.id as storedRecordId,
+            r.warehouse as warehouseId,
+            w.name as warehouseName,
+            b.goods as goodsId,
+            b.id as batchId,  <!-- 添加批次ID用于关联 -->
+            r.nums as stockNum
+        FROM batch b
+        INNER JOIN room r ON b.goods = r.goods  <!-- 通过goods关联 -->
+        LEFT JOIN warehouse w ON r.warehouse = w.id
+        WHERE b.goods IN
+        <foreach collection="goodsIds" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        ORDER BY b.id, r.warehouse
+    </select>
+
+    <!-- 批量查询批次对应的单据基本信息 -->
+    <select id="selectBatchDocumentsBasicInfo" resultType="com.zeroone.star.project.dto.j2.store.BatchDocumentDTO">
         SELECT
             bi.id as id,
             bi.pid as pid,
@@ -154,89 +189,102 @@
         CASE
             WHEN bi.direction = 1 THEN ABS(bi.nums)
         ELSE -ABS(bi.nums)
-        END as nums,
-
-        <!-- 仓库ID -->
-        CASE
-            WHEN bi.type = 'buy' THEN buy.warehouse
-            WHEN bi.type = 'sell' THEN sell.warehouse
-            WHEN bi.type = 'bre' THEN bre.warehouse
-            WHEN bi.type = 'sre' THEN sre.warehouse
-            WHEN bi.type = 'swap' THEN
-                CASE
-                    WHEN bi.direction = 1 THEN swap.storehouse  <!-- 调入仓库 -->
-                    ELSE swap.warehouse                         <!-- 调出仓库 -->
-                END
-            WHEN bi.type = 'entry' THEN entry.warehouse
-            WHEN bi.type = 'extry' THEN extry.warehouse
-            ELSE NULL
-        END as "warehouseStock.warehouseId",
-
-        <!-- 仓库名称 -->
-        CASE
-            WHEN bi.type = 'buy' THEN w_buy.name
-            WHEN bi.type = 'sell' THEN w_sell.name
-            WHEN bi.type = 'bre' THEN w_bre.name
-            WHEN bi.type = 'sre' THEN w_sre.name
-            WHEN bi.type = 'swap' THEN
-                CASE
-                    WHEN bi.direction = 1 THEN w_swap_in.name   <!-- 调入仓库名称 -->
-                    ELSE w_swap_out.name                        <!-- 调出仓库名称 -->
-                END
-            WHEN bi.type = 'entry' THEN w_entry.name
-            WHEN bi.type = 'extry' THEN w_extry.name
-            ELSE NULL
-        END as "warehouseStock.warehouseName"
+        END as nums
 
         FROM batch_info bi
         LEFT JOIN batch b ON bi.pid = b.id
         LEFT JOIN goods g ON b.goods = g.id
         <!-- 采购单 -->
         LEFT JOIN buy_info buy ON bi.info = buy.id AND bi.type = 'buy'
-        LEFT JOIN warehouse w_buy ON buy.warehouse = w_buy.id
         <!-- 销售单 -->
         LEFT JOIN sell_info sell ON bi.info = sell.id AND bi.type = 'sell'
-        LEFT JOIN warehouse w_sell ON sell.warehouse = w_sell.id
         <!-- 采购退货单 -->
         LEFT JOIN bre_info bre ON bi.info = bre.id AND bi.type = 'bre'
-        LEFT JOIN warehouse w_bre ON bre.warehouse = w_bre.id
         <!-- 销售退货单 -->
         LEFT JOIN sre_info sre ON bi.info = sre.id AND bi.type = 'sre'
-        LEFT JOIN warehouse w_sre ON sre.warehouse = w_sre.id
         <!-- 调拨单 -->
         LEFT JOIN swap_info swap ON bi.info = swap.id AND bi.type = 'swap'
-        LEFT JOIN warehouse w_swap_out ON swap.warehouse = w_swap_out.id
-        LEFT JOIN warehouse w_swap_in ON swap.storehouse = w_swap_in.id
         <!-- 其它入库单 -->
         LEFT JOIN entry_info entry ON bi.info = entry.id AND bi.type = 'entry'
-        LEFT JOIN warehouse w_entry ON entry.warehouse = w_entry.id
         <!-- 其它出库单 -->
         LEFT JOIN extry_info extry ON bi.info = extry.id AND bi.type = 'extry'
-        LEFT JOIN warehouse w_extry ON extry.warehouse = w_extry.id
         WHERE bi.pid IN
         <foreach collection="batchIds" item="batchId" open="(" separator="," close=")">
             #{batchId}
         </foreach>
         ORDER BY bi.pid, produceDate DESC, bi.direction DESC
     </select>
-
-    <!-- 批量查询批次的仓库库存信息 -->
-    <select id="selectBatchWarehouseStock" resultType="com.zeroone.star.project.dto.j2.store.WarehouseStockDTO">
+    <!-- 批量查询单据对应的仓库分布 -->
+    <select id="selectDocumentWarehouseDistribution" resultType="com.zeroone.star.project.dto.j2.store.WarehouseStockDTO">
         SELECT
-            b.id as batchId,  <!-- 添加批次ID -->
-            r.id as storedRecordId,
-            b.warehouse as warehouseId,
-            w.name as warehouseName,
+            bi.id as documentId,  <!--：添加单据ID用于关联 -->
+            <!-- 仓库信息 -->
+            CASE
+                WHEN bi.type = 'buy' THEN buy.warehouse
+                WHEN bi.type = 'sell' THEN sell.warehouse
+                WHEN bi.type = 'bre' THEN bre.warehouse
+                WHEN bi.type = 'sre' THEN sre.warehouse
+                WHEN bi.type = 'swap' THEN
+                    CASE
+                        WHEN bi.direction = 1 THEN swap.storehouse  <!-- 调入仓库 -->
+                        ELSE swap.warehouse                         <!-- 调出仓库 -->
+                    END
+                WHEN bi.type = 'entry' THEN entry.warehouse
+                WHEN bi.type = 'extry' THEN extry.warehouse
+                ELSE NULL
+            END as warehouseId,
+
+            CASE
+                WHEN bi.type = 'buy' THEN w_buy.name
+                WHEN bi.type = 'sell' THEN w_sell.name
+                WHEN bi.type = 'bre' THEN w_bre.name
+                WHEN bi.type = 'sre' THEN w_sre.name
+                WHEN bi.type = 'swap' THEN
+                    CASE
+                        WHEN bi.direction = 1 THEN w_swap_in.name   <!-- 调入仓库名称 -->
+                        ELSE w_swap_out.name                        <!-- 调出仓库名称 -->
+                    END
+                WHEN bi.type = 'entry' THEN w_entry.name
+                WHEN bi.type = 'extry' THEN w_extry.name
+                ELSE NULL
+            END as warehouseName,
+
             b.goods as goodsId,
-            r.attr as attrId,
-            b.nums as stockNum
-        FROM batch b
-        LEFT JOIN room r ON b.room = r.id
-        LEFT JOIN warehouse w ON b.warehouse = w.id
-        WHERE b.id IN
+            <!-- 库存数量：使用单据数量，但可能需要根据业务调整 -->
+            ABS(bi.nums) as stockNum
+
+        FROM batch_info bi
+        LEFT JOIN batch b ON bi.pid = b.id
+        LEFT JOIN goods g ON b.goods = g.id
+        <!-- 各种单据的LEFT JOIN -->
+        LEFT JOIN buy_info buy ON bi.info = buy.id AND bi.type = 'buy'
+        LEFT JOIN warehouse w_buy ON buy.warehouse = w_buy.id
+        LEFT JOIN sell_info sell ON bi.info = sell.id AND bi.type = 'sell'
+        LEFT JOIN warehouse w_sell ON sell.warehouse = w_sell.id
+        LEFT JOIN bre_info bre ON bi.info = bre.id AND bi.type = 'bre'
+        LEFT JOIN warehouse w_bre ON bre.warehouse = w_bre.id
+        LEFT JOIN sre_info sre ON bi.info = sre.id AND bi.type = 'sre'
+        LEFT JOIN warehouse w_sre ON sre.warehouse = w_sre.id
+        LEFT JOIN swap_info swap ON bi.info = swap.id AND bi.type = 'swap'
+        LEFT JOIN warehouse w_swap_out ON swap.warehouse = w_swap_out.id
+        LEFT JOIN warehouse w_swap_in ON swap.storehouse = w_swap_in.id
+        LEFT JOIN entry_info entry ON bi.info = entry.id AND bi.type = 'entry'
+        LEFT JOIN warehouse w_entry ON entry.warehouse = w_entry.id
+        LEFT JOIN extry_info extry ON bi.info = extry.id AND bi.type = 'extry'
+        LEFT JOIN warehouse w_extry ON extry.warehouse = w_extry.id
+        WHERE bi.pid IN
         <foreach collection="batchIds" item="batchId" open="(" separator="," close=")">
             #{batchId}
         </foreach>
+        AND (
+        (bi.type = 'buy' AND buy.warehouse IS NOT NULL) OR
+        (bi.type = 'sell' AND sell.warehouse IS NOT NULL) OR
+        (bi.type = 'bre' AND bre.warehouse IS NOT NULL) OR
+        (bi.type = 'sre' AND sre.warehouse IS NOT NULL) OR
+        (bi.type = 'swap' AND (swap.warehouse IS NOT NULL OR swap.storehouse IS NOT NULL)) OR
+        (bi.type = 'entry' AND entry.warehouse IS NOT NULL) OR
+        (bi.type = 'extry' AND extry.warehouse IS NOT NULL)
+        )
+        ORDER BY bi.id, warehouseId
     </select>
-
 </mapper>

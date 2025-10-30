@@ -1,5 +1,6 @@
 package com.zeroone.star.project.dto.j2.store;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -27,5 +28,11 @@ public class WarehouseStockDTO {
 
     @ApiModelProperty(value = "库存数量", example = "100")
     private BigDecimal stockNum;
+
+    @JsonIgnore
+    private String batchId;// 内部使用的批次ID，不暴露给前端
+
+    @JsonIgnore
+    private String documentId; // 内部使用的批次ID，不暴露给前端
 
 }
