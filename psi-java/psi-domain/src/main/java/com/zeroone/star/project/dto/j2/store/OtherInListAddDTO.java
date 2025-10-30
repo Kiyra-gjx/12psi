@@ -61,7 +61,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "备注信息", index = 12)
     @ApiModelProperty(value = "备注信息", required = false,example = "紧急订单，请优先处理")
-    private String data;
+    private String  data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
     String more;
@@ -83,8 +83,8 @@ public class OtherInListAddDTO {
     private String user;
 
     @ApiModelProperty(value = "入库单详细信息列表",required = true)
-    List<OtherInListDetailInfoDTO> otherInListInfoDTOList;
+    List<OtherInListDetailInfoDTO> otherInListDetailInfoDTOList;
 
     @ApiModelProperty(value = "单据费用列表",required = true, example = "{id: 7, type: \"entry\", class: 4, time: \"2025-10-15\", iet: 5, money: 111, data: \"\", settle: 0, state: 0}")
-    List<CostDTO> costDTOList;
+    private List<CostDTO> costDTOList;
 }

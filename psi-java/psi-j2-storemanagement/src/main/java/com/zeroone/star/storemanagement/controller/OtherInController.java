@@ -77,14 +77,14 @@ public class OtherInController implements OtherInApis {
     @PostMapping("/add")
     @ApiOperation(value = "新增其他入库单")
     @Override
-    public JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
+    public  JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
         return otherInListService.saveOtherInList(dto);
     }
 
     @DeleteMapping("/delete")
     @ApiOperation(value = "删除其他入库单（支持批量）")
     @Override
-    public JsonVO<List<String>> removeOtherInList(List<Integer> ids) {
+    public JsonVO<List<String>> removeOtherInList(List<String> ids) {
         return JsonVO.success(otherInListService.removeOtherInList(ids));
     }
 

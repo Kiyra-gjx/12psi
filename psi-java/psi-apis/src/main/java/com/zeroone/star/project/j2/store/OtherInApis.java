@@ -59,7 +59,7 @@ public interface OtherInApis {
      * @param ids
      * @return
      */
-    JsonVO<List<String>> removeOtherInList(List<Integer> ids);
+    JsonVO<List<String>> removeOtherInList(List<String> ids);
 
     /**
      *  导入数据

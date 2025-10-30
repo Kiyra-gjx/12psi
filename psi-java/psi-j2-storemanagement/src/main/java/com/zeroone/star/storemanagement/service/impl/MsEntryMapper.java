@@ -5,7 +5,6 @@ import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.storemanagement.entity.EntryDO;
-import com.zeroone.star.storemanagement.entity.ExtryDO;
 import com.zeroone.star.storemanagement.entity.ExtryInfoDO;
 import org.mapstruct.Mapper;
 

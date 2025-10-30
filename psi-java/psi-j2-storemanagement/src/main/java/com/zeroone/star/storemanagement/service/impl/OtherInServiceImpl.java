@@ -6,8 +6,6 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.zeroone.star.project.components.user.UserDTO;
-import com.zeroone.star.project.components.user.UserHolder;
 import com.zeroone.star.project.dto.j2.store.CostDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
@@ -33,11 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
-import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -103,7 +99,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
 
 
         //3.获取入库单详情列表
-        List<OtherInListDetailInfoDTO> otherInListInfoDTOList = otherInListDetailDTO.getOtherInListInfoDTOList();
+        List<OtherInListDetailInfoDTO> otherInListInfoDTOList = otherInListDetailDTO.getOtherInListDetailInfoDTOList();
         //判断是否为空
         if (otherInListInfoDTOList == null || otherInListInfoDTOList.isEmpty()) {
             throw new RuntimeException("入库单详情列表不能为空");
@@ -364,7 +360,6 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         // 3.查询入库单详细
         OtherInListDetailDTO dto = ms.entryToOtherInListDetailDTO(exist);
         // 4.记录操作日志
-
         logOperation(dto.getId(), "查询入库单详细");
         return dto;
     }
@@ -392,7 +387,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
 
     @Override
     @Transactional
-    public List<String> removeOtherInList(List<Integer> ids) {
+    public List<String> removeOtherInList(List<String> ids) {
         // 用于记录成功删除的入库单编号
         List<String> deletedList = new ArrayList<>();
 
@@ -422,14 +417,12 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                 deletedList.add(entryDO.getNumber());
             }
         }
-
         // 5.记录删除结果
         if (count != ids.size()) {
             log.info("删除入库单完成，预期删除{}条，实际删除{}条", ids.size(), count);
         } else {
             log.info("成功删除{}条入库单", count);
         }
-
         return deletedList;
     }
 
@@ -455,7 +448,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
     }
 
     /**
-     * 数据合法性校验（带错误信息）
+     * 数据合法性校验
      */
     private String validate(OtherInListAddDTO dto) {
         if (dto == null) {
@@ -516,7 +509,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             return "单据日期不能晚于当前时间";
         }
 
-        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListInfoDTOList();
+        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListDetailInfoDTOList();
         // 关联数据校验
         if (validateOtherInListInfo(otherInListInfoDTO) == null) {
             return "入库单详细信息不能为空";
@@ -529,7 +522,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
     }
 
     /**
-     * 入库单详细信息校验（带错误信息）
+     * 入库单详细信息校验
      */
     private String validateOtherInListInfo(OtherInListInfoDTO info) {
         if (info == null) {
