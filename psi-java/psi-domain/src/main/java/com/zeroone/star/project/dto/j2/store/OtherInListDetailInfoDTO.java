@@ -9,9 +9,9 @@ import java.time.LocalDateTime;
 
 @Data
 @ApiModel("其他入库单详细数据信息对象")
-public class OtherInListDetailInfoDTO {
+public class OtherInListDetailInfoDTO{
 
-    @ApiModelProperty(value = "商品名称", example = "刀具")
+    @ApiModelProperty(value = "商品名称",  example = "刀具")
     private String name;
 
     @ApiModelProperty(value="商品编号",example = "0003")
