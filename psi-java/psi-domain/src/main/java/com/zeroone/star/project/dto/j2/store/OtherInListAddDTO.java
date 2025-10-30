@@ -61,7 +61,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "备注信息", index = 12)
     @ApiModelProperty(value = "备注信息", required = false,example = "紧急订单，请优先处理")
-    private String data;
+    private String  data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
     String more;
