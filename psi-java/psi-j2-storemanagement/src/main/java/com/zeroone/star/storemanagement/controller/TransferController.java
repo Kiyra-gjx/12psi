@@ -35,6 +35,8 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 /**
  * @BelongsProject: psi-java
@@ -147,6 +149,7 @@ public class TransferController implements TransferApis {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         excel.export("简单报表",out,TransferListDTO.class,transferListDTOList);
+        out.flush();
 
         HttpHeaders headers = new HttpHeaders();
         String filename = DateTime.now().toString("yyyyMMddHHmmssS")+ ".xlsx";
@@ -157,10 +160,38 @@ public class TransferController implements TransferApis {
         return res;
     }
 
+    @SneakyThrows
     @PostMapping("/exportDetail")
     @ApiOperation(value = "导出详细报表")
     public ResponseEntity<byte[]> exportTransferDetailList(@RequestBody List<String> idList) {
-        return null;
+        if(idList.isEmpty()) {
+            return new ResponseEntity<>("列表为空".getBytes(),HttpStatus.BAD_REQUEST);
+        }
+        ArrayList<ArrayList<TransferDetailListDTO>> transferDetailListDTOList = swapService.getTransferDetailListDTOList(idList);
+        if (transferDetailListDTOList.isEmpty()) {
+            return new ResponseEntity<>("无数据".getBytes(),HttpStatus.BAD_REQUEST);
+        }
+        ByteArrayOutputStream zip = new ByteArrayOutputStream();
+        ZipOutputStream zipOutputStream = new ZipOutputStream(zip);
+        for (ArrayList<TransferDetailListDTO> transferDetailListDTO : transferDetailListDTOList) {
+            if(transferDetailListDTO.isEmpty()) {
+                continue;
+            }
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            excel.export("详细报表",out,TransferDetailListDTO.class,transferDetailListDTO);
+            out.flush();
+            zipOutputStream.putNextEntry(new ZipEntry("详细报表"+DateTime.now().toString("yyyyMMddHHmmssS")+".xlsx"));
+            zipOutputStream.write(out.toByteArray());
+            zipOutputStream.closeEntry();
+            out.close();
+        }
+        zip.close();
+        zipOutputStream.close();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentDispositionFormData("attachment", "detail"+new DateTime().now().toString("yyyyMMddHHmmss")+".zip");
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        ResponseEntity<byte[]> res = new ResponseEntity<>(zip.toByteArray(),headers,HttpStatus.CREATED);
+        return res;
     }
 
 
