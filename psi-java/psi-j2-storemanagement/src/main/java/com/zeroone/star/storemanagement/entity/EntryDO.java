@@ -1,5 +1,7 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -7,7 +9,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class EntryDO {
-
+        @TableId(type = IdType.ASSIGN_ID)
         private String id;
 
         private String supplier;

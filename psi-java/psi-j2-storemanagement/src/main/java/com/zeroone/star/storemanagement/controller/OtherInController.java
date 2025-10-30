@@ -84,7 +84,7 @@ public class OtherInController implements OtherInApis {
     @DeleteMapping("/delete")
     @ApiOperation(value = "删除其他入库单（支持批量）")
     @Override
-    public JsonVO<List<String>> removeOtherInList(List<Integer> ids) {
+    public JsonVO<List<String>> removeOtherInList(List<String> ids) {
         return JsonVO.success(otherInListService.removeOtherInList(ids));
     }
 
