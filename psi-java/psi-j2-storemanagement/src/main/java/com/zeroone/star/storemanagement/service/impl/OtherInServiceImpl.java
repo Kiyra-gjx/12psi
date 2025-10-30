@@ -105,7 +105,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
 
 
         //3.获取入库单详情列表
-        List<OtherInListInfoDTO> otherInListInfoDTOList = otherInListDetailDTO.getOtherInListInfoDTOList();
+        List<OtherInListDetailInfoDTO> otherInListInfoDTOList = otherInListDetailDTO.getOtherInListInfoDTOList();
         //判断是否为空
         if (otherInListInfoDTOList == null || otherInListInfoDTOList.isEmpty()) {
             throw new RuntimeException("入库单详情列表不能为空");
@@ -116,7 +116,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         Integer maxId = costMapper.getMaxId();
         maxId = maxId == null ? 0 : maxId;
         List<EntryInfoDO> entryInfoList = new ArrayList<>();
-        for (OtherInListInfoDTO otherInListInfoDTO : otherInListInfoDTOList) {
+        for (OtherInListDetailInfoDTO otherInListInfoDTO : otherInListInfoDTOList) {
             EntryInfoDO entryInfo = new EntryInfoDO();
             BeanUtils.copyProperties(otherInListInfoDTO, entryInfo);
             entryInfo.setPid(otherInListDetailDTO.getId());
@@ -385,13 +385,14 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             log.info("用户无操作权限");
         }
         // 2.判断入库单是否存在
-        EntryDO exist = otherInMapper.selectById(id);
+        EntryDO exist =  otherInMapper.selectById(id);
         if (exist == null) {
             log.info("入库单不存在");
         }
         // 3.查询入库单详细
         OtherInListDetailDTO dto = ms.entryToOtherInListDetailDTO(exist);
         // 4.记录操作日志
+
         logOperation(dto.getId(), "查询入库单详细");
         return dto;
     }
