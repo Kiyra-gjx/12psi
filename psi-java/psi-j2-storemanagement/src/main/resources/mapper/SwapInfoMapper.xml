@@ -7,6 +7,14 @@
             #{id}
         </foreach>
     </select>
+    <select id="getTransferDetailListDTO"
+            resultType="com.zeroone.star.project.dto.j2.store.TransferDetailListDTO">
+        select i.id,i.pid,i.goods,g.name,g.number,g.spec,i.attr,i.warehouse,i.storehouse,i.price,i.nums,i.total,i.data,s.time,s.number as swapNumber,s.total as swapTotal,s.cost,s.people,s.data as swapData
+        from swap_info i
+        join swap s on s.id = i.pid
+        join goods g on g.id = i.goods
+        where i.id = #{id}
+    </select>
 
     <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapInfoDO">
         UPDATE swap_info
