@@ -5,6 +5,7 @@ import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
 import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
+import com.zeroone.star.project.vo.JsonVO;
 
 /**
  * @BelongsProject: psi-java

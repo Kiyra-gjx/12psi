@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.math.BigDecimal;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -33,136 +34,75 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
     @Resource
     private BatchListMapper batchListMapper;
 
-    /**
-     * 获取批次列表信息
-     * @param query 查询条件对象，包含商品id，批次号等信息
-     * @return PageDTO<BatchListDTO> 分页后的批次列表信息，商品基本信息以及批次的库存详情信息
-     */
     @Override
     public PageDTO<BatchListDTO> listBatch(BatchQuery query) {
 
-        // 第一步：直接分页查询商品列表到BatchListDTO
-        Page<BatchListDTO> goodsPage = new Page<>(query.getPageIndex(), query.getPageSize());
-        Page<BatchListDTO> goodsResult = batchListMapper.selectBatchGoodsList(goodsPage, query);
+            // 创建分页对象
+            Page<BatchListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
 
-        if (goodsResult.getRecords().isEmpty()) {
-            return PageDTO.create(goodsResult);
-        }
+            // 1. 查询商品基本信息（第一层）
+            Page<BatchListDTO> goodsPage = batchListMapper.selectBatchGoodsList(page, query);
+            List<BatchListDTO> goodsList = goodsPage.getRecords();
 
-        // 提取商品ID列表
-        List<String> goodsIds = goodsResult.getRecords().stream()
-                .map(BatchListDTO::getId)
-                .collect(Collectors.toList());
-
-
-        // 第二步：批量查询商品相关的库存和批次数据
-        Map<String, List<WarehouseStockDTO>> goodsWarehouseStockMap = getGoodsWarehouseStockMap(goodsIds);
-        Map<String, List<BatchNumberDTO>> goodsBatchMap = getGoodsBatchMap(goodsIds);
-
-        // 第三步：库存和批次信息
-        for (BatchListDTO goods : goodsResult.getRecords()) {
-            goods.setWarehouses(goodsWarehouseStockMap.getOrDefault(goods.getId(), new ArrayList<>()));
-            goods.setBatches(goodsBatchMap.getOrDefault(goods.getId(), new ArrayList<>()));
-        }
-
-        return PageDTO.create(goodsResult);
-
-
-    }
-
-    /**
-     * 获取商品的仓库库存信息映射
-     */
-    private Map<String, List<WarehouseStockDTO>> getGoodsWarehouseStockMap(List<String> goodsIds) {
-        List<WarehouseStockDTO> warehouseStocks = batchListMapper.selectGoodsWarehouseStock(goodsIds);
-        return warehouseStocks.stream()
-                .collect(Collectors.groupingBy(WarehouseStockDTO::getGoodsId));
-    }
-
-    /**
-     * 获取商品的批次信息映射（使用临时字段组装）
-     */
-    private Map<String, List<BatchNumberDTO>> getGoodsBatchMap(List<String> goodsIds) {
-        // 查询批次基本信息（包含临时字段）
-        List<BatchNumberDTO> batchRawData = batchListMapper.selectBatchInfoByGoodsIds(goodsIds);
-        if (batchRawData.isEmpty()) {
-            return new HashMap<>();
-        }
-
-        // 按批次ID分组，组装每个批次在各个仓库的分布
-        Map<String, BatchNumberDTO> batchMap = new LinkedHashMap<>();
-        Map<String, List<WarehouseStockDTO>> batchWarehouseMap = new HashMap<>();
-
-        for (BatchNumberDTO batchData : batchRawData) {
-            String batchId = batchData.getBatchId();
-
-            if (!batchMap.containsKey(batchId)) {
-                // 创建批次主信息（去重）
-                BatchNumberDTO mainBatch = new BatchNumberDTO();
-                mainBatch.setBatchId(batchData.getBatchId());
-                mainBatch.setBatchNumber(batchData.getBatchNumber());
-                mainBatch.setCreateTime(batchData.getCreateTime());
-                mainBatch.setNums(batchData.getNums()); // 总库存
-                mainBatch.setGoodsId(batchData.getGoodsId());
-                mainBatch.setRoom(batchData.getRoom());
-                mainBatch.setWarehouses(new ArrayList<>());
-                batchMap.put(batchId, mainBatch);
-                batchWarehouseMap.put(batchId, new ArrayList<>());
+            if (goodsList.isEmpty()) {
+                return PageDTO.create(goodsPage);
             }
 
-            // 使用临时字段组装warehouses
-            if (batchData.getWarehouseStock() != null) {
-                WarehouseStockDTO warehouseStock = batchData.getWarehouseStock();
-                batchWarehouseMap.get(batchId).add(warehouseStock);
+            // 提取商品ID列表
+            List<String> goodsIds = goodsList.stream()
+                    .map(BatchListDTO::getId)
+                    .collect(Collectors.toList());
+
+            // 2. 查询仓库库存信息（第一层）
+            List<WarehouseStockDTO> warehouseStocks = batchListMapper.selectGoodsWarehouseStock(goodsIds);
+            Map<String, List<WarehouseStockDTO>> warehouseStockMap = warehouseStocks.stream()
+                    .collect(Collectors.groupingBy(WarehouseStockDTO::getGoodsId));
+
+            // 3. 查询批次号信息（第二层）
+            List<BatchNumberDTO> batchNumbers = batchListMapper.selectBatchNumbersByGoodsIds(goodsIds);
+            // 直接使用 goodsId 字段进行分组
+            Map<String, List<BatchNumberDTO>> batchNumberMap = batchNumbers.stream()
+                    .collect(Collectors.groupingBy(BatchNumberDTO::getGoodsId));
+
+            // 4. 查询批次详情信息（第三层）
+            List<BatchDocumentDTO> batchDocuments = batchListMapper.selectBatchDocumentsByGoodsIds(goodsIds);
+
+            // 按批次号分组批次详情
+            Map<String, List<BatchDocumentDTO>> batchDocumentMap = batchDocuments.stream()
+                    .collect(Collectors.groupingBy(BatchDocumentDTO::getBatchNumber));
+
+            // 组装数据
+            for (BatchListDTO goods : goodsList) {
+                String goodsId = goods.getId();
+
+                // 设置仓库库存信息（第一层）
+                goods.setWarehouses(warehouseStockMap.getOrDefault(goodsId, new ArrayList<>()));
+
+                // 设置批次信息（第二层 + 第三层）
+                List<BatchNumberDTO> goodsBatchNumbers = batchNumberMap.getOrDefault(goodsId, new ArrayList<>());
+                for (BatchNumberDTO batchNumber : goodsBatchNumbers) {
+                    // 获取该批次号的所有详情（第三层）
+                    List<BatchDocumentDTO> documents = batchDocumentMap.getOrDefault(
+                            batchNumber.getBatchNumber(), new ArrayList<>());
+
+                    // 设置批次详情
+                    batchNumber.setBatchDocuments(documents);
+
+                    // 根据第三层详情计算第二层的总库存
+                    BigDecimal totalStock = documents.stream()
+                            .map(BatchDocumentDTO::getNums)
+                            .reduce(BigDecimal.ZERO, BigDecimal::add);
+                    batchNumber.setTotalStock(totalStock);
+                }
+                goods.setBatches(goodsBatchNumbers);
             }
-        }
 
-        // 设置每个批次的仓库分布
-        for (BatchNumberDTO batch : batchMap.values()) {
-            batch.setWarehouses(batchWarehouseMap.get(batch.getBatchId()));
-        }
+            // 返回分页结果
+            PageDTO<BatchListDTO> pageDTO = PageDTO.create(goodsPage);
+            return pageDTO;
 
-        List<BatchNumberDTO> finalBatchList = new ArrayList<>(batchMap.values());
-
-        // 提取批次ID列表查询单据信息
-        List<String> batchIds = finalBatchList.stream()
-                .map(BatchNumberDTO::getBatchId)
-                .collect(Collectors.toList());
-
-        // 查询批次单据信息
-        Map<String, List<BatchDocumentDTO>> batchDocumentsMap = getBatchDocumentsMap(batchIds);
-
-        // 组装批次单据信息
-        for (BatchNumberDTO batch : finalBatchList) {
-            batch.setBatchDocuments(batchDocumentsMap.getOrDefault(batch.getBatchId(), new ArrayList<>()));
-        }
-
-        // 按商品ID分组
-        return finalBatchList.stream()
-                .collect(Collectors.groupingBy(BatchNumberDTO::getGoodsId));
     }
 
-    /**
-     * 获取批次单据信息映射（使用临时字段组装warehouses）
-     */
-    private Map<String, List<BatchDocumentDTO>> getBatchDocumentsMap(List<String> batchIds) {
-        List<BatchDocumentDTO> batchDocuments = batchListMapper.selectBatchDocumentsByBatchIds(batchIds);
-
-        // 使用临时字段组装warehouses
-        for (BatchDocumentDTO document : batchDocuments) {
-            if (document.getWarehouseStock() != null) {
-                WarehouseStockDTO warehouse = document.getWarehouseStock();
-                warehouse.setGoodsId(document.getGoodsId());
-                warehouse.setStockNum(document.getNums().abs()); // 单据的库存数量就是单据的数量
-                document.setWarehouses(Collections.singletonList(warehouse));
-            } else {
-                document.setWarehouses(new ArrayList<>());
-            }
-        }
-
-        return batchDocuments.stream()
-                .collect(Collectors.groupingBy(BatchDocumentDTO::getPid));
-    }
 
     /**
      * 获取指定批次详情数据（分页）
