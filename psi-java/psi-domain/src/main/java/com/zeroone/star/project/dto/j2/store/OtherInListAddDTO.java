@@ -20,6 +20,7 @@ import java.util.List;
 @Data
 @ApiModel("其他入库单数据对象")
 public class OtherInListAddDTO {
+
     @ExcelProperty(value = "供应商", index = 1)
     @ApiModelProperty(value = "供应商",required = false, example = "0")
     private String supplier;

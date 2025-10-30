@@ -392,6 +392,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         // 3.查询入库单详细
         OtherInListDetailDTO dto = ms.entryToOtherInListDetailDTO(exist);
         // 4.记录操作日志
+
         logOperation(dto.getId(), "查询入库单详细");
         return dto;
     }
