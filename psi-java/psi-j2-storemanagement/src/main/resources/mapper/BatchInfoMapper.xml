@@ -11,19 +11,23 @@
     -->
     <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
+        <!-- 将number参数绑定为变量，避免重复传递 -->
+        <bind name="numberPattern" value="batchDetailQuery.number"/>
         SELECT
         bi.pid AS pid,                   <!-- 批次唯一标识 -->
         MAX(r.time) AS time,           <!-- 操作时间（取最新） -->
         bi.type AS type,                <!-- 单据类型（entry/buy/sell等） -->
         <!-- 根据单据类型动态查询对应的单据编号-->
         CASE
-        WHEN bi.type = 'entry' THEN (SELECT number FROM entry WHERE id = bi.class)
-        WHEN bi.type = 'extry' THEN (SELECT number FROM extry WHERE id = bi.class)
-        WHEN bi.type = 'swap' THEN (SELECT number FROM swap WHERE id = bi.class)
-        WHEN bi.type = 'sell' THEN (SELECT number FROM sell WHERE id = bi.class)
-        WHEN bi.type = 'sre' THEN (SELECT number FROM sre WHERE id = bi.class)
-        WHEN bi.type = 'buy' THEN (SELECT number FROM buy WHERE id = bi.class)
-        WHEN bi.type = 'bre' THEN (SELECT number FROM bre WHERE id = bi.class)
+        WHEN bi.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = bi.class)
+        WHEN bi.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = bi.class)
+        WHEN bi.type = 'swap' THEN (SELECT number FROM is_swap WHERE id = bi.class)
+        WHEN bi.type = 'swapOut' THEN (SELECT number FROM is_swap WHERE id = bi.class)
+        WHEN bi.type = 'swapEnter' THEN (SELECT number FROM is_swap WHERE id = bi.class)
+        WHEN bi.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = bi.class)
+        WHEN bi.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = bi.class)
+        WHEN bi.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = bi.class)
+        WHEN bi.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = bi.class)
         ELSE ''
         END AS number,                  <!-- 单据编号 -->
         <!-- 方向转换为可读描述 -->
@@ -34,11 +38,17 @@
         END AS info,                    <!-- 操作类型描述 -->
         bi.nums AS nums                 <!-- 操作数量 -->
         FROM
-        batch_info bi                <!-- 批次信息表 -->
+        is_batch_info bi                <!-- 批次信息表 -->
         LEFT JOIN
-        record r ON bi.type = r.type AND bi.class = r.source  <!-- 关联操作记录表 -->
+        is_record r ON ((bi.type = 'swapOut' OR bi.type = 'swapEnter' OR bi.type = 'swap') AND r.type = 'swap' AND bi.class = r.source) OR
+                      (bi.type NOT IN ('swapOut', 'swapEnter', 'swap') AND bi.type = r.type AND bi.class = r.source)  <!-- 关联操作记录表 -->
         WHERE
-        bi.pid = #{batchDetailQuery.pid} <!-- 筛选指定批次 -->
+        <if test="batchDetailQuery.pid != null and batchDetailQuery.pid.size() > 0">
+            bi.pid IN
+            <foreach collection="batchDetailQuery.pid" item="pidValue" open="(" close=")" separator=",">
+                #{pidValue}
+            </foreach>
+        </if>
         
         <!-- 单据类型过滤条件 -->
         <if test="batchDetailQuery.type != null and batchDetailQuery.type.size() > 0">
@@ -58,19 +68,14 @@
 
         <!-- 单据编号模糊查询条件 -->
         <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
-            AND (
-            <!-- 入库单 -->
-            (bi.type = 'entry' AND bi.class IN (SELECT id FROM entry WHERE number LIKE #{batchDetailQuery.number})) OR
-            <!-- 销售单 -->
-            (bi.type = 'sell' AND bi.class IN (SELECT id FROM sell WHERE number LIKE #{batchDetailQuery.number})) OR
-            <!-- 采购单 -->
-            (bi.type = 'buy' AND bi.class IN (SELECT id FROM buy WHERE number LIKE #{batchDetailQuery.number})) OR
-            <!-- 销售退货单 -->
-            (bi.type = 'sre' AND bi.class IN (SELECT id FROM sre WHERE number LIKE #{batchDetailQuery.number})) OR
-            <!-- 采购退货单 -->
-            (bi.type = 'bre' AND bi.class IN (SELECT id FROM bre WHERE number LIKE #{batchDetailQuery.number})) OR
-            <!-- 调拨单 -->
-            (bi.type = 'swap' AND bi.class IN (SELECT id FROM swap WHERE number LIKE #{batchDetailQuery.number}))
+            AND bi.class IN (
+                SELECT id FROM is_entry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
+                SELECT id FROM is_extry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
+                SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
+                SELECT id FROM is_sell WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
+                SELECT id FROM is_sre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
+                SELECT id FROM is_buy WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
+                SELECT id FROM is_bre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%')
             )
         </if>
 
