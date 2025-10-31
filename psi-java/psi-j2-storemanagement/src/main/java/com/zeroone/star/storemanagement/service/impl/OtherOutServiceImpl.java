@@ -53,7 +53,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         ExtryDO extryDO = otherOutMapper.selectById(extryDOQueryWrapper);
         //2.执行反审核，无需验证库存批次，直接修改审核状态
         if(extryDO.getExamine() == 1){
-            update().set("examine", extryDO.getExamine() == 1 ? 0 : 1).eq("id", ids.get(0)).update();
+            update().set("examine",0).eq("id", ids.get(0)).update();
             return;
         }
         //3.执行审核
@@ -110,7 +110,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                 }
             }
         }
-        update().set("examine", extryDO.getExamine() == 1 ? 0 : 1).eq("id", ids.get(0)).update();
+        update().set("examine", 1).eq("id", ids.get(0)).update();
     }
 
     @Override
