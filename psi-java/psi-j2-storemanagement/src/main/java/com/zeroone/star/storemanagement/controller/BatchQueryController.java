@@ -121,7 +121,7 @@ public class BatchQueryController implements BatchQueryApis {
             log.info("开始导出批次详情Excel，批次ID: {}", query.getPid());
 
             // 参数校验
-            if (query.getPid() == null || query.getPid().trim().isEmpty()) {
+            if (query.getPid() == null || query.getPid().stream().allMatch(pid -> pid == null || pid.trim().isEmpty())) {
                 log.warn("批次ID为空，无法导出");
                 HttpHeaders headers = new HttpHeaders();
                 headers.setContentType(MediaType.TEXT_PLAIN);
