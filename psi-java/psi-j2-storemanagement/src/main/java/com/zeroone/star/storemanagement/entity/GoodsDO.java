@@ -39,7 +39,7 @@ public class GoodsDO {
 
     private String data;
 
-    private String imags;
+    private String imgs;
 
     private String details;
 
