@@ -1,10 +1,7 @@
 package com.zeroone.star.project.j2.store;
 
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.ShopListDTO;
-import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
-import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
-import com.zeroone.star.project.dto.j2.store.TransferListDTO;
+import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.project.query.j2.store.TransferQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import org.springframework.http.ResponseEntity;
@@ -51,18 +48,17 @@ public interface TransferApis {
 
     /**
      * 批量审核/反审核调拨单
-     * @param ids 调拨单id列表
-     * @param operation 操作类型（0-未审核，1-已审核）
+     * @param dto 批量审核/反审核参数
      * @return 审核/反审核结果
      */
-    JsonVO<String> batchAuditTransfer(List<Integer> ids, Integer operation);
+    JsonVO<String> batchAuditTransfer(BatchAuditTransferDTO dto);
 
     /**
      * 批量删除调拨单
-     * @param ids 调拨单id列表
+     * @param dto 批量删除参数
      * @return 删除结果
      */
-    JsonVO<String> removeTransfer(List<Integer> ids);
+    JsonVO<String> removeTransfer(RemoveTransferDTO dto);
 
     /**
      * 导入数据

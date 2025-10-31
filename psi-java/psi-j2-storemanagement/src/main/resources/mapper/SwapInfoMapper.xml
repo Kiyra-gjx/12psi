@@ -2,22 +2,23 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.SwapInfoMapper">
     <select id="getPidListByIds" resultType="java.lang.String">
-        SELECT pid FROM swap_info WHERE id IN
+        SELECT pid FROM is_swap_info WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
     </select>
+
     <select id="getTransferDetailListDTO"
             resultType="com.zeroone.star.project.dto.j2.store.TransferDetailListDTO">
         select i.id,i.pid,i.goods,g.name,g.number,g.spec,i.attr,i.warehouse,i.storehouse,i.price,i.nums,i.total,i.data,s.time,s.number as swapNumber,s.total as swapTotal,s.cost,s.people,s.data as swapData
-        from swap_info i
+        from is_swap_info i
         join swap s on s.id = i.pid
         join goods g on g.id = i.goods
         where i.id = #{id}
     </select>
 
     <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapInfoDO">
-        UPDATE swap_info
+        UPDATE is_swap_info
         <set>
             <if test="warehouse != null and warehouse != ''">warehouse = #{warehouse},</if>
             <if test="storehouse != null and storehouse != ''">storehouse = #{storehouse},</if>

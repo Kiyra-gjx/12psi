@@ -17,7 +17,7 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
     /**
      * 根据id查询到调拨单的id
      */
-    @Select("SELECT pid FROM swap_info WHERE id = #{id}")
+    @Select("SELECT pid FROM is_swap_info WHERE id = #{id}")
     String getSwapById(@Param("id") String id);
 
     /**

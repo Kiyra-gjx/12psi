@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.SwapMapper">
     <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapDO">
-        UPDATE swap
+        UPDATE is_swap
         <set>
             <if test="people != null and people != ''">people = #{people},</if>
             <if test="logistics != null and logistics != ''">logistics = #{logistics},</if>
@@ -13,7 +13,7 @@
     </update>
 
     <update id="auditBatchStatus">
-        UPDATE swap
+        UPDATE is_swap
         SET examine = #{operation}
         WHERE id IN
         <foreach collection="pidList" item="pid" open="(" separator="," close=")">
@@ -22,16 +22,17 @@
     </update>
 
     <delete id="deleteBatchIds">
-        DELETE FROM swap
+        DELETE FROM is_swap
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
               #{id}
         </foreach>
     </delete>
+
     <select id="getTransferListDTOList"
             resultType="com.zeroone.star.project.dto.j2.store.TransferListDTO">
         select id,frame, time, number, total, cost, people, examine, cse, user, data
-        from swap
+        from is_swap
         where id in
         <foreach collection="idList" item="id" open="(" separator="," close=")">
             #{id}

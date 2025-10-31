@@ -1,5 +1,7 @@
 package com.zeroone.star.storemanagement.service;
 
+import com.zeroone.star.project.dto.j2.store.BatchAuditTransferDTO;
+import com.zeroone.star.project.dto.j2.store.RemoveTransferDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.vo.JsonVO;
 
@@ -15,10 +17,10 @@ public interface ITransferService {
     /**
      * 审核/反审核调拨单（支持批量）
      */
-    JsonVO<String> batchAuditTransfer(List<Integer> ids, Integer operation);
+    JsonVO<String> batchAuditTransfer(BatchAuditTransferDTO dto);
 
     /**
      * 删除调拨单（支持批量）
      */
-    JsonVO<String> deleteTransfer(List<Integer> ids);
+    JsonVO<String> deleteTransfer(RemoveTransferDTO dto);
 }

@@ -15,7 +15,7 @@ public interface SwapMapper extends BaseMapper<SwapDO> {
     /**
      * 根据id查询调拨单状态
      */
-    @Select("SELECT examine FROM swap WHERE id = #{id}")
+    @Select("SELECT examine FROM is_swap WHERE id = #{id}")
     Integer getStatusById(@Param("id") String id);
     /**
      * 更新调拨单信息

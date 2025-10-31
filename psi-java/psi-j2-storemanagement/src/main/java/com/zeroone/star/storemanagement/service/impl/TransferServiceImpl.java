@@ -1,5 +1,7 @@
 package com.zeroone.star.storemanagement.service.impl;
 
+import com.zeroone.star.project.dto.j2.store.BatchAuditTransferDTO;
+import com.zeroone.star.project.dto.j2.store.RemoveTransferDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.entity.SwapDO;
@@ -14,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @Slf4j
@@ -108,8 +111,10 @@ public class TransferServiceImpl implements ITransferService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JsonVO<String> batchAuditTransfer(List<Integer> ids, Integer operation) {
+    public JsonVO<String> batchAuditTransfer(BatchAuditTransferDTO dto) {
         try {
+            List<Integer> ids = dto.getIds();
+            Integer operation = dto.getOperation();
             if (operation != 0 && operation != 1) {
                 return JsonVO.fail("操作参数错误，0-反审核，1-审核");
             } else if (ids == null || ids.isEmpty()) {
@@ -161,8 +166,9 @@ public class TransferServiceImpl implements ITransferService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public JsonVO<String> deleteTransfer(List<Integer> ids) {
+    public JsonVO<String> deleteTransfer(RemoveTransferDTO dto) {
         try {
+            List<Integer> ids = dto.getIds();
             if (ids == null || ids.isEmpty()) {
                 return JsonVO.fail("请选择要删除的调拨单");
             }
@@ -217,6 +223,9 @@ public class TransferServiceImpl implements ITransferService {
             return false;
         }
         if (dto.getInfo().getPrice() != null && dto.getInfo().getPrice().compareTo(BigDecimal.ZERO) < 0) {
+            return false;
+        }
+        if (Objects.equals(dto.getInfo().getStorehouse(), dto.getInfo().getWarehouse())) {
             return false;
         }
         return dto.getInfo().getNums() == null || dto.getInfo().getNums().compareTo(BigDecimal.ZERO) >= 0;

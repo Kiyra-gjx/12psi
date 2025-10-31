@@ -1,15 +1,10 @@
 package com.zeroone.star.storemanagement.controller;
 
 import cn.hutool.core.date.DateTime;
-import com.alibaba.excel.EasyExcel;
 import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
 import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
-import com.zeroone.star.project.components.fastdfs.FastDfsFileInfo;
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.ShopListDTO;
-import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
-import com.zeroone.star.project.dto.j2.store.TransferDetailListDTO;
-import com.zeroone.star.project.dto.j2.store.TransferListDTO;
+import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.project.j2.store.TransferApis;
 import com.zeroone.star.project.query.j2.store.TransferQuery;
 import com.zeroone.star.project.vo.JsonVO;
@@ -24,15 +19,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
-import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -99,19 +90,15 @@ public class TransferController implements TransferApis {
     @PostMapping("/batch-audit-transfer")
     @ApiOperation(value = "审核/反审核(支持批量)")
     @Override
-    public JsonVO<String> batchAuditTransfer(
-            @ApiParam(value = "调拨单ID列表", required = true, example = "[1,2,3]")
-            @RequestBody List<Integer> ids,
-            @ApiParam(value = "操作类型（0-未审核，1-已审核）", required = true, example = "1")
-            @RequestParam Integer operation) {
-        return transferService.batchAuditTransfer(ids, operation);
+    public JsonVO<String> batchAuditTransfer(@RequestBody BatchAuditTransferDTO dto) {
+        return transferService.batchAuditTransfer(dto);
     }
 
     @PostMapping("/remove-transfer")
     @ApiOperation(value = "删除调拨单(支持批量)")
     @Override
-    public JsonVO<String> removeTransfer(@RequestBody List<Integer> ids) {
-        return transferService.deleteTransfer(ids);
+    public JsonVO<String> removeTransfer(@RequestBody RemoveTransferDTO dto) {
+        return transferService.deleteTransfer(dto);
     }
 
     @Resource
