@@ -62,8 +62,11 @@ public class UserHolder {
         return UserDTO.builder()
                 .id(Convert.toStr(userJsonObject.get("id")))
                 .username(userJsonObject.getStr("user_name"))
-                .isEnabled(Convert.toByte(1))
+                //.isEnabled(Convert.toByte(1))
+                .avatar(Convert.toStr(userJsonObject.get("avatar")))
                 .roles(Convert.toList(String.class, userJsonObject.get("authorities")))
+                .frameId(Convert.toStr(userJsonObject.get("frameId")))
+                .frameName(Convert.toStr(userJsonObject.get("frameName")))
                 .build();
     }
 
