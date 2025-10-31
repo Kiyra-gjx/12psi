@@ -19,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.Resource;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -108,14 +109,12 @@ public class OtherOutController implements OtherOutApis {
     @PostMapping("/exportEasyExcel")
     @ApiOperation(value = "导出其他出库单数据Excel")
     @Override
-    public  JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestBody String  ids) {
-
+    public JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestBody List<String> ids) {
         try {
-            List<Integer> idList = Arrays.stream(ids.split(","))
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
+            List<String> idStrList = new ArrayList<>(ids);
 
-            byte[] excelData = otherOutListService.exportOrderList(idList);
+            byte[] excelData = otherOutListService.exportOrderList(idStrList);
+
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             String fileName = URLEncoder.encode("其他出库单.xlsx", StandardCharsets.UTF_8.toString());
@@ -128,18 +127,17 @@ public class OtherOutController implements OtherOutApis {
             result.setMessage("导出失败：" + e.getMessage());
             result.setData(ResponseEntity.badRequest().body(new byte[0]));
             return result;
-    }}
+        }
+    }
+
 
     @PostMapping("/exportDetailExcel")
     @ApiOperation(value = "导出其他出库单详情数据Excel")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestBody String ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestBody List<String> ids) {
         try {
-            List<Integer> idList = Arrays.stream(ids.split(","))
-                    .map(Integer::parseInt)
-                    .collect(Collectors.toList());
-
-            byte[] excelData = otherOutListService.exportOrderDetails(idList);
+            List<String> idStrList = new ArrayList<>(ids);
+            byte[] excelData = otherOutListService.exportOrderDetails(idStrList);
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
             String fileName = URLEncoder.encode("其他出库单明细.xlsx", StandardCharsets.UTF_8.toString());
@@ -151,8 +149,10 @@ public class OtherOutController implements OtherOutApis {
             result.setCode(500);
             result.setMessage("导出失败：" + e.getMessage());
             result.setData(ResponseEntity.badRequest().body(new byte[0]));
-            return result;}
+            return result;
+        }
     }
+
 
     @PostMapping("/import")
     @ApiOperation(value = "批量导入其他出库单")
