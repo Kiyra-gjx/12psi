@@ -11,8 +11,6 @@
     -->
     <select id="getBatchDetail" resultType="com.zeroone.star.project.dto.j2.store.BatchDetailDTO"
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
-        <!-- 将number参数绑定为变量，避免重复传递 -->
-        <bind name="numberPattern" value="batchDetailQuery.number"/>
         SELECT
         bi.pid AS pid,                   <!-- 批次唯一标识 -->
         MAX(r.time) AS time,           <!-- 操作时间（取最新） -->
