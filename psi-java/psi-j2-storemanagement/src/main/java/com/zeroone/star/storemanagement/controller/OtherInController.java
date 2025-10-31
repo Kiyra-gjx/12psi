@@ -1,29 +1,23 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
-import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
-import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.project.query.j2.store.OtherInQuery;
+import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.service.IOtherInService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 /**
  * @BelongsProject: psi-java
@@ -51,7 +45,7 @@ public class OtherInController implements OtherInApis {
     }
 
     @PutMapping("/examine")
-    @ApiOperation(value = "审核入库单")
+    @ApiOperation(value = "审核/反审核入库单")
     @Override
     public JsonVO<String> examine(@RequestBody List<Integer> ids) {
         otherInListService.examine(ids);
@@ -59,7 +53,7 @@ public class OtherInController implements OtherInApis {
     }
 
     @PutMapping("/check")
-    @ApiOperation(value = "核对入库单")
+    @ApiOperation(value = "核对/反核对入库单")
     @Override
     public JsonVO<String> check(@RequestBody List<Integer> ids) {
         otherInListService.check(ids);

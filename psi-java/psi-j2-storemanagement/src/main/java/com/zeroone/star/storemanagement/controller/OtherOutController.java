@@ -41,16 +41,16 @@ public class OtherOutController implements OtherOutApis {
     private IOtherOutService otherOutListService;
 
     @PutMapping("/examine")
-    @ApiOperation(value = "审核出库单")
+    @ApiOperation(value = "审核/反审核出库单")
     @Override
-    public JsonVO<String> examine(@RequestParam List<Integer> ids) {
+    public JsonVO<String> examine(@RequestBody List<Integer> ids) {
         otherOutListService.examine(ids);
         return JsonVO.success("success");
     }
     @PutMapping("/check")
-    @ApiOperation(value = "核对出库单")
+    @ApiOperation(value = "核对/反核对出库单")
     @Override
-    public JsonVO<String> check(@RequestParam List<Integer> ids) {
+    public JsonVO<String> check(@RequestBody List<Integer> ids) {
         otherOutListService.check(ids);
         return JsonVO.success("success");
     }
