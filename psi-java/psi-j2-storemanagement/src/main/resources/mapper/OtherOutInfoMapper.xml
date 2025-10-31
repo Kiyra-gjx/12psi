@@ -2,12 +2,31 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.OtherOutInfoMapper">
 
-<select id="selectByMainIds" resultType="com.zeroone.star.storemanagement.entity.ExtryInfoDO">
-    SELECT * FROM entry_info WHERE id IN
-    <foreach collection="mainIds" item="id" open="(" separator="," close=")">
-        #{id}
-    </foreach>
-</select>
+    <select id="selectByMainIds" resultType="com.zeroone.star.storemanagement.entity.ExtryInfoDO">
+        SELECT id,
+        pid,
+        goods,
+        attr,
+        unit,
+        warehouse,
+        batch,
+        mfd,
+        price,
+        nums,
+        serial,
+        total,
+        data
+        FROM extry_info
+        <where>
+            <if test="mainIds != null and mainIds.size() > 0">
+                id IN
+                <foreach collection="mainIds" item="id" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
     <insert id="insertBatch" parameterType="com.zeroone.star.storemanagement.entity.ExtryInfoDO">
         INSERT INTO extry_info (
             id,pid,goods, attr, unit, warehouse,
