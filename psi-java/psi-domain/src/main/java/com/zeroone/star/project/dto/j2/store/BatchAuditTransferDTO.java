@@ -11,7 +11,7 @@ import java.util.List;
 public class BatchAuditTransferDTO {
 
     @ApiModelProperty(value = "调拨单ID列表", required = true, example = "[1,2,3]")
-    private List<Integer> ids;
+    private List<String> ids;
 
     @ApiModelProperty(value = "操作类型（0-反审核，1-审核）", required = true, example = "1")
     private Integer operation;

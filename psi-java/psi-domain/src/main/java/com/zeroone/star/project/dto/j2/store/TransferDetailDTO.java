@@ -54,7 +54,7 @@ public class TransferDetailDTO {
         @ApiModel("单据费用详情")
         public static class cost {
             @ApiModelProperty(value = "支出类别", example = "9")
-            private Integer ite;
+            private Integer iet;
 
             @ApiModelProperty(value = "金额", example = "10")
             private BigDecimal money;
