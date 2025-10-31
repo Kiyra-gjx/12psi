@@ -114,7 +114,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     }
 
     @Override
-    public byte[] exportOrderList(List<Integer> ids) {
+    public byte[] exportOrderList(List<String> ids) {
         List<ExtryDO> dataList = otherOutMapper.selectBatchIds(ids);
 
         ByteArrayOutputStream outputStream = null;
@@ -137,7 +137,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     }
 
     @Override
-    public byte[] exportOrderDetails(List<Integer> ids) {
+    public byte[] exportOrderDetails(List<String> ids) {
         List<ExtryInfoDO> detailList = otherOutInfoMapper.selectByMainIds(ids);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
