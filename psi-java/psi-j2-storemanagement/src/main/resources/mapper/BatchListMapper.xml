@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.BatchListMapper">
+
+    <!-- 分页查询批次商品列表（第一层） -->
+    <select id="selectBatchGoodsList" resultType="com.zeroone.star.project.dto.j2.store.BatchListDTO">
+        SELECT
+            g.id,
+            g.name,
+            g.number,
+            g.spec,
+            g.brand,
+            g.unit,
+            g.code,
+            g.data,
+            g.batch,
+            g.protect,
+            g.threshold,
+            c.id as "categoryData.id",
+            c.name as "categoryData.name",
+        COALESCE(SUM(r.nums), 0) as totalStock
+        FROM goods g
+        LEFT JOIN category c ON g.category = c.id
+        LEFT JOIN room r ON r.goods = g.id
+        WHERE 1=1
+        <!-- 商品相关条件 -->
+        <if test="query.goodsId != null and query.goodsId != ''">
+            AND g.id = #{query.goodsId}
+        </if>
+        <if test="query.goodsNumber != null and query.goodsNumber != ''">
+            AND g.number LIKE CONCAT('%', #{query.goodsNumber}, '%')
+        </if>
+        <if test="query.goodsSpec != null and query.goodsSpec != ''">
+            AND g.spec = #{query.goodsSpec}
+        </if>
+        <if test="query.goodsCategoryId != null and query.goodsCategoryId != ''">
+            AND g.category = #{query.goodsCategoryId}
+        </if>
+        <if test="query.goodsBrand != null and query.goodsBrand != ''">
+            AND g.brand = #{query.goodsBrand}
+        </if>
+        <if test="query.goodsCode != null and query.goodsCode != ''">
+            AND g.code = #{query.goodsCode}
+        </if>
+        <!-- 批次相关条件 -->
+        <if test="query.batchNumber != null and query.batchNumber != ''">
+            AND EXISTS (
+            SELECT 1 FROM batch b
+            WHERE b.goods = g.id
+            AND b.number LIKE CONCAT('%', #{query.batchNumber}, '%')
+            )
+        </if>
+        <if test="query.productDate != null">
+            AND EXISTS (
+            SELECT 1 FROM batch b
+            WHERE b.goods = g.id
+            AND DATE(b.time) = #{query.productDate}
+            )
+        </if>
+        <!-- 预警批次过滤 -->
+        <if test="query.batchState != null and query.batchState == 1">
+            AND EXISTS (
+            SELECT 1 FROM batch b
+            WHERE b.goods = g.id
+            AND b.nums <![CDATA[ < ]]> g.threshold
+            )
+        </if>
+        <!-- 仓库条件 -->
+        <if test="query.warehouseIds != null and query.warehouseIds.size() > 0">
+            AND EXISTS (
+            SELECT 1 FROM room r3
+            WHERE r3.goods = g.id
+            AND r3.warehouse IN
+            <foreach collection="query.warehouseIds" item="warehouseId" open="(" separator="," close=")">
+                #{warehouseId}
+            </foreach>
+            )
+        </if>
+        GROUP BY g.id, c.id
+        ORDER BY g.name
+    </select>
+
+    <!-- 批量查询商品的仓库库存信息（第一层） -->
+    <select id="selectGoodsWarehouseStock" resultType="com.zeroone.star.project.dto.j2.store.WarehouseStockDTO">
+        SELECT
+        r.id as storedRecordId,
+        r.warehouse as warehouseId,
+        w.name as warehouseName,
+        r.goods as goodsId,
+        r.attr as attrId,
+        r.nums as stockNum
+        FROM room r
+        LEFT JOIN warehouse w ON r.warehouse = w.id
+        WHERE r.goods IN
+        <foreach collection="goodsIds" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+    </select>
+
+    <!-- 批量查询商品的批次号信息（第二层） -->
+    <select id="selectBatchNumbersByGoodsIds" resultType="com.zeroone.star.project.dto.j2.store.BatchNumberDTO">
+        SELECT DISTINCT
+        b.number as batchNumber,
+        b.goods as goodsId
+        FROM batch b
+        WHERE b.goods IN
+        <foreach collection="goodsIds" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        ORDER BY b.number
+    </select>
+
+    <!-- 批量查询批次详情信息（第三层） -->
+    <select id="selectBatchDocumentsByGoodsIds" resultType="com.zeroone.star.project.dto.j2.store.BatchDocumentDTO">
+        SELECT
+            b.id as batchId,
+            b.room,
+            b.warehouse,
+            w.name as warehouseName,
+            b.goods as goodsId,
+            b.number as batchNumber,
+            b.time as productDate,
+            b.nums
+        FROM batch b
+        LEFT JOIN warehouse w ON b.warehouse = w.id
+        WHERE b.goods IN
+        <foreach collection="goodsIds" item="goodsId" open="(" separator="," close=")">
+            #{goodsId}
+        </foreach>
+        ORDER BY b.number, b.warehouse, b.time
+    </select>
+
+</mapper>

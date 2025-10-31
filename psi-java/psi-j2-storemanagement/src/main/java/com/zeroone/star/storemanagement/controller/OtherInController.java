@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+
 /**
  * @BelongsProject: psi-java
  * @BelongsPackage: com.zeroone.star.storemanagement.controller
@@ -45,7 +47,7 @@ public class OtherInController implements OtherInApis {
     @Override
     public JsonVO<String> updateOtherInList(@RequestBody OtherInListDetailDTO otherInListDetailDTO) {
         otherInListService.updateOtherInList(otherInListDetailDTO);
-        return JsonVO.success(otherInListDetailDTO.getId().toString());
+        return JsonVO.success(otherInListDetailDTO.getId());
     }
 
     @PutMapping("/examine")
@@ -75,14 +77,14 @@ public class OtherInController implements OtherInApis {
     @PostMapping("/add")
     @ApiOperation(value = "新增其他入库单")
     @Override
-    public JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
+    public  JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
         return otherInListService.saveOtherInList(dto);
     }
 
     @DeleteMapping("/delete")
     @ApiOperation(value = "删除其他入库单（支持批量）")
     @Override
-    public JsonVO<List<String>> removeOtherInList(List<Integer> ids) {
+    public JsonVO<List<String>> removeOtherInList(List<String> ids) {
         return JsonVO.success(otherInListService.removeOtherInList(ids));
     }
 
@@ -107,10 +109,17 @@ public class OtherInController implements OtherInApis {
         return null;
     }
 
+    /**
+     * 获取其他入库单列表（条件+分页）
+     * 若不输入查询条件，则默认查询所有数据
+     * @param query 查询参数对象，包含分页信息和各种查询条件
+     * @return 返回分页的其他入库单列表
+     */
     @GetMapping("")
     @ApiOperation(value = "获取其他入库单列表（条件+分页）")
     @Override
     public JsonVO<PageDTO<OtherInListDTO>> listOtherIn(OtherInQuery query) {
-        return null;
+        // 调用service查询数据
+        return otherInListService.getOtherInList(query);
     }
 }

@@ -23,10 +23,8 @@ public class InventoryDetailDTO {
     @ApiModelProperty(value = "仓储详情id", example = "1")
     private String id;
 
-
     @ApiModelProperty(value = "操作时间", example = "2025-10-15")
     private LocalDate time;
-
 
     @ExcelProperty(value = "单据类型", index = 2)
     @ApiModelProperty(value = "单据类型", example = "采购单")

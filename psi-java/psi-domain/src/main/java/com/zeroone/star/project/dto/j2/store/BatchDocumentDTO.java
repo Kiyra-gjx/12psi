@@ -8,34 +8,35 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
-@ApiModel("批次单据信息")
+@ApiModel("批次详细对象")
 public class BatchDocumentDTO {
+    @ApiModelProperty(value = "批次号ID", example = "22")
+    private String batchId;
 
-    @ApiModelProperty(value = "批次单据ID", example = "1")
-    private Integer id;
+    @ApiModelProperty(value = "所属仓储ID（", example = "1")
+    private String room;
 
-    @ApiModelProperty(value = "批次号", example = "22")
-    private Integer batch;
+    @ApiModelProperty(value = "所属仓库ID", example = "1")
+    private String warehouse;
 
-    @ApiModelProperty(value = "名称")
-    private String name;
+    @ApiModelProperty(value = "所属仓库名称", example = "主仓库")
+    private String warehouseName;
 
-    @ApiModelProperty(value = "保质期", example = "365")
-    private Integer protect;
+    @ApiModelProperty(value = "所属商品ID", example = "1")
+    private String goodsId;
+
+    @ApiModelProperty(value = "批次号", example = "BATCH20241018001")
+    private String batchNumber;
 
     @ApiModelProperty(value = "生产日期", example = "2025-10-12")
-    private String produceDate;
+    private LocalDateTime productDate;
 
-    @ApiModelProperty(value = "到期日期", example = "2026-10-12")
-    private String expireDate;
+    @ApiModelProperty(value = "库存数量", example = "100")
+    private BigDecimal nums;
 
-    @ApiModelProperty(value = "总库存数量", example = "200")
-    private BigDecimal totalStock;
-
-
-    @ApiModelProperty(value = "仓库库存明细")
-    private List<WarehouseStockDTO> warehouses;
 }

@@ -1,59 +1,89 @@
 package com.zeroone.star.storemanagement.service.impl;
 
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import com.alibaba.cloud.commons.lang.StringUtils;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zeroone.star.project.dto.j2.store.CostDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListInfoDTO;
+import com.zeroone.star.project.dto.PageDTO;
+import com.zeroone.star.project.dto.j2.store.*;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.convertor.MsEntryMapper;
+import com.zeroone.star.storemanagement.entity.*;
+import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.entity.CostDO;
 import com.zeroone.star.storemanagement.entity.EntryDO;
 import com.zeroone.star.storemanagement.entity.EntryInfoDO;
 import com.zeroone.star.storemanagement.mapper.CostMapper;
 import com.zeroone.star.storemanagement.mapper.OtherInInfoMapper;
+import com.zeroone.star.storemanagement.mapper.OtherInListMapper;
 import com.zeroone.star.storemanagement.mapper.OtherInMapper;
 import com.zeroone.star.storemanagement.service.IOtherInService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import javax.annotation.Resource;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> implements IOtherInService {
+public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  implements IOtherInService {
 
-    @Autowired
+    @Resource
     OtherInMapper otherInMapper;
 
-    @Autowired
+    @Resource
     OtherInInfoMapper otherInInfoMapper;
 
-    @Autowired
+    @Resource
     CostMapper costMapper;
 
-//    @Autowired
-//    LogMapper logMapper;
-//
-//    @Autowired
-//    RecordMapper recordMapper;
-//
-//    @Resource
-//    UserHolder userHolder;
+    @Resource
+    LogMapper logMapper;
 
-    @Autowired
+    @Resource
+    RecordMapper recordMapper;
+
+    @Resource
+    RoomMapper roomMapper;
+
+    @Resource
+    RoomInfoMapper roomInfoMapper;
+
+    @Resource
+    SummaryMapper summaryMapper;
+
+    @Resource
+    ServeMapper serveMapper;
+
+    @Resource
+    ServeInfoMapper serveInfoMapper;
+    
+    @Resource
+    OtherInListMapper otherInListMapper;
+
+    @Resource
     MsEntryMapper ms;
+
+    //雪花算法
+    private final Snowflake snowflake = IdUtil.getSnowflake();
 
     @Override
     @Transactional
     public void updateOtherInList(OtherInListDetailDTO otherInListDetailDTO) {
-        //判断入库单是否存在
+        //1.判断入库单是否存在
         Integer examine = otherInMapper.getExamineById(otherInListDetailDTO.getId());
         if (examine == null) {
             throw new RuntimeException("入库单不存在");
@@ -61,41 +91,37 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
         if (examine == 1) {
             throw new RuntimeException("入库单已审核,无法修改");
         }
-        //更新入库单
+        //2.更新入库单
         EntryDO entry = new EntryDO();
         BeanUtils.copyProperties(otherInListDetailDTO, entry);
         otherInMapper.update(entry);
 
 
-        //获取入库单详情列表
-        List<OtherInListInfoDTO> otherInListInfoDTOList = otherInListDetailDTO.getOtherInListInfoDTOList();
+        //3.获取入库单详情列表
+        List<OtherInListDetailInfoDTO> otherInListInfoDTOList = otherInListDetailDTO.getOtherInListDetailInfoDTOList();
         //判断是否为空
         if (otherInListInfoDTOList == null || otherInListInfoDTOList.isEmpty()) {
             throw new RuntimeException("入库单详情列表不能为空");
         }
-        //删除原先的入库单详情数据
+        //4.删除原先的入库单详情数据
         otherInInfoMapper.deleteByPid(otherInListDetailDTO.getId());
-        //插入新的入库单详情数据
-        Integer maxId = costMapper.getMaxId();
-        maxId = maxId == null ? 0 : maxId;
+        //5.插入新的入库单详情数据
         List<EntryInfoDO> entryInfoList = new ArrayList<>();
-        for (OtherInListInfoDTO otherInListInfoDTO : otherInListInfoDTOList) {
+        for (OtherInListDetailInfoDTO otherInListInfoDTO : otherInListInfoDTOList) {
             EntryInfoDO entryInfo = new EntryInfoDO();
             BeanUtils.copyProperties(otherInListInfoDTO, entryInfo);
             entryInfo.setPid(otherInListDetailDTO.getId());
-            entryInfo.setId((++maxId).toString());
             entryInfoList.add(entryInfo);
+            entryInfo.setId(snowflake.nextIdStr());
         }
         otherInInfoMapper.insertBatch(entryInfoList);
 
 
-        //获取单据花费列表
+        //6.获取单据花费列表
         List<CostDTO> costDTOList = otherInListDetailDTO.getCostDTOList();
-        //删除原先的单据花费数据
+        //7.删除原先的单据花费数据
         costMapper.deleteBycls(otherInListDetailDTO.getId());
-        //插入新的花费单据数据
-        maxId = costMapper.getMaxId();
-        maxId = maxId == null ? 0 : maxId;
+        //8.插入新的花费单据数据
         List<CostDO> costList = new ArrayList<>();
         for (CostDTO costDTO : costDTOList) {
             CostDO cost = new CostDO();
@@ -105,52 +131,216 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
             cost.setTime(entry.getTime());
             cost.setSettle(BigDecimal.valueOf(0.0000));
             cost.setState(0);
-            cost.setId((++maxId).toString());
+            cost.setId(snowflake.nextIdStr());
             costList.add(cost);
         }
         costMapper.insertBatch(costList);
 
-//        //更新操作日志表和单据记录表
-//        UserDTO user=null;
-//        try {
-//            user = userHolder.getCurrentUser();
-//        } catch (Exception e) {
-//            throw new RuntimeException(e);
-//        }
-//        LogDO log = new LogDO();
-//        log.setUser(user.getUsername());
-//        log.setTime(entry.getTime());
-//        log.setInfo("更新其他入库单"+"["+otherInListDetailDTO.getNumber()+"]");
-//        logMapper.insert(log);
-//        RecordDO record = new RecordDO();
-//        record.setUser(user.getUsername());
-//        record.setType("entry");
-//        record.setSource(otherInListDetailDTO.getId());
-//        record.setTime(entry.getTime());
-//        record.setInfo("更新单据");
-//        recordMapper.insert(record);
+        //9.更新操作日志表和单据记录表
+        LogDO log = new LogDO();
+        log.setUser("admin");
+        log.setTime(entry.getTime());
+        log.setInfo("更新其他入库单"+"["+otherInListDetailDTO.getNumber()+"]");
+        log.setId(snowflake.nextIdStr());
+        logMapper.insert(log);
+        RecordDO record = new RecordDO();
+        record.setUser("admin");
+        record.setType("entry");
+        record.setSource(otherInListDetailDTO.getId());
+        record.setTime(entry.getTime());
+        record.setInfo("更新单据");
+        record.setId(snowflake.nextIdStr());
+        recordMapper.insert(record);
     }
 
     @Override
+    @Transactional
     public void examine(List<Integer> ids) {
+        //1.判断入库单是否存在
         //查询id在ids中的入库单总数
         List<Integer> exmineStatusList = otherInMapper.getExamineByIds(ids);
         //判断入库单总数是否等于ids的长度
         if (exmineStatusList.size() != ids.size()) {
             throw new RuntimeException("有入库单不存在");
         }
-        int status = exmineStatusList.get(0);
-        otherInMapper.updateExamine(ids, status ^ 1);
+        int status = exmineStatusList.get(0)^1;
+        //更新表：summary,serve,serve_info,room,room_info,log,record
+        //查询表: entry,entry_info
+
+
+        //获取所有id对应的entry表和entry_info表信息
+        List<EntryDO> entryList = otherInMapper.getByIds(ids);
+        Map<String, EntryDO> entryMap = entryList.stream()
+                .collect(Collectors.toMap(EntryDO::getId, entryDO -> entryDO));
+        List<EntryInfoDO> entryInfoList = otherInInfoMapper.getByPids(ids);
+        //2.审核入库单
+        if(status==1) {
+            for (EntryInfoDO entryInfoDO : entryInfoList) {
+                //3.审核服务
+                if (entryInfoDO.getWarehouse().equals("0")) {
+                    //4.获取服务，若服务不存在，则插入，否则更新
+                    ServeDO serveDO = serveMapper.getByGoods(entryInfoDO.getGoods());
+                    if (serveDO == null) {
+                        serveDO = new ServeDO();
+                        serveDO.setId(snowflake.nextIdStr());
+                        serveDO.setGoods(entryInfoDO.getGoods());
+                        serveDO.setAttr(entryInfoDO.getAttr());
+                        serveDO.setNums(entryInfoDO.getNums());
+                        serveMapper.insert(serveDO);
+                    } else {
+                        serveDO.setNums(serveDO.getNums().add(entryInfoDO.getNums()));
+                        serveMapper.updateById(serveDO);
+                    }
+                    //5.插入服务详细信息
+                    ServeInfoDO serveInfoDO = new ServeInfoDO();
+                    serveInfoDO.setId(snowflake.nextIdStr());
+                    serveInfoDO.setPid(serveDO.getId());
+                    serveInfoDO.setType("entry");
+                    serveInfoDO.setCls(entryInfoDO.getPid());
+                    serveInfoDO.setInfo(entryInfoDO.getId());
+                    serveInfoDO.setTime(entryMap.get(entryInfoDO.getPid()).getTime());
+                    serveInfoDO.setPrice(entryInfoDO.getPrice());
+                    serveInfoDO.setNums(entryInfoDO.getNums());
+                    serveInfoMapper.insert(serveInfoDO);
+                } else {//6.审核库存
+                    //7.获取库存，若库存不存在，则插入，否则更新
+                    RoomDO roomDO = roomMapper.getByGoods(entryInfoDO.getGoods());
+                    if (roomDO == null) {
+                        roomDO = new RoomDO();
+                        roomDO.setId(snowflake.nextIdStr());
+                        roomDO.setWarehouse(entryInfoDO.getWarehouse());
+                        roomDO.setGoods(entryInfoDO.getGoods());
+                        roomDO.setAttr(entryInfoDO.getAttr());
+                        roomDO.setNums(entryInfoDO.getNums());
+                        roomMapper.insert(roomDO);
+                    } else {
+                        roomDO.setNums(roomDO.getNums().add(entryInfoDO.getNums()));
+                        roomMapper.updateById(roomDO);
+                    }
+                    //8.插入库存详细信息
+                    RoomInfoDO roomInfoDO = new RoomInfoDO();
+                    roomInfoDO.setId(snowflake.nextIdStr());
+                    roomInfoDO.setPid(roomDO.getId());
+                    roomInfoDO.setType("entry");
+                    roomInfoDO.setCls(entryInfoDO.getPid());
+                    roomInfoDO.setInfo(entryInfoDO.getId());
+                    roomInfoDO.setTime(entryMap.get(entryInfoDO.getPid()).getTime());
+                    roomInfoDO.setDirection(1);
+                    roomInfoDO.setPrice(entryInfoDO.getPrice());
+                    roomInfoDO.setNums(entryInfoDO.getNums());
+                    roomInfoMapper.insert(roomInfoDO);
+                    //9.插入收发统计信息
+                    SummaryDO summaryDO = new SummaryDO();
+                    BeanUtils.copyProperties(roomInfoDO, summaryDO);
+                    summaryDO.setId(snowflake.nextIdStr());
+                    summaryDO.setPid(summaryDO.getId());
+                    summaryDO.setGoods(roomDO.getGoods());
+                    summaryDO.setAttr(roomDO.getAttr());
+                    summaryDO.setWarehouse(roomDO.getWarehouse());
+                    summaryDO.setBatch(entryInfoDO.getBatch());
+                    summaryDO.setMfd(entryInfoDO.getMfd());
+                    summaryDO.setSerial(entryInfoDO.getSerial());
+                    summaryDO.setUct(summaryDO.getPrice());
+                    summaryDO.setBct(summaryDO.getPrice().multiply(summaryDO.getNums()));
+                    summaryDO.setExist("[" + roomDO.getNums() +","+ roomDO.getNums() +","+ roomDO.getNums() +","+ roomDO.getNums() + "]");
+                    int temp = roomDO.getNums().multiply(roomInfoDO.getPrice()).intValue();
+                    summaryDO.setBalance("[" + temp+"," + temp +","+ temp +","+ temp + "]");
+                    summaryDO.setHandle("0.0000");
+                    summaryMapper.insert(summaryDO);
+                }
+            }
+        }else{//10.反审核入库单
+            for(EntryInfoDO entryInfoDO : entryInfoList){
+                //11.获取服务并更新
+                if(entryInfoDO.getWarehouse().equals("0")){
+                    ServeDO serveDO = serveMapper.getByGoods(entryInfoDO.getGoods());
+                    if(serveDO.getNums().equals(entryInfoDO.getNums())){
+                        serveMapper.deleteById(serveDO.getId());
+                    }else{
+                        serveDO.setNums(serveDO.getNums().subtract(entryInfoDO.getNums()));
+                        serveMapper.updateById(serveDO);
+                    }
+                    //12.删除服务详细信息
+                    serveInfoMapper.deleteByInfo(entryInfoDO.getId());
+                }else{
+                    //13.获取库存并更新
+                    RoomDO roomDO = roomMapper.getByGoods(entryInfoDO.getGoods());
+                    if(roomDO.getNums().equals(entryInfoDO.getNums())){
+                        roomMapper.deleteById(roomDO.getId());
+                    }else{
+                        roomDO.setNums(roomDO.getNums().subtract(entryInfoDO.getNums()));
+                        roomMapper.updateById(roomDO);
+                    }
+                    //14.删除库存详细信息
+                    roomInfoMapper.deleteByInfo(entryInfoDO.getId());
+                    //15.删除收发统计信息
+                    summaryMapper.deleteByInfo(entryInfoDO.getId());
+                }
+            }
+        }
+        //16.更新审核状态
+        otherInMapper.updateExamine(ids,status);
+        //17.更新日志表和单据记录表
+        List<LogDO> logList = new ArrayList<>();
+        for(EntryDO entry : entryList){
+            LogDO log = new LogDO();
+            log.setId(snowflake.nextIdStr());
+            log.setUser("admin");
+            log.setTime(entry.getTime());
+            log.setInfo("审核其他入库单"+"["+entry.getNumber()+"]");
+            logList.add(log);
+        }
+        logMapper.insertBatch(logList);
+        List<RecordDO> recordList = new ArrayList<>();
+        for(EntryDO entry : entryList){
+            RecordDO record = new RecordDO();
+            record.setId(snowflake.nextIdStr());
+            record.setUser("admin");
+            record.setType("entry");
+            record.setSource(entry.getId());
+            record.setTime(entry.getTime());
+            record.setInfo("审核单据");
+            recordList.add(record);
+        }
+        recordMapper.insertBatch(recordList);
     }
 
     @Override
+    @Transactional
     public void check(List<Integer> ids) {
+        //1.判断入库单是否存在并获取核对状态
         List<Integer> checkStatusList = otherInMapper.getCheckByIds(ids);
         if (checkStatusList.size() != ids.size()) {
             throw new RuntimeException("有入库单不存在");
         }
         int status = checkStatusList.get(0);
+        //2.更新核对状态
         otherInMapper.updateCheck(ids, status ^ 1);
+
+        //3.更新日志表和单据记录表
+        List<EntryDO> entryList = otherInMapper.getByIds(ids);
+        List<LogDO> logList = new ArrayList<>();
+        for(EntryDO entry : entryList){
+            LogDO log = new LogDO();
+            log.setId(snowflake.nextIdStr());
+            log.setUser("admin");
+            log.setTime(entry.getTime());
+            log.setInfo("核对其他入库单"+"["+entry.getNumber()+"]");
+            logList.add(log);
+        }
+        logMapper.insertBatch(logList);
+        List<RecordDO> recordList = new ArrayList<>();
+        for(EntryDO entry : entryList){
+            RecordDO record = new RecordDO();
+            record.setId(snowflake.nextIdStr());
+            record.setUser("admin");
+            record.setType("entry");
+            record.setSource(entry.getId());
+            record.setTime(entry.getTime());
+            record.setInfo("核对单据");
+            recordList.add(record);
+        }
+        recordMapper.insertBatch(recordList);
     }
 
     @Override
@@ -162,7 +352,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
             log.info("用户无操作权限");
         }
         // 2.判断入库单是否存在
-        EntryDO exist = otherInMapper.selectById(id);
+        EntryDO exist =  otherInMapper.selectById(id);
         if (exist == null) {
             log.info("入库单不存在");
         }
@@ -196,7 +386,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
 
     @Override
     @Transactional
-    public List<String> removeOtherInList(List<Integer> ids) {
+    public List<String> removeOtherInList(List<String> ids) {
         // 用于记录成功删除的入库单编号
         List<String> deletedList = new ArrayList<>();
 
@@ -226,19 +416,38 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
                 deletedList.add(entryDO.getNumber());
             }
         }
-
         // 5.记录删除结果
         if (count != ids.size()) {
             log.info("删除入库单完成，预期删除{}条，实际删除{}条", ids.size(), count);
         } else {
             log.info("成功删除{}条入库单", count);
         }
-
         return deletedList;
     }
 
+
     /**
-     * 数据合法性校验（带错误信息）
+     * 获取其他入库单列表（条件查询+分页）
+     * @param query 查询参数对象
+     * @return 包含分页数据的JsonVO对象
+     */
+    @Override
+    public JsonVO<PageDTO<OtherInListDTO>> getOtherInList(OtherInQuery query) {
+        // 创建分页对象
+        Page<OtherInListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        // 调用mapper进行分页查询
+        Page<OtherInListDTO> result = otherInListMapper.selectOtherInListPage(page, query);
+        // 构建返回的分页数据对象
+        PageDTO<OtherInListDTO> pageDTO = new PageDTO<>();
+        pageDTO.setTotal(result.getTotal());
+        pageDTO.setRows(result.getRecords());
+        pageDTO.setPageSize(result.getSize());
+        // 返回成功响应
+        return JsonVO.success(pageDTO);
+    }
+
+    /**
+     * 数据合法性校验
      */
     private String validate(OtherInListAddDTO dto) {
         if (dto == null) {
@@ -299,7 +508,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
             return "单据日期不能晚于当前时间";
         }
 
-        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListInfoDTOList();
+        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListDetailInfoDTOList();
         // 关联数据校验
         if (validateOtherInListInfo(otherInListInfoDTO) == null) {
             return "入库单详细信息不能为空";
@@ -312,7 +521,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO> impl
     }
 
     /**
-     * 入库单详细信息校验（带错误信息）
+     * 入库单详细信息校验
      */
     private String validateOtherInListInfo(OtherInListInfoDTO info) {
         if (info == null) {

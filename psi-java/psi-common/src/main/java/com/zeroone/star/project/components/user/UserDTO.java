@@ -29,9 +29,21 @@ public class UserDTO {
     /**
      * 是否启用
      */
-    private Byte isEnabled;
+    //private Byte isEnabled;
     /**
      * 用户拥有角色列表
      */
     private List<String> roles;
+    /**
+     * 用户头像
+     */
+    private String avatar;
+    /**
+     * 组织id
+     */
+    private String frameId;
+    /**
+     * 组织名称
+     */
+    private String frameName;
 }

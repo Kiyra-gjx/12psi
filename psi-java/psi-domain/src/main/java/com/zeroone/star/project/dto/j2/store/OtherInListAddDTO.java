@@ -20,6 +20,7 @@ import java.util.List;
 @Data
 @ApiModel("其他入库单数据对象")
 public class OtherInListAddDTO {
+
     @ExcelProperty(value = "供应商", index = 1)
     @ApiModelProperty(value = "供应商",required = false, example = "0")
     private String supplier;
@@ -32,7 +33,7 @@ public class OtherInListAddDTO {
     @ApiModelProperty(value = "单据日期",required = true, example = "2023-10-18 18:18:00")
     private LocalDateTime time;
 
-    @ExcelProperty(value = "单据编号", index = 4)
+    @ExcelProperty(value = "单据编号", index  =4)
     @ApiModelProperty(value = "单据编号",required = true, example = "QTRKD2510151628275")
     private String number;
 
@@ -60,7 +61,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "备注信息", index = 12)
     @ApiModelProperty(value = "备注信息", required = false,example = "紧急订单，请优先处理")
-    private String data;
+    private String  data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
     String more;
@@ -82,8 +83,8 @@ public class OtherInListAddDTO {
     private String user;
 
     @ApiModelProperty(value = "入库单详细信息列表",required = true)
-    List<OtherInListInfoDTO> otherInListInfoDTOList;
+    List<OtherInListDetailInfoDTO> otherInListDetailInfoDTOList;
 
     @ApiModelProperty(value = "单据费用列表",required = true, example = "{id: 7, type: \"entry\", class: 4, time: \"2025-10-15\", iet: 5, money: 111, data: \"\", settle: 0, state: 0}")
-    List<CostDTO> costDTOList;
+    private List<CostDTO> costDTOList;
 }

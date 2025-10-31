@@ -19,4 +19,6 @@ public interface CostMapper extends BaseMapper<CostDO> {
     void deleteBycls(String id);
 
     void insertBatch(List<CostDO> costList);
+
+    List<CostDO> selectByCls(String toString);
 }

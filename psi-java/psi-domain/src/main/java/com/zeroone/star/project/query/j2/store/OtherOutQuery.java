@@ -23,13 +23,13 @@ import java.util.List;
 @ApiModel("其他出库单参数对象")
 public class OtherOutQuery extends PageQuery {
     @ApiModelProperty(value = "id", example = "1")
-    private Integer id;
+    private String id;
     @ApiModelProperty(value = "供应商", example = "1")
-    private Integer customer;
+    private String customer;
     @ApiModelProperty(value = "所属组织", example = "0")
-    private Integer frame;
+    private String frame;
     @ApiModelProperty(value = "单据时间", example = "1695043200")
-    private Integer time;
+    private String time;
     @ApiModelProperty(value = "单据编号", example = "OT202310190001")
     private String number;
     @ApiModelProperty(value = "单据类型[0:其它出库单|1:盘亏单]", example = "0")
@@ -38,6 +38,10 @@ public class OtherOutQuery extends PageQuery {
     private BigDecimal total;
     @ApiModelProperty(value = "单据费用", example = "50.00")
     private BigDecimal cost;
+    @ApiModelProperty(value = "开始日期", example = "2024-10-19")
+    private String startTime;
+    @ApiModelProperty(value = "结束日期", example = "2025-10-19")
+    private String endTime;
     @ApiModelProperty(value = "关联人员", example = "1")
     private Integer people;
     @ApiModelProperty(value = "物流信息", example = "顺丰快递")

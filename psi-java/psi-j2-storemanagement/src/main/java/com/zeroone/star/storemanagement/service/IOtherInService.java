@@ -1,7 +1,10 @@
 package com.zeroone.star.storemanagement.service;
 
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
+import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
+import com.zeroone.star.project.query.j2.store.OtherInQuery;
 import com.zeroone.star.project.vo.JsonVO;
 
 import java.util.List;
@@ -17,5 +20,7 @@ public interface IOtherInService {
 
     JsonVO<String> saveOtherInList(OtherInListAddDTO dto);
 
-    List<String> removeOtherInList(List<Integer> ids);
+    List<String> removeOtherInList(List<String> ids);
+
+    JsonVO<PageDTO<OtherInListDTO>> getOtherInList(OtherInQuery query);
 }

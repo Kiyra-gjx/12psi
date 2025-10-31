@@ -8,4 +8,14 @@
         #{id}
     </foreach>
 </select>
+    <insert id="insertBatch" parameterType="com.zeroone.star.storemanagement.entity.ExtryInfoDO">
+        INSERT INTO extry_info (
+            id,pid,goods, attr, unit, warehouse,
+            batch, mfd, price, nums, serial,
+            total, data
+        ) VALUES
+        <foreach collection="extryInfoList" item="item" separator=",">
+            (#{item.id},#{item.pid}, #{item.goods}, #{item.attr}, #{item.unit}, #{item.warehouse}, #{item.batch}, #{item.mfd}, #{item.price}, #{item.nums}, #{item.serial}, #{item.total}, #{item.data})
+        </foreach>
+    </insert>
 </mapper>

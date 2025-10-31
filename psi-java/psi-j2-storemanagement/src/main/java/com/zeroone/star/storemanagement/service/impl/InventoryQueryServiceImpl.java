@@ -4,14 +4,16 @@ package com.zeroone.star.storemanagement.service.impl;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.AttrStockDTO;
+import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
+import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
-import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.mapper.AttrMapper;
+import com.zeroone.star.storemanagement.mapper.InventoryDetailMapper;
 import com.zeroone.star.storemanagement.mapper.InventoryMapper;
 import com.zeroone.star.storemanagement.mapper.RoomMapper;
-import com.zeroone.star.storemanagement.service.IInventoryService;
+import com.zeroone.star.storemanagement.service.IInventoryQueryService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +25,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 @Service
 @Slf4j
-public class InventoryServiceImpl  implements IInventoryService {
+public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
     @Resource
     private InventoryMapper inventoryMapper;
@@ -34,6 +36,14 @@ public class InventoryServiceImpl  implements IInventoryService {
     @Resource
     private RoomMapper roomMapper;
 
+    @Resource
+    private InventoryDetailMapper inventoryDetailMapper;
+
+    /**
+     * 获取库存列表数据（分页）
+     * @param query 查询条件对象，包含商品ID、仓库ID、辅助属性ID、时间范围、库存数量范围、库存状态等过滤条件以及分页参数
+     * @return PageDTO<InventoryListDTO> 分页后的库存列表数据，每条记录包含商品ID、商品名称、仓库ID、仓库名称、辅助属性ID、辅助属性名称、库存数量、库存状态等字段
+     */
     @Override
     public PageDTO<InventoryListDTO> getInventoryList(InventoryQuery query) {
             //1.xml联表查询基础数据
@@ -89,5 +99,25 @@ public class InventoryServiceImpl  implements IInventoryService {
                 });
             }
             return PageDTO.create(resultPage);
+    }
+
+
+    /**
+     * 获取库存详情数据（分页）
+     * @param query 详情查询条件对象，包含商品ID、仓库ID、辅助属性ID、时间范围、库存数量范围、库存状态等过滤条件以及分页参数
+     * @return PageDTO<InventoryDetailDTO> 分页后的库存详情数据，每条记录包含商品ID、商品名称、仓库ID、仓库名称、辅助属性ID、辅助属性名称、库存数量、库存状态等字段
+     */
+    @Override
+    public PageDTO<InventoryDetailDTO> getInventoryDetail(InventoryDetailQuery query) {
+        //TODO:后续可以使用校验注解优化
+        if (query.getGoodsId() == null) {
+            throw new IllegalArgumentException("商品ID不能为空");
+        }
+
+        Page<InventoryDetailDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        Page<InventoryDetailDTO> resultPage = inventoryDetailMapper.selectInventoryDetailList(page, query);
+
+        return PageDTO.create(resultPage);
+
     }
 }

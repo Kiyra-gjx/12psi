@@ -22,4 +22,12 @@ public interface OtherInMapper extends BaseMapper<EntryDO> {
 
     @Select("select examine from entry where id = #{id}")
     Integer getExamineById(String id);
+
+    List<EntryDO> getByIds(List<Integer> ids);
+
+     int insert(EntryDO entryDO);
+
+     EntryDO selectById(String id);
+
+    List<EntryDO> selectBatchIds(List<Integer> ids);
 }
