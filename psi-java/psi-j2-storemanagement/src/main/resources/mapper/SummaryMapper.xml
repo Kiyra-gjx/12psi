@@ -4,7 +4,7 @@
 
 
     <insert id="insert">
-        insert into summary (id, pid, type, class, info, time, goods, attr, warehouse, batch, mfd, direction, price, nums, uct, bct, exist, balance, handle)
-        values (#{id}, #{pid}, #{type}, #{cls}, #{info}, #{time}, #{goods}, #{attr}, #{warehouse}, #{batch}, #{mfd}, #{direction}, #{price}, #{nums}, #{uct}, #{bct}, #{exist}, #{balance}, #{handle})
+        insert into is_summary (id, pid, type, class, info, time, goods, attr, warehouse, batch, mfd, direction, price, nums, uct, bct, exist, balance, handle,serial)
+        values (#{id}, #{pid}, #{type}, #{cls}, #{info}, UNIX_TIMESTAMP(#{time}), #{goods}, #{attr}, #{warehouse}, #{batch}, UNIX_TIMESTAMP(#{mfd}) * 1000, #{direction}, #{price}, #{nums}, #{uct}, #{bct}, #{exist}, #{balance}, #{handle},'1')
     </insert>
 </mapper>

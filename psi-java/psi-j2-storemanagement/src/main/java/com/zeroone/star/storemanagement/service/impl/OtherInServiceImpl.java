@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.zeroone.star.project.components.user.UserDTO;
+import com.zeroone.star.project.components.user.UserHolder;
 import com.zeroone.star.project.dto.j2.store.CostDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
@@ -80,6 +82,9 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
     @Resource
     MsEntryMapper ms;
 
+    @Resource
+    UserHolder userHolder;
+
     //雪花算法
     private final Snowflake snowflake = IdUtil.getSnowflake();
 
@@ -114,7 +119,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             BeanUtils.copyProperties(otherInListInfoDTO, entryInfo);
             entryInfo.setPid(otherInListDetailDTO.getId());
             entryInfoList.add(entryInfo);
-            entryInfo.setId(snowflake.nextIdStr());
+            entryInfo.setId(String.valueOf(snowflake.nextId()%100000000));
         }
         otherInInfoMapper.insertBatch(entryInfoList);
 
@@ -133,25 +138,31 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             cost.setTime(entry.getTime());
             cost.setSettle(BigDecimal.valueOf(0.0000));
             cost.setState(0);
-            cost.setId(snowflake.nextIdStr());
+            cost.setId(String.valueOf(snowflake.nextId()%100000000));
             costList.add(cost);
         }
         costMapper.insertBatch(costList);
 
         //9.更新操作日志表和单据记录表
+        UserDTO userDTO = null;
+        try {
+            userDTO = userHolder.getCurrentUser();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         LogDO log = new LogDO();
-        log.setUser("admin");
+        log.setUser("1");
         log.setTime(entry.getTime());
         log.setInfo("更新其他入库单"+"["+otherInListDetailDTO.getNumber()+"]");
-        log.setId(snowflake.nextIdStr());
+        log.setId(String.valueOf(snowflake.nextId()%100000000));
         logMapper.insert(log);
         RecordDO record = new RecordDO();
-        record.setUser("admin");
+        record.setUser("1");
         record.setType("entry");
         record.setSource(otherInListDetailDTO.getId());
         record.setTime(entry.getTime());
         record.setInfo("更新单据");
-        record.setId(snowflake.nextIdStr());
+        record.setId(String.valueOf(snowflake.nextId()%100000000));
         recordMapper.insert(record);
     }
 
@@ -184,7 +195,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                     ServeDO serveDO = serveMapper.getByGoods(entryInfoDO.getGoods());
                     if (serveDO == null) {
                         serveDO = new ServeDO();
-                        serveDO.setId(snowflake.nextIdStr());
+                        serveDO.setId(String.valueOf(snowflake.nextId()%100000000));
                         serveDO.setGoods(entryInfoDO.getGoods());
                         serveDO.setAttr(entryInfoDO.getAttr());
                         serveDO.setNums(entryInfoDO.getNums());
@@ -195,7 +206,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                     }
                     //5.插入服务详细信息
                     ServeInfoDO serveInfoDO = new ServeInfoDO();
-                    serveInfoDO.setId(snowflake.nextIdStr());
+                    serveInfoDO.setId(String.valueOf(snowflake.nextId()%100000000));
                     serveInfoDO.setPid(serveDO.getId());
                     serveInfoDO.setType("entry");
                     serveInfoDO.setCls(entryInfoDO.getPid());
@@ -209,7 +220,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                     RoomDO roomDO = roomMapper.getByGoods(entryInfoDO.getGoods());
                     if (roomDO == null) {
                         roomDO = new RoomDO();
-                        roomDO.setId(snowflake.nextIdStr());
+                        roomDO.setId(String.valueOf(snowflake.nextId()%100000000));
                         roomDO.setWarehouse(entryInfoDO.getWarehouse());
                         roomDO.setGoods(entryInfoDO.getGoods());
                         roomDO.setAttr(entryInfoDO.getAttr());
@@ -221,7 +232,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                     }
                     //8.插入库存详细信息
                     RoomInfoDO roomInfoDO = new RoomInfoDO();
-                    roomInfoDO.setId(snowflake.nextIdStr());
+                    roomInfoDO.setId(String.valueOf(snowflake.nextId()%100000000));
                     roomInfoDO.setPid(roomDO.getId());
                     roomInfoDO.setType("entry");
                     roomInfoDO.setCls(entryInfoDO.getPid());
@@ -234,7 +245,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                     //9.插入收发统计信息
                     SummaryDO summaryDO = new SummaryDO();
                     BeanUtils.copyProperties(roomInfoDO, summaryDO);
-                    summaryDO.setId(snowflake.nextIdStr());
+                    summaryDO.setId(String.valueOf(snowflake.nextId()%100000000));
                     summaryDO.setPid(summaryDO.getId());
                     summaryDO.setGoods(roomDO.getGoods());
                     summaryDO.setAttr(roomDO.getAttr());
@@ -282,11 +293,17 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         //16.更新审核状态
         otherInMapper.updateExamine(ids,status);
         //17.更新日志表和单据记录表
+        UserDTO userDTO = null;
+        try {
+            userDTO = userHolder.getCurrentUser();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         List<LogDO> logList = new ArrayList<>();
         for(EntryDO entry : entryList){
             LogDO log = new LogDO();
-            log.setId(snowflake.nextIdStr());
-            log.setUser("admin");
+            log.setId(String.valueOf(snowflake.nextId()%100000000));
+            log.setUser("1");
             log.setTime(entry.getTime());
             log.setInfo("审核其他入库单"+"["+entry.getNumber()+"]");
             logList.add(log);
@@ -295,8 +312,8 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         List<RecordDO> recordList = new ArrayList<>();
         for(EntryDO entry : entryList){
             RecordDO record = new RecordDO();
-            record.setId(snowflake.nextIdStr());
-            record.setUser("admin");
+            record.setId(String.valueOf(snowflake.nextId()%100000000));
+            record.setUser("1");
             record.setType("entry");
             record.setSource(entry.getId());
             record.setTime(entry.getTime());
@@ -319,12 +336,18 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         otherInMapper.updateCheck(ids, status ^ 1);
 
         //3.更新日志表和单据记录表
+        UserDTO userDTO = null;
+        try {
+            userDTO = userHolder.getCurrentUser();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         List<EntryDO> entryList = otherInMapper.getByIds(ids);
         List<LogDO> logList = new ArrayList<>();
         for(EntryDO entry : entryList){
             LogDO log = new LogDO();
-            log.setId(snowflake.nextIdStr());
-            log.setUser("admin");
+            log.setId(String.valueOf(snowflake.nextId()%100000000));
+            log.setUser("1");
             log.setTime(entry.getTime());
             log.setInfo("核对其他入库单"+"["+entry.getNumber()+"]");
             logList.add(log);
@@ -333,8 +356,8 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         List<RecordDO> recordList = new ArrayList<>();
         for(EntryDO entry : entryList){
             RecordDO record = new RecordDO();
-            record.setId(snowflake.nextIdStr());
-            record.setUser("admin");
+            record.setId(String.valueOf(snowflake.nextId()%100000000));
+            record.setUser("1");
             record.setType("entry");
             record.setSource(entry.getId());
             record.setTime(entry.getTime());

@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper
 public interface CostMapper extends BaseMapper<CostDO> {
 
-    @Select("select max(id) from cost")
+    @Select("select max(id) from is_cost")
     Integer getMaxId();
 
-    @Delete("delete from cost where class = #{id}")
+    @Delete("delete from is_cost where class = #{id}")
     void deleteBycls(String id);
 
     void insertBatch(List<CostDO> costList);

@@ -9,9 +9,9 @@ import org.apache.ibatis.annotations.Select;
 @Mapper
 public interface ServeInfoMapper {
 
-    @Insert("insert into serve_info (id,pid,type,class,info,time,price,nums) VALUES (#{id},#{pid},#{type},#{cls},#{info},#{time},#{price},#{nums})")
+    @Insert("insert into is_serve_info (id,pid,type,class,info,time,price,nums) VALUES (#{id},#{pid},#{type},#{cls},#{info},UNIX_TIMESTAMP(#{time}),#{price},#{nums})")
     void insert(ServeInfoDO serveInfoDO);
 
-    @Delete("delete from serve_info where info=#{info}")
+    @Delete("delete from is_serve_info where info=#{info}")
     void deleteByInfo(String id);
 }
