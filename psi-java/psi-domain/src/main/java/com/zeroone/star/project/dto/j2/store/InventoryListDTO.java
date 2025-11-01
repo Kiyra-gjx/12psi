@@ -62,13 +62,14 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "商品备注", example = "")
     private String remark;
 
-    // ================= 属性库存信息 =================
+    @ApiModelProperty(value = "库存阈值", example = "100")
+    private BigDecimal stock;
+
     @ApiModelProperty(value = "商品辅助属性信息")
     private List<AttrStockDTO> attrs;
 
     @ExcelProperty(value = "商品名称", index = 2)
-    // ================= 若无属性时展示仓库库存 =================
-    @ApiModelProperty(value = "仓库库存明细信息（没有辅助属性时）")
+    @ApiModelProperty(value = "商品的仓库库存明细信息")
     private List<WarehouseStockDTO> warehouses;
 
 }

@@ -36,11 +36,11 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
 
     @Override
     public PageDTO<BatchListDTO> listBatch(BatchQuery query) {
-
+        try {
             // 创建分页对象
             Page<BatchListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
 
-            // 1. 查询商品基本信息（第一层）
+            // 1. 查询商品基本信息（第一层）- 商品级别筛选
             Page<BatchListDTO> goodsPage = batchListMapper.selectBatchGoodsList(page, query);
             List<BatchListDTO> goodsList = goodsPage.getRecords();
 
@@ -58,49 +58,52 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
             Map<String, List<WarehouseStockDTO>> warehouseStockMap = warehouseStocks.stream()
                     .collect(Collectors.groupingBy(WarehouseStockDTO::getGoodsId));
 
-            // 3. 查询批次号信息（第二层）
-            List<BatchNumberDTO> batchNumbers = batchListMapper.selectBatchNumbersByGoodsIds(goodsIds);
-            // 直接使用 goodsId 字段进行分组
-            Map<String, List<BatchNumberDTO>> batchNumberMap = batchNumbers.stream()
-                    .collect(Collectors.groupingBy(BatchNumberDTO::getGoodsId));
+            // 3. 查询批次详情信息（第三层）- 严格应用所有批次条件
+            List<BatchDocumentDTO> allBatchDocuments = batchListMapper.selectBatchDocumentsByGoodsIds(goodsIds, query);
 
-            // 4. 查询批次详情信息（第三层）
-            List<BatchDocumentDTO> batchDocuments = batchListMapper.selectBatchDocumentsByGoodsIds(goodsIds);
+            // 4. 按商品ID和批次号进行双重分组
+            Map<String, Map<String, List<BatchDocumentDTO>>> batchGroupMap = allBatchDocuments.stream()
+                    .collect(Collectors.groupingBy(
+                            BatchDocumentDTO::getGoodsId,
+                            Collectors.groupingBy(BatchDocumentDTO::getBatchNumber)
+                    ));
 
-            // 按批次号分组批次详情
-            Map<String, List<BatchDocumentDTO>> batchDocumentMap = batchDocuments.stream()
-                    .collect(Collectors.groupingBy(BatchDocumentDTO::getBatchNumber));
-
-            // 组装数据
+            // 5. 组装数据
             for (BatchListDTO goods : goodsList) {
                 String goodsId = goods.getId();
 
-                // 设置仓库库存信息（第一层）
+                // 设置仓库库存信息
                 goods.setWarehouses(warehouseStockMap.getOrDefault(goodsId, new ArrayList<>()));
 
-                // 设置批次信息（第二层 + 第三层）
-                List<BatchNumberDTO> goodsBatchNumbers = batchNumberMap.getOrDefault(goodsId, new ArrayList<>());
-                for (BatchNumberDTO batchNumber : goodsBatchNumbers) {
-                    // 获取该批次号的所有详情（第三层）
-                    List<BatchDocumentDTO> documents = batchDocumentMap.getOrDefault(
-                            batchNumber.getBatchNumber(), new ArrayList<>());
+                // 设置批次信息
+                Map<String, List<BatchDocumentDTO>> goodsBatchMap = batchGroupMap.getOrDefault(goodsId, new HashMap<>());
+                List<BatchNumberDTO> batchNumbers = new ArrayList<>();
 
-                    // 设置批次详情
-                    batchNumber.setBatchDocuments(documents);
+                for (Map.Entry<String, List<BatchDocumentDTO>> entry : goodsBatchMap.entrySet()) {
+                    BatchNumberDTO batchNumberDTO = new BatchNumberDTO();
+                    batchNumberDTO.setBatchNumber(entry.getKey());
+                    batchNumberDTO.setGoodsId(goodsId);
+                    batchNumberDTO.setBatchDocuments(entry.getValue());
 
-                    // 根据第三层详情计算第二层的总库存
-                    BigDecimal totalStock = documents.stream()
+                    // 计算该批次号的总库存
+                    BigDecimal totalStock = entry.getValue().stream()
                             .map(BatchDocumentDTO::getNums)
                             .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    batchNumber.setTotalStock(totalStock);
+                    batchNumberDTO.setTotalStock(totalStock);
+
+                    batchNumbers.add(batchNumberDTO);
                 }
-                goods.setBatches(goodsBatchNumbers);
+
+                goods.setBatches(batchNumbers);
             }
 
             // 返回分页结果
-            PageDTO<BatchListDTO> pageDTO = PageDTO.create(goodsPage);
-            return pageDTO;
+            return PageDTO.create(goodsPage);
 
+        } catch (Exception e) {
+            log.error("查询批次列表失败", e);
+            throw new RuntimeException("查询批次列表失败", e);
+        }
     }
 
 

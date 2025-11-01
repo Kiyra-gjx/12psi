@@ -9,9 +9,6 @@ import java.util.List;
 
 public interface RoomMapper extends BaseMapper<RoomDO> {
 
-
-    List<WarehouseStockDTO> selectWarehouseStockByGoodsIds(@Param("goodsIds") List<String> goodsIds);
-
     @Select("select max(id) from room")
     Integer getMaxId();
 
