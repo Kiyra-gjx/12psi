@@ -17,7 +17,7 @@ public interface OtherOutMapper extends BaseMapper<ExtryDO> {
 
     void examine(List<Integer> ids);
 
-    List<ExtryDO> selectBatchIds(@Param("ids") List<Integer> ids);
+    List<ExtryDO> selectMainIds(@Param("ids") List<String> ids);
 
     void insertBatch(ExtryDO extry);
 

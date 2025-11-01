@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.OtherOutMapper">
 
-    <select id="selectBatchIds" parameterType="java.util.List" resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
+    <select id="selectMainIds" parameterType="java.util.List" resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
         SELECT
         e.id,
         e.customer,
