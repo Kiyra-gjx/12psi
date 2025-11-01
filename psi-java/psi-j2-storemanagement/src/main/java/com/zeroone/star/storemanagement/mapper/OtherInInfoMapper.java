@@ -10,7 +10,7 @@ import java.util.List;
 
 @Mapper
 public interface OtherInInfoMapper extends BaseMapper<EntryInfoDO> {
-    @Delete("delete from entry_info where pid = #{pid}")
+    @Delete("delete from is_entry_info where pid = #{pid}")
     void deleteByPid(String pid);
 
     List<EntryInfoDO> selectBatchIds(List<Integer> ids);

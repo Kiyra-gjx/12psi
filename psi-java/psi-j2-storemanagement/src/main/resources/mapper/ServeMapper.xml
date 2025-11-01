@@ -3,7 +3,7 @@
 <mapper namespace="com.zeroone.star.storemanagement.mapper.ServeMapper">
 
     <update id="updateById">
-        UPDATE serve
+        UPDATE is_serve
         <set>
             <if test="goods != null">
                 goods = #{goods},
