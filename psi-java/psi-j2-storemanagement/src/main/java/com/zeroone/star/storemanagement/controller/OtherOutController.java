@@ -1,5 +1,6 @@
 package com.zeroone.star.storemanagement.controller;
 
+import cn.hutool.core.date.DateTime;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
@@ -111,17 +112,36 @@ public class OtherOutController implements OtherOutApis {
     @Override
     public JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestBody List<String> ids) {
         try {
+            if(ids.isEmpty()) {
+                JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+                result.setCode(400);
+                result.setMessage("列表为空");
+                result.setData(ResponseEntity.badRequest().body(new byte[0]));
+                return result;
+            }
             List<String> idStrList = new ArrayList<>(ids);
-
             byte[] excelData = otherOutListService.exportOrderList(idStrList);
+            if (excelData == null || excelData.length == 0) {
+                JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+                result.setCode(404);
+                result.setMessage("无数据");
+                result.setData(ResponseEntity.badRequest().body(new byte[0]));
+                return result;
+            }
 
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            String fileName = URLEncoder.encode("其他出库单.xlsx", StandardCharsets.UTF_8.toString());
+            String fileName = URLEncoder.encode(DateTime.now().toString("yyyyMMddHHmmss") + "其他出库单.xlsx", StandardCharsets.UTF_8.toString());
             headers.setContentDispositionFormData("attachment", fileName);
-
             return JsonVO.success(ResponseEntity.ok().headers(headers).body(excelData));
-        } catch (Exception e) {
+        } catch  (RuntimeException e) {
+            // 处理数据为空等运行时异常
+            JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+            result.setCode(404);
+            result.setMessage(e.getMessage());
+            result.setData(ResponseEntity.badRequest().body(new byte[0]));
+            return result;
+        }  catch (Exception e) {
             JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
             result.setCode(500);
             result.setMessage("导出失败：" + e.getMessage());
@@ -136,21 +156,43 @@ public class OtherOutController implements OtherOutApis {
     @Override
     public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestBody List<String> ids) {
         try {
+            if(ids.isEmpty()) {
+                JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+                result.setCode(400);
+                result.setMessage("列表为空");
+                result.setData(ResponseEntity.badRequest().body(new byte[0]));
+                return result;
+            }
             List<String> idStrList = new ArrayList<>(ids);
             byte[] excelData = otherOutListService.exportOrderDetails(idStrList);
+            if (excelData == null || excelData.length == 0) {
+                JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+                result.setCode(404);
+                result.setMessage("无数据");
+                result.setData(ResponseEntity.badRequest().body(new byte[0]));
+                return result;
+            }
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            String fileName = URLEncoder.encode("其他出库单明细.xlsx", StandardCharsets.UTF_8.toString());
+            String fileName = URLEncoder.encode(DateTime.now().toString("yyyyMMddHHmmss") + "其他出库单详情.xlsx", StandardCharsets.UTF_8.toString());
             headers.setContentDispositionFormData("attachment", fileName);
 
             return JsonVO.success(ResponseEntity.ok().headers(headers).body(excelData));
-        } catch (Exception e) {
+        } catch (RuntimeException e) {
+            // 处理数据为空等运行时异常
+            JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
+            result.setCode(404);
+            result.setMessage(e.getMessage());
+            result.setData(ResponseEntity.badRequest().body(new byte[0]));
+            return result;
+        }  catch (Exception e) {
             JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
             result.setCode(500);
             result.setMessage("导出失败：" + e.getMessage());
             result.setData(ResponseEntity.badRequest().body(new byte[0]));
             return result;
         }
+
     }
 
 
