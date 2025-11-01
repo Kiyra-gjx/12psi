@@ -6,7 +6,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zeroone.star.project.components.user.UserHolder;
 import com.zeroone.star.project.dto.PageDTO;
-import com.zeroone.star.project.dto.j2.store.*;
+import com.zeroone.star.project.dto.j2.store.CostDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListDTO;
+import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.convertor.MsEntryMapper;
@@ -15,7 +17,6 @@ import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.service.IOtherOutService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
@@ -24,7 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Service
@@ -56,7 +59,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     private ServeInfoMapper serveInfoMapper;
     @Resource
     private UserHolder userHolder;
-    @Autowired
+    @Resource
     MsEntryMapper ms;
     @Override
     @Transactional
@@ -66,8 +69,8 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
             //2.判断该出库单是否已经审核
             boolean flag = true;
             QueryWrapper<ExtryDO> extryDOQueryWrapper = new QueryWrapper<>();
-            extryDOQueryWrapper.eq("examine", 1).eq("id", extryId);
-            ExtryDO extryDO = otherOutMapper.selectById(extryDOQueryWrapper);
+            extryDOQueryWrapper.eq("id", extryId);
+            ExtryDO extryDO = otherOutMapper.selectOne(extryDOQueryWrapper);
             if (extryDO.getExamine() == 0) {
                 //3.执行审核
                 //4.根据Id查询该出库单每一个商品的类型，常规商品需要查询库存
@@ -78,13 +81,13 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                     throw new RuntimeException("出库单信息有误!");
                 }
                 for (ExtryInfoDO extryInfoDO : extryInfoDOList) {
-                    String goodsId = extryInfoDO.getGoods();
+                    Integer goodsId = extryInfoDO.getGoods();
                     QueryWrapper<GoodsDO> goodsQueryWrapper = new QueryWrapper<>();
                     goodsQueryWrapper.select("type").eq("id", goodsId);
                     GoodsDO goodsDO = goodsMapper.selectOne(goodsQueryWrapper);
                     if (goodsDO.getType() == 0) {
                         //.常规商品查询库存
-                        String warehouse = extryInfoDO.getWarehouse();
+                        Integer warehouse = extryInfoDO.getWarehouse();
                         QueryWrapper<RoomDO> roomDOQueryWrapper = new QueryWrapper<>();
                         List<RoomDO> roomDOS = roomMapper.selectList(
                                 roomDOQueryWrapper
@@ -114,22 +117,20 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                             }
                             boolean batchMatch = extryInfoDO.getBatch().equals(batchDO.getNumber()) &&
                                     Objects.equals(extryInfoDO.getMfd(), batchDO.getTime()) &&
-                                    batchDO.getWarehouse().equals(extryInfoDO.getWarehouse()) &&
-                                    Objects.equals(extryInfoDO.getNums(), batchDO.getNums());
+                                    batchDO.getWarehouse().equals(extryInfoDO.getWarehouse()) ;
 
                             if (!batchMatch) {
                                 throw new RuntimeException("批次信息不匹配!");
                             }
                         }
                         //6.常规商品出库后减少对应仓库中该商品库存
-                        RoomDO roomDO = new RoomDO();
-                        roomDO.setId(roomMapper.selectOne(new QueryWrapper<RoomDO>().eq("warehouse", extryInfoDO.getWarehouse()).eq("goods", goodsId)).getId());
+                        RoomDO roomDO = roomMapper.selectOne(new QueryWrapper<RoomDO>().eq("warehouse", extryInfoDO.getWarehouse()).eq("goods", goodsId));
                         BigDecimal roomStock = roomDO.getNums().subtract(extryInfoDO.getNums());
                         roomDO.setNums(roomStock);
                         roomMapper.updateById(roomDO);
 
                         //7.生成库存信息
-                        String roomId = roomMapper.selectOne(new QueryWrapper<RoomDO>().eq("warehouse", extryInfoDO.getWarehouse()).eq("goods", goodsId)).getId();
+                        Integer roomId = roomMapper.selectOne(new QueryWrapper<RoomDO>().eq("warehouse", extryInfoDO.getWarehouse()).eq("goods", goodsId)).getId();
                         RoomInfoDO roomInfoDO = new RoomInfoDO();
                         roomInfoDO.setPid(roomId);
                         roomInfoDO.setType("extry");
@@ -144,8 +145,8 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
 
                         //8.生成收支单
                         SummaryDO summaryDO = new SummaryDO();
-                        summaryDO.setId(result);
-                        summaryDO.setPid(result);
+                        summaryDO.setId(Integer.parseInt(result));
+                        summaryDO.setPid(Integer.parseInt(result));
                         summaryDO.setType("extry");
                         summaryDO.setCls(extryInfoDO.getPid());
                         summaryDO.setInfo(extryInfoDO.getId());
@@ -166,6 +167,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                                 + stock.multiply(extryInfoDO.getPrice()) + ","
                                 + roomStock.multiply(extryInfoDO.getPrice()) + "]"
                         );
+                        summaryDO.setHandle("00.0000");
                         summaryMapper.insert(summaryDO);
                     }
                     //9.服务商品执行服务业务
@@ -228,23 +230,25 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
             //添加记录和日志
             RecordDO recordDO = new RecordDO();
             recordDO.setType("extry");
-            recordDO.setSource(extryId.toString());
-            recordDO.setTime(LocalDateTime.now());
-            try {
-                recordDO.setUser(userHolder.getCurrentUser().toString());
+            recordDO.setSource(extryId);
+            recordDO.setTime(extryDO.getTime());
+         /*   try {
+                recordDO.setUser(userHolder.getCurrentUser().getId());
             } catch (Exception e) {
                 throw new RuntimeException(e);
-            }
+            }*/
+            recordDO.setUser(1);
             recordDO.setInfo(flag ? "审核单据" : "反审核单据");
             recordMapper.insert(recordDO);
 
             LogDO logDO = new LogDO();
-            logDO.setTime(LocalDateTime.now());
-            try {
-                recordDO.setUser(userHolder.getCurrentUser().toString());
+            logDO.setTime(extryDO.getTime());
+           /* try {
+                logDO.setUser(userHolder.getCurrentUser().getId());
             } catch (Exception e) {
                 throw new RuntimeException(e);
-            }
+            }*/
+            logDO.setUser(1);
             logDO.setInfo((flag ? "审核其他出库单" : "反审核其他出库单") + "[" + extryDO.getNumber() + "]");
             logMapper.insert(logDO);
         }
@@ -261,23 +265,25 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                 //添加记录和日志
                 RecordDO recordDO = new RecordDO();
                 recordDO.setType("extry");
-                recordDO.setSource(extryId.toString());
-                recordDO.setTime(LocalDateTime.now());
-                try {
-                    recordDO.setUser(userHolder.getCurrentUser().toString());
+                recordDO.setSource(extryId);
+                recordDO.setTime(extryDO.getTime());
+               /* try {
+                    recordDO.setUser(userHolder.getCurrentUser().getId());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
-                }
+                }*/
+                recordDO.setUser(1);
                 recordDO.setInfo(flag ? "核对单据" : "反核对单据");
                 recordMapper.insert(recordDO);
 
                 LogDO logDO = new LogDO();
-                logDO.setTime(LocalDateTime.now());
-                try {
-                    recordDO.setUser(userHolder.getCurrentUser().toString());
+                logDO.setTime(extryDO.getTime());
+             /*   try {
+                    recordDO.setUser(userHolder.getCurrentUser().getId());
                 } catch (Exception e) {
                     throw new RuntimeException(e);
-                }
+                }*/
+                logDO.setUser(1);
                 logDO.setInfo((flag ? "核对其他出库单" : "反核对其他出库单") + "[" + extryDO.getNumber() + "]");
                 logMapper.insert(logDO);
             }
