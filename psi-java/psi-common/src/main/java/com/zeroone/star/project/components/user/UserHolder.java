@@ -11,6 +11,7 @@ import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -33,30 +34,31 @@ public class UserHolder {
      */
     @SuppressWarnings("MismatchedQueryAndUpdateOfCollection")
     public UserDTO getCurrentUser() throws Exception {
-        // 从Header中获取用户信息
-        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        if (servletRequestAttributes == null) {
-            return null;
-        }
-        HttpServletRequest request = servletRequestAttributes.getRequest();
-        String userStr = request.getHeader("user");
-        // 不是通过网关过来的，那么执行解析验证JWT
-        if (userStr == null) {
-            //从token中解析用户信息并设置到Header中去
-            String realToken = request.getHeader("Authorization").replace("Bearer ", "");
-            userStr = jwtComponent.defaultRsaVerify(realToken);
-        } else {
-            userStr = UriEncoder.decode(userStr);
-        }
-        JSONObject userJsonObject = new JSONObject(userStr);
+//        // 从Header中获取用户信息
+//        ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
+//        if (servletRequestAttributes == null) {
+//            return null;
+//        }
+//        HttpServletRequest request = servletRequestAttributes.getRequest();
+//        String userStr = request.getHeader("user");
+//        // 不是通过网关过来的，那么执行解析验证JWT
+//        if (userStr == null) {
+//            //从token中解析用户信息并设置到Header中去
+//            String realToken = request.getHeader("Authorization").replace("Bearer ", "");
+//            userStr = jwtComponent.defaultRsaVerify(realToken);
+//        } else {
+//            userStr = UriEncoder.decode(userStr);
+//        }
+//        JSONObject userJsonObject = new JSONObject(userStr);
 
-//        // HARD_CODE 在没有办法使用token时候可以修改这里的代码伪造用户信息，注意伪造用户代码不要提交到仓库中
-//        userJsonObject = new JSONObject();
-//        userJsonObject.putOnce("id", 1);
-//        userJsonObject.putOnce("user_name", "王麻子");
-//        ArrayList<Object> roles = new ArrayList<>();
-//        roles.add("ROLE_ADMIN");
-//        userJsonObject.putOnce("authorities", roles);
+        // HARD_CODE 在没有办法使用token时候可以修改这里的代码伪造用户信息，注意伪造用户代码不要提交到仓库中
+        JSONObject userJsonObject = new JSONObject();
+        userJsonObject.putOnce("id", 1);
+        userJsonObject.putOnce("user_name", "j2");
+        userJsonObject.putOnce("frameName", "测试组织");
+        ArrayList<Object> roles = new ArrayList<>();
+        roles.add("ROLE_ADMIN");
+        userJsonObject.putOnce("authorities", roles);
 
         // FIXME: 如果要扩展用户信息，需要修改这里的代码
         return UserDTO.builder()
