@@ -233,7 +233,12 @@
         WHEN ri.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ri.class)
         WHEN ri.type = 'swap' OR ri.type = 'swapEnter' OR ri.type = 'swapOut' THEN (SELECT number FROM is_swap WHERE id = ri.class)
         END AS number,
-        CAST(ri.direction AS SIGNED INTEGER) AS direction,
+        <!-- 根据direction值转换为中文描述 -->
+        CASE 
+            WHEN ri.direction = 0 THEN '减少'
+            WHEN ri.direction = 1 THEN '增加'
+            ELSE CAST(ri.direction AS CHAR)
+        END AS direction,
         CAST(ri.nums AS DECIMAL(10,2)) AS nums
         FROM is_room_info ri
         INNER JOIN is_room r ON ri.pid = r.id
