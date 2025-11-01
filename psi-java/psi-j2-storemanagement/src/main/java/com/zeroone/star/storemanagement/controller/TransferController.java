@@ -1,6 +1,7 @@
 package com.zeroone.star.storemanagement.controller;
 
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.date.LocalDateTimeUtil;
 import cn.hutool.core.util.IdUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
@@ -23,12 +24,8 @@ import com.zeroone.star.project.dto.j2.store.TransferListDTO;
 import com.zeroone.star.project.j2.store.TransferApis;
 import com.zeroone.star.project.query.j2.store.TransferQuery;
 import com.zeroone.star.project.vo.JsonVO;
-import com.zeroone.star.storemanagement.entity.GoodsDO;
-import com.zeroone.star.storemanagement.entity.SwapDO;
-import com.zeroone.star.storemanagement.entity.SwapInfoDO;
-import com.zeroone.star.storemanagement.mapper.GoodsMapper;
-import com.zeroone.star.storemanagement.mapper.SwapInfoMapper;
-import com.zeroone.star.storemanagement.mapper.SwapMapper;
+import com.zeroone.star.storemanagement.entity.*;
+import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.service.ISwapService;
 import com.zeroone.star.storemanagement.service.ITransferService;
 import io.swagger.annotations.Api;
@@ -54,6 +51,7 @@ import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.ZipEntry;
@@ -157,6 +155,12 @@ public class TransferController implements TransferApis {
     @Resource
     GoodsMapper goodsMapper;
 
+    @Resource
+    RecordMapper recordMapper;
+
+    @Resource
+    LogMapper logMapper;
+
     @SneakyThrows
     @PostMapping("/import")
     @ApiOperation(value = "导入数据")
@@ -185,8 +189,6 @@ public class TransferController implements TransferApis {
                     if(rowIndex == 2) {
                         SwapDO swap = new SwapDO();
                         if(data.get(0)==null){
-                            swap.setTime(null);
-                            swapList.add(swap);
                             return;
                         }
                         swap.setTime(new DateTime(data.get(0)));
@@ -225,10 +227,9 @@ public class TransferController implements TransferApis {
             return JsonVO.fail("fail");
         }
 
-        if(swapList.get(0).getTime()==null){
-            return new JsonVO<String>(1001,"单据日期为空",null);
+        if(swapList.isEmpty()){
+            return new JsonVO<String>(1001,"数据错误",null);
         }
-
         if(swapList.get(0).getNumber()==null){
             return new JsonVO<String>(1001,"单据编号为空",null);
         }
@@ -277,6 +278,21 @@ public class TransferController implements TransferApis {
             swapInfoMapper.insert(swapInfoList.get(i));
         }
         swapMapper.insert(swapList.get(0));
+
+        RecordDO record = new RecordDO();
+        record.setType("swap");
+        record.setSource(swapList.get(0).getId());
+        record.setTime(LocalDateTime.now());
+        record.setUser(currentUser.getUsername());
+        record.setInfo("新增单据");
+        recordMapper.insert(record);
+
+        LogDO log = new LogDO();
+        log.setTime(LocalDateTime.now());
+        log.setUser(currentUser.getUsername());
+        log.setInfo("新增调拨单"+swapList.get(0).getNumber());
+        logMapper.insert(log);
+
         System.out.println("主表数据：" + swapList);
         System.out.println("明细数据：" + swapInfoList);
         return new JsonVO<String>(200,"success",null);
@@ -338,6 +354,14 @@ public class TransferController implements TransferApis {
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         ResponseEntity<byte[]> res = new ResponseEntity<>(out.toByteArray(),headers,HttpStatus.CREATED);
         out.close();
+
+        UserDTO user = userHolder.getCurrentUser();
+        LogDO log = new LogDO();
+        log.setTime(LocalDateTime.now());
+        log.setUser(user.getUsername());
+        log.setInfo("导出调拨单列表");
+        logMapper.insert(log);
+
         return res;
     }
 
@@ -426,6 +450,14 @@ public class TransferController implements TransferApis {
         headers.setContentDispositionFormData("attachment", "detail"+new DateTime().now().toString("yyyyMMddHHmmss")+".zip");
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         ResponseEntity<byte[]> res = new ResponseEntity<>(zip.toByteArray(),headers,HttpStatus.CREATED);
+
+        UserDTO user = userHolder.getCurrentUser();
+        LogDO log = new LogDO();
+        log.setTime(LocalDateTime.now());
+        log.setUser(user.getUsername());
+        log.setInfo("导出详细调拨单列表");
+        logMapper.insert(log);
+
         return res;
     }
 
