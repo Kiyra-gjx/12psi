@@ -64,6 +64,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     @Override
     @Transactional
     public void examine(List<Integer> ids) {
+        //测试表业务。
         for (Integer extryId : ids) {
             //1.取出出库单ID
             //2.判断该出库单是否已经审核
@@ -257,6 +258,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     @Override
     @Transactional
     public void check(List<Integer> ids) {
+        //测试表业务。
         for (Integer extryId : ids) {
             ExtryDO extryDO = otherOutMapper.selectById(extryId);
             if (extryDO != null) {
