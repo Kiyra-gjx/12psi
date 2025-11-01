@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
 import java.lang.reflect.Array;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,5 +31,29 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
      */
     List<String> getPidListByIds(@Param("ids") List<Integer> ids);
 
+    /**
+     * 根据调拨单的批次号查询批次是否存在
+     */
+    @Select("SELECT EXISTS(SELECT 1 FROM is_batch WHERE number = #{batch})")
+    boolean isBatchExist(@Param("batch") String batch);
+
     ArrayList<TransferDetailListDTO> getTransferDetailListDTO(@Param("id") String id);
+
+    /**
+     * 根据调拨单的id查询库存是否充足
+     */
+    @Select("SELECT EXISTS(SELECT 1 FROM is_room WHERE goods = #{goods} AND warehouse = #{warehouse} AND nums >= #{nums})")
+    boolean isNumsEnough(@Param("goods") String goods, @Param("warehouse") String warehouse, @Param("nums") BigDecimal nums);
+
+    /**
+     * 根据调拨单的id查询调拨单详情
+     */
+    @Select("SELECT * FROM is_swap_info WHERE id = #{id}")
+    SwapInfoDO getTransferDetail(String id);
+
+    /**
+     * 根据批次号、商品id、仓库id查询批次库存
+     */
+    @Select("SELECT nums FROM is_batch WHERE number = #{batchNo} AND goods = #{goodsId} AND warehouse = #{fromWarehouse}")
+    BigDecimal getBatchStock(String batchNo, String goodsId, String fromWarehouse);
 }

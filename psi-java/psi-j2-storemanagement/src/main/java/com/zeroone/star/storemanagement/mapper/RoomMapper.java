@@ -5,6 +5,7 @@ import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.storemanagement.entity.RoomDO;
 import org.apache.ibatis.annotations.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 public interface RoomMapper extends BaseMapper<RoomDO> {
@@ -26,4 +27,22 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
 
     @Delete("delete from room where id = #{id}")
     void deleteById(String id);
+
+    @Select("SELECT EXISTS(SELECT 1 FROM is_room WHERE goods = #{goods} AND warehouse = #{warehouse} AND nums >= #{nums})")
+    boolean isNumsEnough(@Param("goods") String goods, @Param("warehouse") String warehouse,
+                         @Param("nums") BigDecimal nums);
+
+    @Select("SELECT * FROM is_room WHERE goods = #{goodsId} AND warehouse = #{warehouseId}")
+    RoomDO getRoomByGoodsAndWarehouse(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId);
+
+    @Update("UPDATE is_room SET nums = nums + #{nums} WHERE goods = #{goodsId} AND warehouse = #{warehouseId}")
+    int updateRoomStock(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId,
+                        @Param("nums") BigDecimal nums);
+
+    @Update("INSERT INTO is_room (goods, warehouse, nums) VALUES (#{goodsId}, #{warehouseId}, #{nums})")
+    int createRoomInTargetWarehouse(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId,
+                                    @Param("nums") BigDecimal nums);
+
+    @Select("SELECT id FROM is_room WHERE goods = #{goodsId} AND warehouse = #{warehouseId}")
+    String getRoomId(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId);
 }
