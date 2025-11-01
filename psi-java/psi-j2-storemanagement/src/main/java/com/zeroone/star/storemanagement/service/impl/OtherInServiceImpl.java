@@ -5,6 +5,8 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.cloud.commons.lang.StringUtils;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zeroone.star.project.dto.j2.store.CostDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
@@ -33,6 +35,7 @@ import javax.annotation.Resource;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -92,8 +95,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             throw new RuntimeException("入库单已审核,无法修改");
         }
         //2.更新入库单
-        EntryDO entry = new EntryDO();
-        BeanUtils.copyProperties(otherInListDetailDTO, entry);
+        EntryDO entry = ms.otherInListDetailDtoToEntry(otherInListDetailDTO);
         otherInMapper.update(entry);
 
 
@@ -239,7 +241,6 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
                     summaryDO.setWarehouse(roomDO.getWarehouse());
                     summaryDO.setBatch(entryInfoDO.getBatch());
                     summaryDO.setMfd(entryInfoDO.getMfd());
-                    summaryDO.setSerial(entryInfoDO.getSerial());
                     summaryDO.setUct(summaryDO.getPrice());
                     summaryDO.setBct(summaryDO.getPrice().multiply(summaryDO.getNums()));
                     summaryDO.setExist("[" + roomDO.getNums() +","+ roomDO.getNums() +","+ roomDO.getNums() +","+ roomDO.getNums() + "]");

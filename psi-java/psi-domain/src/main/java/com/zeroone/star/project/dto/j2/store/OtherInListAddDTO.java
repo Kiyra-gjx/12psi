@@ -54,17 +54,17 @@ public class OtherInListAddDTO {
     private String people;
 
     @ApiModelProperty(value = "物流信息",required = false, example = "{\"key\":\"auto\",\"name\":\"自动识别\",\"number\":\"\"}")
-    private String logistics;
+    private LogisticsDTO logistics;
 
     @ApiModelProperty(value = "单据附件", required = false, example = "")
-    private String file;
+    private List<FileDTO> file;
 
     @ExcelProperty(value = "备注信息", index = 12)
     @ApiModelProperty(value = "备注信息", required = false,example = "紧急订单，请优先处理")
     private String  data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
-    String more;
+    private Object more;
 
     @ExcelProperty(value = "审核状态", index = 8)
     @ApiModelProperty(value = "审核状态[0:未审核|1:已审核]",required = true, example = "0")
