@@ -5,7 +5,7 @@
 <mapper namespace="com.zeroone.star.storemanagement.mapper.OtherInListMapper">
 
     <!-- 结果映射 -->
-    <resultMap id="OtherInListDTOMap" type="com.zeroone.star.project.dto.j2.store.OtherInListDTO">
+    <resultMap id="EntryDOMap" type="com.zeroone.star.storemanagement.entity.EntryDO">
         <id column="id" property="id"/>
         <result column="frame" property="frame"/>
         <result column="supplier" property="supplier"/>
@@ -23,7 +23,7 @@
     </resultMap>
 
     <!-- 分页查询其他入库单列表 -->
-    <select id="selectOtherInListPage" resultMap="OtherInListDTOMap">
+    <select id="selectOtherInListPage" resultMap="EntryDOMap">
         SELECT DISTINCT
             e.id,
             e.frame,

@@ -26,7 +26,7 @@ public class BatchDetailDTO {
     private String frame;
 
     @ApiModelProperty(value = "操作时间（毫秒时间戳）",example = "2025-10-13")
-    private LocalDateTime time;
+    private long time;
 
     @ApiModelProperty(value = "单据类型", example = "其他入库单")
     private String type;

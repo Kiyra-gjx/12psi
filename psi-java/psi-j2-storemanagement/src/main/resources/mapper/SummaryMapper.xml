@@ -4,7 +4,7 @@
 
 
     <insert id="insert">
-        insert into summary (id, pid, type, class, info, time, goods, attr, warehouse, batch, mfd, serial, direction, price, nums, uct, bct, exist, balance, handle)
-        values (#{id}, #{pid}, #{type}, #{cls}, #{info}, #{time}, #{goods}, #{attr}, #{warehouse}, #{batch}, #{mfd}, #{serial}, #{direction}, #{price}, #{nums}, #{uct}, #{bct}, #{exist}, #{balance}, #{handle})
+        insert into summary (id, pid, type, class, info, time, goods, attr, warehouse, batch, mfd, direction, price, nums, uct, bct, exist, balance, handle)
+        values (#{id}, #{pid}, #{type}, #{cls}, #{info}, #{time}, #{goods}, #{attr}, #{warehouse}, #{batch}, #{mfd}, #{direction}, #{price}, #{nums}, #{uct}, #{bct}, #{exist}, #{balance}, #{handle})
     </insert>
 </mapper>

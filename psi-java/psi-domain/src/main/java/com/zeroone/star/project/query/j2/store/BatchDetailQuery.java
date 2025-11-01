@@ -19,7 +19,7 @@ import java.util.List;
 @ApiModel("批次查询详情参数")
 public class BatchDetailQuery extends PageQuery {
     @ApiModelProperty(value = "批次pid(点开详情时的查询条件,内部使用)", example = "1", required = true)
-    private String pid;
+    private List<String> pid;
     @ApiModelProperty(value = "单据编号", example = "QTRKD2510181347194")
     private String number;
     @ApiModelProperty(value = "单据类型", example = "采购单")

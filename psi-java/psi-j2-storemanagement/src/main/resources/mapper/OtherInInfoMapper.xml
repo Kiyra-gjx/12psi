@@ -4,29 +4,29 @@
 
 
     <insert id="insertBatch">
-        insert into entry_info (id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, serial, total, data) values
+        insert into entry_info (id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, total, data) values
         <foreach collection="entryInfoList" item="item" separator=",">
-            (#{item.id},#{item.pid}, #{item.goods}, #{item.attr}, #{item.unit}, #{item.warehouse}, #{item.batch}, #{item.mfd}, #{item.price}, #{item.nums}, #{item.serial}, #{item.total}, #{item.data})
+            (#{item.id},#{item.pid}, #{item.goods}, #{item.attr}, #{item.unit}, #{item.warehouse}, #{item.batch}, #{item.mfd}, #{item.price}, #{item.nums}, #{item.total}, #{item.data})
         </foreach>
     </insert>
 
     <delete id="deleteById">
-        delete from entry where id = #{id}
+        delete from entry_info where id = #{id}
     </delete>
     <select id="selectBatchIds" resultType="com.zeroone.star.storemanagement.entity.EntryInfoDO">
-        select id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, serial, total, data from entry where id in
+        select id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, total, data from entry_info where id in
         <foreach item="item" collection="list" separator="," open="(" close=")">
             #{item}
         </foreach>
     </select>
     <select id="getByIds" resultType="com.zeroone.star.storemanagement.entity.EntryInfoDO">
-        select id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, serial, total, data from entry_info where id in
+        select id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, total, data from entry_info where id in
         <foreach item="item" collection="ids" separator="," open="(" close=")">
             #{item}
         </foreach>
     </select>
     <select id="getByPids" resultType="com.zeroone.star.storemanagement.entity.EntryInfoDO">
-        select id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, serial, total, data from entry_info where pid in
+        select id,pid, goods, attr, unit, warehouse, batch, mfd, price, nums, total, data from entry_info where pid in
         <foreach item="item" collection="pids" separator="," open="(" close=")">
             #{item}
         </foreach>

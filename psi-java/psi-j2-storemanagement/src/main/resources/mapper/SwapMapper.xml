@@ -12,6 +12,15 @@
         WHERE id = #{id}
     </update>
 
+    <update id="auditBatchStatus">
+        UPDATE swap
+        SET examine = #{operation}
+        WHERE id IN
+        <foreach collection="pidList" item="pid" open="(" separator="," close=")">
+            #{pid}
+        </foreach>
+    </update>
+
     <delete id="deleteBatchIds">
         DELETE FROM swap
         WHERE id IN

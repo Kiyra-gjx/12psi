@@ -8,17 +8,18 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * @BelongsProject: psi-java
- * @BelongsPackage: com.zeroone.star.project.dto.j2.store
- * @Author: 高
- * @CreateTime: 2025-10-19 13:53
- * @Description: TODO
- * @Version: 1.0
- */
 @Data
-@ApiModel("其他入库单数据信息对象")
-public class OtherInListInfoDTO {
+@ApiModel("其他入库单详细数据信息对象")
+public class OtherInListDetailInfoDTO{
+
+    @ApiModelProperty(value = "商品名称",  example = "刀具")
+    private String name;
+
+    @ApiModelProperty(value="商品编号",example ="0003")
+    private String number;
+
+    @ApiModelProperty(value = "规格型号", example = "DJ-111")
+    private String spec;
 
     @ApiModelProperty(value = "所属商品", example = "1")
     private String goods;

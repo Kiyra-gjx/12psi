@@ -11,8 +11,6 @@ import java.util.List;
 
 @Mapper
 public interface RecordMapper  {
-    @Select("select max(id) from record")
-    Integer getMaxId();
 
     @Insert("insert into record (id, type, source, time, user, info) VALUE (#{id},#{type},#{source},#{time},#{user},#{info})")
     void insert(RecordDO record);
