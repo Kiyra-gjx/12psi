@@ -14,7 +14,7 @@ public class SwapInfoDO {
 
     private String pid;
 
-    private String good;
+    private String goods;
 
     private String attr;
 
