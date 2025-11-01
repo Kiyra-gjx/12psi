@@ -31,4 +31,11 @@ public interface IInventoryQueryService  {
      * @return
      */
     ResponseEntity<byte[]> getListExport(InventoryQuery query);
+
+    /**
+     * 导出库存详情数据Excel
+     * @param id
+     * @return
+     */
+    ResponseEntity<byte[]> getDetailExport(String id);
 }

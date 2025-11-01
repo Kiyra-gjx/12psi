@@ -68,8 +68,8 @@ public class InventoryQueryController implements InventoryQueryApis {
     @GetMapping("/exportDetail")
     @ApiOperation(value = "导出库存详情数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailQuery query) {
-        return null;
+    public ResponseEntity<byte[]> exportInventoryDetailExcel(String id) {
+        return inventoryService.getDetailExport(id);
     }
 
 
