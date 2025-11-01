@@ -1,5 +1,6 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -9,6 +10,7 @@ import java.time.LocalDateTime;
  * @description 日志表实体类
  */
 @Data
+@TableName("log")
 public class LogDO {
     private String id;
     private LocalDateTime time;

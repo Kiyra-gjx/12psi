@@ -1,15 +1,14 @@
 package com.zeroone.star.storemanagement.entity;
 
 import com.baomidou.mybatisplus.annotation.TableField;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
+@TableName("room_info")
 public class RoomInfoDO {
 
     private String id;

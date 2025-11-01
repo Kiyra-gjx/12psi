@@ -1,5 +1,6 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
  * @description 收发统计表
  */
 @Data
+@TableName("summary")
 public class SummaryDO {
     private String id;
     private String pid;
