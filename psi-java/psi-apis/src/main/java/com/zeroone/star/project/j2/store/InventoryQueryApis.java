@@ -35,17 +35,17 @@ public interface InventoryQueryApis {
     JsonVO<PageDTO<InventoryDetailDTO>> getInventoryDetail(InventoryDetailQuery query);
 
 
-//    /**
-//     * 导出库存列表数据
-//     * @param query
-//     * @return
-//     */
-//    ResponseEntity<byte[]> exportInventoryListExcel(InventoryQuery query);
-//
-//    /**
-//     * 导出库存详情数据
-//     * @param id
-//     * @return
-//     */
-//    ResponseEntity<byte[]> exportInventoryDetailExcel(String id);
+    /**
+     * 导出库存列表数据
+     * @param query
+     * @return
+     */
+    ResponseEntity<byte[]> exportInventoryListExcel(InventoryQuery query);
+
+    /**
+     * 导出库存详情数据
+     * @param query
+     * @return
+     */
+    ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailQuery query);
 }
