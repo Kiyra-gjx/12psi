@@ -286,36 +286,47 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
 
     @Override
     public byte[] exportOrderList(List<String> ids) {
-        List<ExtryDO> dataList = otherOutMapper.selectBatchIds(ids);
+        // 判断传入ID列表是否为空
+        if (ids == null || ids.isEmpty()) {
+            throw new RuntimeException("导出数据ID列表不能为空");
+        }
+        List<ExtryDO> dataList = otherOutMapper.selectMainIds(ids);
 
-        ByteArrayOutputStream outputStream = null;
-        try {
-            outputStream = new ByteArrayOutputStream();
+        // 判断查询结果是否为空
+        if (dataList == null || dataList.isEmpty()) {
+            throw new RuntimeException("未查询到相关数据");
+        }
+        try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             EasyExcel.write(outputStream, ExtryDO.class)
                     .sheet("其他出库单")
                     .doWrite(dataList);
-            return outputStream.toByteArray();
-        } finally {
-            if (outputStream != null) {
-                try {
-                    outputStream.close();
-                } catch (IOException e) {
-                    // 记录日志但不中断操作
-                    log.warn("Failed to close ByteArrayOutputStream");
-                }
-            }
+            byte[] result = outputStream.toByteArray();
+            log.info("生成Excel文件大小: {} 字节", result.length);
+            return result;
+        } catch (IOException e) {
+            throw new RuntimeException("导出Excel失败", e);
         }
     }
 
+
     @Override
     public byte[] exportOrderDetails(List<String> ids) {
+        // 判断传入ID列表是否为空
+        if (ids == null || ids.isEmpty()) {
+            throw new RuntimeException("导出数据ID列表不能为空");
+        }
         List<ExtryInfoDO> detailList = otherOutInfoMapper.selectByMainIds(ids);
-
+        // 判断查询结果是否为空
+        if (detailList == null || detailList.isEmpty()) {
+            throw new RuntimeException("未查询到相关明细数据");
+        }
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {
             EasyExcel.write(outputStream, ExtryInfoDO.class)
                     .sheet("其他出库单明细")
                     .doWrite(detailList);
+
             return outputStream.toByteArray();
+
         } catch (IOException e) {
             throw new RuntimeException("导出Excel失败", e);
         }

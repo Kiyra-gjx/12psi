@@ -3,7 +3,6 @@ package com.zeroone.star.storemanagement.mapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zeroone.star.project.dto.j2.store.BatchDocumentDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
-import com.zeroone.star.project.dto.j2.store.BatchNumberDTO;
 import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
 import org.apache.ibatis.annotations.Mapper;
@@ -24,13 +23,10 @@ public interface BatchListMapper {
     List<WarehouseStockDTO> selectGoodsWarehouseStock(@Param("goodsIds") List<String> goodsIds);
 
     /**
-     * 批量查询商品的批次号信息（第二层：批次号）
+     * 批量查询批次详情信息（第三层：批次详情）- 严格应用所有条件
      */
-    List<BatchNumberDTO> selectBatchNumbersByGoodsIds(@Param("goodsIds") List<String> goodsIds);
-
-    /**
-     * 批量查询批次详情信息（第三层：批次详情）
-     */
-    List<BatchDocumentDTO> selectBatchDocumentsByGoodsIds(@Param("goodsIds") List<String> goodsIds);
+    List<BatchDocumentDTO> selectBatchDocumentsByGoodsIds(
+            @Param("goodsIds") List<String> goodsIds,
+            @Param("query") BatchQuery query);
 
 }

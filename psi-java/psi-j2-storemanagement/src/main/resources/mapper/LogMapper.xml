@@ -3,9 +3,9 @@
 <mapper namespace="com.zeroone.star.storemanagement.mapper.LogMapper">
 
     <insert id="insertBatch">
-        insert into log (id, time, user, info) VALUES
+        insert into is_log (id, time, user, info) VALUES
         <foreach collection="logList" item="item" separator=",">
-            (#{item.id},#{item.time},#{item.user},#{item.info})
+            (#{item.id},UNIX_TIMESTAMP(#{item.time}),#{item.user},#{item.info})
         </foreach>
     </insert>
 </mapper>

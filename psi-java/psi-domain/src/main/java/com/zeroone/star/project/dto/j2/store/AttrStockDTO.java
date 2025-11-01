@@ -21,9 +21,6 @@ public class AttrStockDTO {
     @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
     private String pid;
 
-    @ApiModelProperty(value = "商品属性条形码", example = "")
-    private String attrCode;
-
     @ApiModelProperty(value = "该商品属性的总库存", example = "200")
     private BigDecimal totalStock;
 

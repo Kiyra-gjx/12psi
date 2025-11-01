@@ -1,11 +1,13 @@
 package com.zeroone.star.storemanagement.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.zeroone.star.project.components.user.UserHolder;
 import org.apache.ibatis.reflection.MetaObject;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import javax.annotation.Resource;
 import java.time.LocalDateTime;
 
 /**
@@ -21,17 +23,30 @@ import java.time.LocalDateTime;
 @ComponentScan("com.zeroone.star.project.config.mybatis")
 public class MpConfig {
 
+    @Resource
+    UserHolder userHolder;
+
     @Bean
     public MetaObjectHandler metaObjectHandler() {
         return new MetaObjectHandler() {
             @Override
             public void insertFill(MetaObject metaObject) {
                 this.strictInsertFill(metaObject, "createTime", LocalDateTime.class, LocalDateTime.now());
+                try {
+                    this.strictInsertFill(metaObject, "creatBy", String.class, userHolder.getCurrentUser().getUsername());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void updateFill(MetaObject metaObject) {
                 this.strictUpdateFill(metaObject, "updateTime", LocalDateTime.class, LocalDateTime.now());
+                try {
+                    this.strictUpdateFill(metaObject, "updateBy", String.class, userHolder.getCurrentUser().getUsername());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         };
     }

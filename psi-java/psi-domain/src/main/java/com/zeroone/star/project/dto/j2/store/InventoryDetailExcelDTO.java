@@ -18,19 +18,31 @@ import java.time.LocalDate;
  */
 @Data
 @ApiModel("商品库存详情数据对象")
-public class InventoryDetailDTO {
+public class InventoryDetailExcelDTO {
 
+    @ExcelProperty(value = "所属组织", index = 0)
+    @ApiModelProperty(value = "所属组织", example = "默认组织")
+    private String name;
+
+    @ExcelProperty(value = "操作时间", index = 1)
+    @ApiModelProperty(value = "操作时间", example = "2025-10-15")
+    private long time;
+
+    @ExcelProperty(value = "单据类型", index = 2)
     @ApiModelProperty(value = "单据类型", example = "采购单")
     private String type;
 
-    @ApiModelProperty(value = "单据信息")
-    private CostDataDTO costData;
+    @ExcelProperty(value = "单据编号", index = 3)
+    @ApiModelProperty(value = "单据编号")
+    private String number;
 
+    @ExcelProperty(value = "操作类型", index = 4)
     @ApiModelProperty(
             value = "操作类型[0:减少|1:增加]",
             example = "1")
-    private Integer direction;
+    private String direction;
 
+    @ExcelProperty(value = "操作数量", index = 5)
     @ApiModelProperty(value = "操作数量", example = "10")
     private BigDecimal nums;
 }

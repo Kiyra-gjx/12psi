@@ -73,7 +73,7 @@ public interface OtherOutApis {
      * @param ids 需要导出的出库单ID列表
      * @return
      */
-    JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(List<String>  ids);
+    JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(List<String> ids);
 
     /**
      * 导出其他出库单详细报表

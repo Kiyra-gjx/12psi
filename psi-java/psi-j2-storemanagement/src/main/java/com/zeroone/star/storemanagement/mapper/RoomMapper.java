@@ -9,18 +9,18 @@ import java.util.List;
 
 public interface RoomMapper extends BaseMapper<RoomDO> {
 
+    @Select("select max(id) from room")
+    Integer getMaxId();
 
-    List<WarehouseStockDTO> selectWarehouseStockByGoodsIds(@Param("goodsIds") List<String> goodsIds);
-
-    @Select("select id, warehouse, goods, attr, nums from room where goods = #{goods}")
+    @Select("select id, warehouse, goods, attr, nums from is_room where goods = #{goods}")
     RoomDO getByGoods(String goods);
 
-    @Insert("insert into room(id,warehouse, goods, attr, nums) values(#{id},#{warehouse}, #{goods}, #{attr}, #{nums})")
+    @Insert("insert into is_room(id,warehouse, goods, attr, nums) values(#{id},#{warehouse}, #{goods}, #{attr}, #{nums})")
     int insert(RoomDO roomDO);
 
-    @Update("update room set warehouse = #{warehouse}, goods = #{goods}, attr = #{attr}, nums = #{nums} where id = #{id}")
+    @Update("update is_room set warehouse = #{warehouse}, goods = #{goods}, attr = #{attr}, nums = #{nums} where id = #{id}")
     int updateById(RoomDO roomDO);
 
-    @Delete("delete from room where id = #{id}")
+    @Delete("delete from is_room where id = #{id}")
     void deleteById(String id);
 }

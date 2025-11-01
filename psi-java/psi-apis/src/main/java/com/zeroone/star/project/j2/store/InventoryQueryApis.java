@@ -44,8 +44,8 @@ public interface InventoryQueryApis {
 
     /**
      * 导出库存详情数据
-     * @param query
+     * @param id
      * @return
      */
-    ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailQuery query);
+    ResponseEntity<byte[]> exportInventoryDetailExcel(String id);
 }
