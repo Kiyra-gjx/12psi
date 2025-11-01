@@ -123,6 +123,7 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
         
         // 为每个批次详情设置所属组织
         // TODO: 后续可以通过其他方式获取实际的组织数据，目前使用默认值
+
         resultPage.getRecords().forEach(dto -> dto.setFrame("默认组织"));
 
         return PageDTO.create(resultPage);

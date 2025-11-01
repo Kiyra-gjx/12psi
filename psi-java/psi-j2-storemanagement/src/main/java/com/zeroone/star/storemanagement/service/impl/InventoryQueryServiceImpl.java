@@ -143,6 +143,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // TODO 获取库存列表数据
+//        List<InventoryListDTO> inventoryListDTOS = inventoryMapper.getInventroyList();
         List<InventoryListDTO> inventoryListDTOS = null;
 
         // 生成Excel
