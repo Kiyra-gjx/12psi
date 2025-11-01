@@ -5,6 +5,9 @@ import cn.hutool.core.util.IdUtil;
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.write.handler.AbstractRowWriteHandler;
+import com.alibaba.excel.write.metadata.holder.WriteSheetHolder;
+import com.alibaba.excel.write.metadata.holder.WriteTableHolder;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
 import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
@@ -49,7 +52,9 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -70,6 +75,8 @@ public class TransferController implements TransferApis {
     private final ITransferService transferService;
     @Autowired
     private SwapMapper swapMapper;
+    @Autowired
+    private EasyExcelComponent easyExcelComponent;
 
     public TransferController(ITransferService transferService) {
         this.transferService = transferService;
@@ -177,9 +184,14 @@ public class TransferController implements TransferApis {
 
                     if(rowIndex == 2) {
                         SwapDO swap = new SwapDO();
+                        if(data.get(0)==null){
+                            swap.setTime(null);
+                            swapList.add(swap);
+                            return;
+                        }
                         swap.setTime(new DateTime(data.get(0)));
                         swap.setNumber(data.get(1));
-                        swap.setTotal(new BigDecimal(data.get(2) == null?"0":data.get(2)));
+                        swap.setTotal(new BigDecimal(data.get(2)));
                         swap.setPeople(data.get(3));
                         swap.setLogistics(data.get(4));
                         swap.setData(data.get(5));
@@ -188,14 +200,14 @@ public class TransferController implements TransferApis {
                     SwapInfoDO swapInfo = new SwapInfoDO();
                     goodsNames.add(data.get(6));
                     swapInfo.setAttr(data.get(7));
-                    swapInfo.setUnit(data.get(8)== null?"":data.get(8));
+                    swapInfo.setUnit(data.get(8));
                     swapInfo.setWarehouse(data.get(9));
                     swapInfo.setStorehouse(data.get(10));
-                    swapInfo.setBatch(data.get(11)== null?"":data.get(11));
-                    swapInfo.setMfd(new DateTime(data.get(12) == null?"":data.get(12)));
-                    swapInfo.setPrice(new BigDecimal(data.get(13)== null?"0":data.get(13)));
-                    swapInfo.setNums(new BigDecimal(data.get(14)== null?"0":data.get(14)));
-                    swapInfo.setSerial(data.get(15)== null?"":data.get(15));
+                    swapInfo.setBatch(data.get(11));
+                    swapInfo.setMfd(new DateTime(data.get(12)));
+                    swapInfo.setPrice(new BigDecimal(data.get(13)));
+                    swapInfo.setNums(new BigDecimal(data.get(14)));
+                    swapInfo.setSerial(data.get(15));
                     swapInfo.setTotal(new BigDecimal(data.get(16)== null?"0":data.get(16)));
                     swapInfo.setData(data.get(17));
                     swapInfoList.add(swapInfo);
@@ -211,6 +223,14 @@ public class TransferController implements TransferApis {
         } catch (Exception e) {
             e.printStackTrace();
             return JsonVO.fail("fail");
+        }
+
+        if(swapList.get(0).getTime()==null){
+            return new JsonVO<String>(1001,"单据日期为空",null);
+        }
+
+        if(swapList.get(0).getNumber()==null){
+            return new JsonVO<String>(1001,"单据编号为空",null);
         }
         UserDTO currentUser;
         try {
@@ -232,6 +252,27 @@ public class TransferController implements TransferApis {
         for(int i=0;i<swapInfoList.size();i++) {
             swapInfoList.get(i).setPid(swapList.get(0).getId());
             GoodsDO good = goodsMapper.selectOne(new QueryWrapper<GoodsDO>().eq("name", goodsNames.get(i)));
+
+            if(good==null) {
+                return new JsonVO<>(1001,"第"+(i+2)+"行商品名称有误",null);
+            }
+
+            if(swapInfoList.get(i).getWarehouse()==null) {
+                return new JsonVO<>(1001,"第"+(i+2)+"行调出仓库为空",null);
+            }
+
+            if(swapInfoList.get(i).getStorehouse()==null) {
+                return new JsonVO<>(1001,"第"+(i+2)+"行调入仓库为空",null);
+            }
+
+            if (swapInfoList.get(i).getPrice()==null){
+                return new JsonVO<>(1001,"第"+(i+2)+"行成本为空",null);
+            }
+
+            if(swapInfoList.get(i).getNums()==null){
+                return new JsonVO<>(1001,"第"+(i+2)+"行数量为空   ",null);
+            }
+
             swapInfoList.get(i).setGoods(good.getId());
             swapInfoMapper.insert(swapInfoList.get(i));
         }
@@ -254,7 +295,41 @@ public class TransferController implements TransferApis {
         }
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        excel.export("简单报表",out,TransferListDTO.class,transferListDTOList);
+        List<List<String>> headList = new ArrayList<>();
+        headList.add(Collections.singletonList("所属组织"));
+        headList.add(Collections.singletonList("单据时间"));
+        headList.add(Collections.singletonList("单据编号"));
+        headList.add(Collections.singletonList("单据成本"));
+        headList.add(Collections.singletonList("单据费用"));
+        headList.add(Collections.singletonList("关联人员"));
+        headList.add(Collections.singletonList("审核状态"));
+        headList.add(Collections.singletonList("费用状态"));
+        headList.add(Collections.singletonList("制单人"));
+        headList.add(Collections.singletonList("备注信息"));
+
+        List<List<Object>> data = new ArrayList<>();
+        for (TransferListDTO dto : transferListDTOList) {
+            List<Object> row = new ArrayList<>();
+            // 跳过前两列字段
+            // row.add(dto.getColumn1()); // 不加
+            // row.add(dto.getColumn2()); // 不加
+
+            row.add(dto.getFrame());
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            row.add(dto.getTime().format(formatter));
+            row.add(dto.getNumber());
+            row.add(dto.getCost());
+            row.add(dto.getTotal());
+            row.add(dto.getPeople());
+            row.add(dto.getExamine());
+            row.add(dto.getCse());
+            row.add(dto.getUser());
+            row.add(dto.getData());
+
+            data.add(row);
+        }
+
+        EasyExcel.write(out).head(headList).sheet("简单报表").doWrite(data);
         out.flush();
 
         HttpHeaders headers = new HttpHeaders();
@@ -284,7 +359,61 @@ public class TransferController implements TransferApis {
                 continue;
             }
             ByteArrayOutputStream out = new ByteArrayOutputStream();
-            excel.export("详细报表",out,TransferDetailListDTO.class,transferDetailListDTO);
+
+            List<List<Object>> allRows = new ArrayList<>();
+
+
+            List<Object> dateRow = new ArrayList<>();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+            dateRow.add("单据日期:");
+            dateRow.add(transferDetailListDTO.get(0).getTime().format(formatter));
+            dateRow.add("单据编号:");
+            dateRow.add(transferDetailListDTO.get(0).getSwapNumber());
+            while (dateRow.size() < 10) dateRow.add("");
+            allRows.add(dateRow);
+            List<Object> headerRow = new ArrayList<>();
+            headerRow.add("商品名称");
+            headerRow.add("规格型号");
+            headerRow.add("辅助属性");
+            headerRow.add("单位");
+            headerRow.add("调出仓库");
+            headerRow.add("调入仓库");
+            headerRow.add("成本");
+            headerRow.add("数量");
+            headerRow.add("总成本");
+            headerRow.add("备注信息");
+            allRows.add(headerRow);
+
+            for (TransferDetailListDTO dto : transferDetailListDTO) {
+                List<Object> row = new ArrayList<>();
+                row.add(dto.getName());
+                row.add(dto.getSpec());
+                row.add(dto.getAttr());
+                row.add(dto.getUnit());
+                row.add(dto.getWarehouse());
+                row.add(dto.getStorehouse());
+                row.add(dto.getPrice());
+                row.add(dto.getNums());
+                row.add(dto.getTotal());
+                row.add(dto.getData());
+                allRows.add(row);
+            }
+
+            List<Object> summaryRow = new ArrayList<>();
+            summaryRow.add("单据成本:");
+            summaryRow.add(transferDetailListDTO.get(0).getSwapTotal());
+            summaryRow.add("单据费用:");
+            summaryRow.add(transferDetailListDTO.get(0).getCost());
+            summaryRow.add("关联人员:");
+            summaryRow.add(transferDetailListDTO.get(0).getPeople());
+            summaryRow.add("备注信息:");
+            summaryRow.add(transferDetailListDTO.get(0).getSwapData());
+            while (summaryRow.size() < 10) summaryRow.add("");
+
+            allRows.add(summaryRow);
+
+            EasyExcel.write(out).sheet("详细报表").doWrite(allRows);
+
             out.flush();
             zipOutputStream.putNextEntry(new ZipEntry("详细报表"+DateTime.now().toString("yyyyMMddHHmmssS")+".xlsx"));
             zipOutputStream.write(out.toByteArray());
