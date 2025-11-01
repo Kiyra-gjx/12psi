@@ -8,6 +8,7 @@ import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.project.query.j2.store.OtherOutQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.convertor.MsEntryMapper;
 import com.zeroone.star.storemanagement.entity.*;
 import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.service.IOtherOutService;
@@ -23,9 +24,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.ZoneOffset;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,9 +46,18 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     MsEntryMapper ms;
     @Override
     public void examine(List<Integer> ids) {
-        //取出出库单ID
+        //1.取出出库单ID
         Integer extryId = ids.get(0);
-        //1.根据Id查询该出库单每一个商品的类型，常规商品需要查询库存
+        QueryWrapper<ExtryDO> extryDOQueryWrapper = new QueryWrapper<>();
+        extryDOQueryWrapper.eq("examine", 1).eq("id", extryId);
+        ExtryDO extryDO = otherOutMapper.selectById(extryDOQueryWrapper);
+        //2.执行反审核，无需验证库存批次，直接修改审核状态
+        if(extryDO.getExamine() == 1){
+            update().set("examine",0).eq("id", ids.get(0)).update();
+            return;
+        }
+        //3.执行审核
+        //4.根据Id查询该出库单每一个商品的类型，常规商品需要查询库存
         QueryWrapper<ExtryInfoDO> extryInfoDOQueryWrapper = new QueryWrapper<>();
         extryInfoDOQueryWrapper.eq("pid", extryId);
         List<ExtryInfoDO> extryInfoDOList = otherOutInfoMapper.selectList(extryInfoDOQueryWrapper);
@@ -83,7 +91,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                 if(stock.compareTo(extryInfoDO.getNums()) < 0) {
                     throw new RuntimeException("库存不足!");
                 }
-                //2.检查该出库单商品是否满足批次要求，如满足批次要求，则继续审核批次
+                //5.检查该出库单商品是否满足批次要求，如满足批次要求，则继续审核批次
                 if(extryInfoDO.getBatch() != null && !extryInfoDO.getBatch().isEmpty()){
                     QueryWrapper<BatchDO> batchDOQueryWrapper = new QueryWrapper<>();
                     batchDOQueryWrapper.eq("warehouse", extryInfoDO.getWarehouse()).eq("number", extryInfoDO.getBatch());
@@ -102,8 +110,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
                 }
             }
         }
-        ExtryDO extryDO = otherOutMapper.selectById(extryId);
-        update().set("examine", extryDO.getExamine() == 1 ? 0 : 1).eq("id", ids.get(0)).update();
+        update().set("examine", 1).eq("id", ids.get(0)).update();
     }
 
     @Override
@@ -115,7 +122,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     }
 
     @Override
-    public byte[] exportOrderList(List<Integer> ids) {
+    public byte[] exportOrderList(List<String> ids) {
         List<ExtryDO> dataList = otherOutMapper.selectBatchIds(ids);
 
         ByteArrayOutputStream outputStream = null;
@@ -138,7 +145,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     }
 
     @Override
-    public byte[] exportOrderDetails(List<Integer> ids) {
+    public byte[] exportOrderDetails(List<String> ids) {
         List<ExtryInfoDO> detailList = otherOutInfoMapper.selectByMainIds(ids);
 
         try (ByteArrayOutputStream outputStream = new ByteArrayOutputStream()) {

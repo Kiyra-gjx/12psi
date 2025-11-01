@@ -22,7 +22,6 @@ public class SummaryDO {
     private String warehouse;
     private String batch;
     private LocalDateTime mfd;
-    private String serial;
     private int direction;
     private BigDecimal price;
     private BigDecimal nums;

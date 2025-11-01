@@ -206,4 +206,38 @@
             ELSE 0
         END DESC
     </select>
+
+    <select id="getDetailList" resultType="com.zeroone.star.project.dto.j2.store.InventoryDetailExcelDTO">
+        SELECT
+        ri.time AS time,
+        <!-- 将英文类型转换为中文显示 -->
+        CASE
+        WHEN ri.type = 'buy' THEN '采购单'
+        WHEN ri.type = 'sell' THEN '销售单'
+        WHEN ri.type = 'bre' THEN '采购退货单'
+        WHEN ri.type = 'sre' THEN '销售退货单'
+        WHEN ri.type = 'swap' THEN '调拨单'
+        WHEN ri.type = 'swapEnter' THEN '调拨单-入'
+        WHEN ri.type = 'swapOut' THEN '调拨单-出'
+        WHEN ri.type = 'entry' THEN '其它入库单'
+        WHEN ri.type = 'extry' THEN '其它出库单'
+        ELSE ri.type
+        END AS type,
+        <!-- 根据type动态关联不同的单据表获取number -->
+        CASE
+        WHEN ri.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ri.class)
+        WHEN ri.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ri.class)
+        WHEN ri.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ri.class)
+        WHEN ri.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ri.class)
+        WHEN ri.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ri.class)
+        WHEN ri.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ri.class)
+        WHEN ri.type = 'swap' OR ri.type = 'swapEnter' OR ri.type = 'swapOut' THEN (SELECT number FROM is_swap WHERE id = ri.class)
+        END AS number,
+        CAST(ri.direction AS SIGNED INTEGER) AS direction,
+        CAST(ri.nums AS DECIMAL(10,2)) AS nums
+        FROM is_room_info ri
+        INNER JOIN is_room r ON ri.pid = r.id
+        WHERE r.goods = #{id}
+        ORDER BY ri.time DESC
+    </select>
 </mapper>

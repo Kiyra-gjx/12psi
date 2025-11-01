@@ -2,10 +2,15 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.OtherInMapper">
 
+    <insert id="insert">
+        insert into entry(supplier,frame,time,number,type,total,cost,people,logistics,file,data,examine,cse,`check`,`user`)
+        values(#{supplier},#{frame},#{time},#{number},#{type},#{total},#{cost},#{people},#{logistics},#{file},#{data},#{examine},#{cse},#{check},#{user})
+    </insert>
+
     <update id="update">
         update entry set supplier=#{supplier},frame=#{frame},time=#{time},number=#{number},
         type=#{type},total=#{total},cost=#{cost},people=#{people},logistics=#{logistics},file=#{file},
-        data=#{data},more=#{more},examine=#{examine},cse=#{cse},`check`=#{check},user=#{user}
+        data=#{data},examine=#{examine},cse=#{cse},`check`=#{check},user=#{user}
         where id=#{id}
     </update>
     <update id="updateExamine">
@@ -33,7 +38,20 @@
         </foreach>
     </select>
     <select id="getByIds" resultType="com.zeroone.star.storemanagement.entity.EntryDO">
-        select id, supplier, frame, time, number, type, total, cost, people, logistics, file, data, more, examine, cse, `check`, user
+        select id, supplier, frame, time, number, type, total, cost, people, logistics, file, data, examine, cse, `check`, user
+        from entry where id in
+        <foreach item="item" collection="ids" separator="," open="(" close=")">
+            #{item}
+        </foreach>
+    </select>
+
+    <select id="selectById" resultType="com.zeroone.star.storemanagement.entity.EntryDO">
+        select id, supplier, frame, time, number, type, total, cost, people, logistics, file, data, examine, cse, `check`, `user`
+        from entry where id = #{id}
+    </select>
+
+    <select id="selectBatchIds" resultType="com.zeroone.star.storemanagement.entity.EntryDO">
+        select id, supplier, frame, time, number, type, total, cost, people, logistics, file, data, examine, cse, `check`, `user`
         from entry where id in
         <foreach item="item" collection="ids" separator="," open="(" close=")">
             #{item}

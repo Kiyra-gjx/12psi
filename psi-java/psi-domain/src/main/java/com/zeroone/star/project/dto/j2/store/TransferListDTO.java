@@ -1,5 +1,6 @@
 package com.zeroone.star.project.dto.j2.store;
 
+import com.alibaba.excel.annotation.format.DateTimeFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -22,8 +23,10 @@ import java.time.LocalDateTime;
 public class TransferListDTO {
     @ApiModelProperty(value = "隐藏属性唯一id", required = true ,example = "1")
     private String id;
-    @ApiModelProperty(value = "所属组织,frame表",required = true , example = "默认组织")
+    @ApiModelProperty(value = "隐藏属性商品名称，查询需要,goods表",required = true , example = "默认组织")
     private String name;
+    @ApiModelProperty(value = "所属组织",required = true , example = "默认组织")
+    private String frame;
     @ApiModelProperty(value = "单据时间",required = true , example = "2025-10-18")
     private LocalDateTime time;
     @ApiModelProperty(value = "单据编号",required = true , example = "DJ20251018001")
@@ -32,7 +35,7 @@ public class TransferListDTO {
     private BigDecimal total;
     @ApiModelProperty(value = "单据费用",required = true , example = "0")
     private BigDecimal cost;
-    @ApiModelProperty(value = "关联人员",required = true , example = "")
+    @ApiModelProperty(value = "关联人员", example = "")
     private String people;
     @ApiModelProperty(value = "审核状态", example = "未审核")
     private int examine;

@@ -16,9 +16,9 @@ public interface IOtherOutService extends IService<ExtryDO> {
 
     void check(List<Integer> ids);
 
-    byte[] exportOrderList(List<Integer> ids);
+    byte[] exportOrderList(List<String> ids);
 
-    byte[] exportOrderDetails(List<Integer> ids);
+    byte[] exportOrderDetails(List<String> ids);
 
     void importOrders(InputStream inputStream) throws Exception;
 

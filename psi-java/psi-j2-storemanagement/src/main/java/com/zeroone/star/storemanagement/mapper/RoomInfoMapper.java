@@ -8,8 +8,6 @@ import org.apache.ibatis.annotations.Select;
 
 @Mapper
 public interface RoomInfoMapper {
-    @Select("select max(id) from room_info")
-    Integer getMaxId();
 
     @Insert("insert into room_info (id, pid, type, class, info, time, direction, price, nums) VALUE (#{id},#{pid},#{type},#{cls},#{info},#{time},#{direction},#{price},#{nums})")
     void insert(RoomInfoDO roomInfoDO);

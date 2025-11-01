@@ -6,6 +6,7 @@ import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
+import org.springframework.http.ResponseEntity;
 
 
 public interface IInventoryQueryService  {
@@ -23,4 +24,6 @@ public interface IInventoryQueryService  {
      * @return
      */
     PageDTO<InventoryDetailDTO> getInventoryDetail(InventoryDetailQuery query);
+
+
 }

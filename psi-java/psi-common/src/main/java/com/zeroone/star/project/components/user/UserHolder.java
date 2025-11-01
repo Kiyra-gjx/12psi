@@ -11,6 +11,7 @@ import org.yaml.snakeyaml.util.UriEncoder;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -50,10 +51,11 @@ public class UserHolder {
         }
         JSONObject userJsonObject = new JSONObject(userStr);
 
-//        // HARD_CODE 在没有办法使用token时候可以修改这里的代码伪造用户信息，注意伪造用户代码不要提交到仓库中
-//        userJsonObject = new JSONObject();
+        // HARD_CODE 在没有办法使用token时候可以修改这里的代码伪造用户信息，注意伪造用户代码不要提交到仓库中
+//        JSONObject userJsonObject = new JSONObject();
 //        userJsonObject.putOnce("id", 1);
-//        userJsonObject.putOnce("user_name", "王麻子");
+//        userJsonObject.putOnce("user_name", "j2");
+//        userJsonObject.putOnce("frameName", "测试组织");
 //        ArrayList<Object> roles = new ArrayList<>();
 //        roles.add("ROLE_ADMIN");
 //        userJsonObject.putOnce("authorities", roles);
@@ -62,8 +64,11 @@ public class UserHolder {
         return UserDTO.builder()
                 .id(Convert.toStr(userJsonObject.get("id")))
                 .username(userJsonObject.getStr("user_name"))
-                .isEnabled(Convert.toByte(1))
+                //.isEnabled(Convert.toByte(1))
+                .avatar(Convert.toStr(userJsonObject.get("avatar")))
                 .roles(Convert.toList(String.class, userJsonObject.get("authorities")))
+                .frameId(Convert.toStr(userJsonObject.get("frameId")))
+                .frameName(Convert.toStr(userJsonObject.get("frameName")))
                 .build();
     }
 

@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class EntryInfoDO {
@@ -28,7 +29,7 @@ public class EntryInfoDO {
 
     private BigDecimal nums;
 
-    private String serial;
+    private List<String> serial;
 
     private BigDecimal total;
 
