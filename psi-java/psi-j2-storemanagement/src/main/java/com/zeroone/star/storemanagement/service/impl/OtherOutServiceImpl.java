@@ -251,6 +251,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
     }
 
     @Override
+    @Transactional
     public void check(List<Integer> ids) {
         for (Integer extryId : ids) {
             ExtryDO extryDO = otherOutMapper.selectById(extryId);
