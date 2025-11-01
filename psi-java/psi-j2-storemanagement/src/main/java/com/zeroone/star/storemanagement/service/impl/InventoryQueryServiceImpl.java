@@ -1,7 +1,10 @@
 package com.zeroone.star.storemanagement.service.impl;
 
 
+import cn.hutool.core.date.DateTime;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
+import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.AttrStockDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
@@ -14,14 +17,17 @@ import com.zeroone.star.storemanagement.mapper.InventoryDetailMapper;
 import com.zeroone.star.storemanagement.mapper.InventoryMapper;
 import com.zeroone.star.storemanagement.mapper.RoomMapper;
 import com.zeroone.star.storemanagement.service.IInventoryQueryService;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.io.ByteArrayOutputStream;
+import java.util.*;
 import java.util.stream.Collectors;
 @Service
 @Slf4j
@@ -38,6 +44,10 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
     @Resource
     private InventoryDetailMapper inventoryDetailMapper;
+
+    @Resource
+    private FastDfsClientComponent dfs;
+    private EasyExcelComponent excel;
 
     /**
      * 获取库存列表数据（分页）
@@ -119,5 +129,33 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
         return PageDTO.create(resultPage);
 
+    }
+
+    /**
+     * 导出库存列表数据Excel
+     * @param query
+     * @return
+     */
+    @SneakyThrows
+    @Override
+    public ResponseEntity<byte[]> getListExport(InventoryQuery query) {
+        // 定义输出流
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+        // TODO 获取库存列表数据
+        List<InventoryListDTO> inventoryListDTOS = null;
+
+        // 生成Excel
+        excel.export("库存列表",out,InventoryListDTO.class,inventoryListDTOS);
+
+        // 响应给前端
+        HttpHeaders headers = new HttpHeaders();
+        String filename = "库存列表" + DateTime.now().toString("yyyyMMddHHmmssS") + ".xlsx";
+        headers.setContentDispositionFormData("attachment", filename);
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        ResponseEntity<byte[]> res = new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.CREATED);
+        out.close();
+
+        return res;
     }
 }
