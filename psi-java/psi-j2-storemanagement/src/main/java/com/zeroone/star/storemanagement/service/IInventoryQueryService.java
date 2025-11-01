@@ -6,6 +6,7 @@ import com.zeroone.star.project.dto.j2.store.InventoryDetailDTO;
 import com.zeroone.star.project.dto.j2.store.InventoryListDTO;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
+import org.springframework.http.ResponseEntity;
 
 
 public interface IInventoryQueryService  {
@@ -23,4 +24,18 @@ public interface IInventoryQueryService  {
      * @return
      */
     PageDTO<InventoryDetailDTO> getInventoryDetail(InventoryDetailQuery query);
+
+    /**
+     * 导出库存列表数据Excel
+     * @param query
+     * @return
+     */
+    ResponseEntity<byte[]> getListExport(InventoryQuery query);
+
+    /**
+     * 导出库存详情数据Excel
+     * @param id
+     * @return
+     */
+    ResponseEntity<byte[]> getDetailExport(String id);
 }
