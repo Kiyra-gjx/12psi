@@ -15,6 +15,7 @@ import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.project.query.j2.store.OtherInQuery;
 import com.zeroone.star.project.vo.JsonVO;
+import com.zeroone.star.storemanagement.convertor.EntryConverter;
 import com.zeroone.star.storemanagement.convertor.MsEntryMapper;
 import com.zeroone.star.storemanagement.entity.*;
 import com.zeroone.star.storemanagement.mapper.*;
@@ -79,6 +80,9 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
 
     @Resource
     MsEntryMapper ms;
+
+    @Resource
+    EntryConverter entryConverter;
 
     //雪花算法
     private final Snowflake snowflake = IdUtil.getSnowflake();
@@ -435,14 +439,17 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
     @Override
     public JsonVO<PageDTO<OtherInListDTO>> getOtherInList(OtherInQuery query) {
         // 创建分页对象
-        Page<OtherInListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
+        Page<OtherInListDTO> doPage = new Page<>(query.getPageIndex(), query.getPageSize());
         // 调用mapper进行分页查询
-        Page<OtherInListDTO> result = otherInListMapper.selectOtherInListPage(page, query);
+        Page<EntryDO> doResult = otherInListMapper.selectOtherInListPage(doPage, query);
+        // 使用MapStruct 转换器进行批量转换
+        List<OtherInListDTO> dtoList = entryConverter.toDTOList(doResult.getRecords());
         // 构建返回的分页数据对象
         PageDTO<OtherInListDTO> pageDTO = new PageDTO<>();
-        pageDTO.setTotal(result.getTotal());
-        pageDTO.setRows(result.getRecords());
-        pageDTO.setPageSize(result.getSize());
+        pageDTO.setTotal(doResult.getTotal());
+        pageDTO.setRows(dtoList);
+        pageDTO.setPageSize(doResult.getSize());
+        log.info("查询其他入库单列表成功, 共{}条记录", doResult.getTotal());
         // 返回成功响应
         return JsonVO.success(pageDTO);
     }

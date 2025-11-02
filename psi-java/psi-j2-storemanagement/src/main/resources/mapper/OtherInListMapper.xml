@@ -39,11 +39,11 @@
             e.check,
             e.user,
             e.data
-        FROM entry e
-        LEFT JOIN supplier s ON e.supplier = s.id
-        LEFT JOIN people p ON e.people = p.id
-        LEFT JOIN entry_info ei ON e.id = ei.pid
-        LEFT JOIN goods g ON ei.goods = g.id
+        FROM is_entry e
+        LEFT JOIN is_supplier s ON e.supplier = s.id
+        LEFT JOIN is_people p ON e.people = p.id
+        LEFT JOIN is_entry_info ei ON e.id = ei.pid
+        LEFT JOIN is_goods g ON ei.goods = g.id
         WHERE 1=1
             <!-- 商品名称查询 -->
             <if test="query.name != null and query.name != ''">
