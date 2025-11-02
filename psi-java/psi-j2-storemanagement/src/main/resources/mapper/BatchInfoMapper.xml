@@ -66,14 +66,14 @@
 
         <!-- 单据编号模糊查询条件 -->
         <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
-            AND bi.class IN (
-                SELECT id FROM is_entry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
-                SELECT id FROM is_extry WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
-                SELECT id FROM is_swap WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
-                SELECT id FROM is_sell WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
-                SELECT id FROM is_sre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
-                SELECT id FROM is_buy WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%') UNION ALL
-                SELECT id FROM is_bre WHERE number LIKE CONCAT('%', #{batchDetailQuery.number}, '%')
+            AND (
+                (bi.type = 'entry' AND (SELECT number FROM is_entry WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%')) OR
+                (bi.type = 'extry' AND (SELECT number FROM is_extry WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%')) OR
+                ((bi.type = 'swap' OR bi.type = 'swapOut' OR bi.type = 'swapEnter') AND (SELECT number FROM is_swap WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%')) OR
+                (bi.type = 'sell' AND (SELECT number FROM is_sell WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%')) OR
+                (bi.type = 'sre' AND (SELECT number FROM is_sre WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%')) OR
+                (bi.type = 'buy' AND (SELECT number FROM is_buy WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%')) OR
+                (bi.type = 'bre' AND (SELECT number FROM is_bre WHERE id = bi.class) LIKE CONCAT('%', #{batchDetailQuery.number}, '%'))
             )
         </if>
 
