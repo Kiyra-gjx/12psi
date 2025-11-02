@@ -33,7 +33,7 @@ public class OtherOutListInfoDTO {
     @ApiModelProperty(value = "批次号", example = "B20231019001")
     private String batch;
     @ApiModelProperty(value = "生产日期", example = "2023-10-18T18:18:00")
-    private LocalDateTime mfd;
+    private long mfd;
     @ApiModelProperty(value = "成本", example = "10.00")
     private BigDecimal price;
     @ApiModelProperty(value = "数量", example = "100")
