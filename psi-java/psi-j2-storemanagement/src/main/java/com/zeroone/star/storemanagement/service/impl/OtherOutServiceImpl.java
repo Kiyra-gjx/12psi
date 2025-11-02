@@ -361,7 +361,8 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         // 更新出库单
         ExtryDO extry = new ExtryDO();
         BeanUtils.copyProperties(otherOutListDTO, extry);
-        extry.setTime(LocalDateTime.now());
+//        extry.setTime(LocalDateTime.now());
+        extry.setTime(Long.valueOf(System.currentTimeMillis()).intValue());
 
         otherOutMapper.insertBatch(extry);
         // 获取出库单详情列表
@@ -377,8 +378,12 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
         for (OtherOutListInfoDTO otherOutListInfoDTO : otherOutListInfoDTOList) {
             ExtryInfoDO extryInfo = new ExtryInfoDO();
             BeanUtils.copyProperties(otherOutListInfoDTO, extryInfo);
-            extryInfo.setPid(otherOutListDTO.getId());
-            extryInfo.setId((++maxId).toString());
+
+//            extryInfo.setPid(otherOutListDTO.getId());
+            extryInfo.setPid(Integer.valueOf(otherOutListDTO.getId()));
+//            extryInfo.setId((++maxId).toString());
+            extryInfo.setId(++maxId);
+
             extryInfoList.add(extryInfo);
         }
         otherOutInfoMapper.insertBatch(extryInfoList);
