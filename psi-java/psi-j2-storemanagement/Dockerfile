@@ -1,5 +1,5 @@
 FROM openjdk:8
-MAINTAINER 01star
+MAINTAINER Carry
 ADD target/psi-j2-storemanagement-1.0.0-SNAPSHOT.jar app.jar
 ENV JAVA_OPTS="-Xms256m -Xmx256m"
 ENV SPRING_ARGS=""
