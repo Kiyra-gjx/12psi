@@ -19,7 +19,7 @@ public class EntryDO {
 
         private String frame;
 
-        private long time;
+        private LocalDateTime time;
 
         private String number;
 

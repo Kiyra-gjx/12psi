@@ -1,30 +1,27 @@
 package com.zeroone.star.storemanagement.entity;
 
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 /**
  * @author Coda
  * @date 2025/10/28
  * @description 收发统计表
  */
 @Data
-@TableName("is_summary")
 public class SummaryDO {
-    private Integer id;
-    private Integer pid;
+    private String id;
+    private String pid;
     private String type;
-    @TableField("class")
-    private Integer cls;
-    private Integer info;
-    private Integer time;
-    private Integer goods;
+    private String cls;
+    private String info;
+    private LocalDateTime time;
+    private String goods;
     private String attr;
-    private Integer warehouse;
+    private String warehouse;
     private String batch;
-    private Integer mfd;
+    private LocalDateTime mfd;
     private int direction;
     private BigDecimal price;
     private BigDecimal nums;

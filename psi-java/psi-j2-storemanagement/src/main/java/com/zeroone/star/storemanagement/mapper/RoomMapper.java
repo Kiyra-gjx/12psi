@@ -1,15 +1,15 @@
 package com.zeroone.star.storemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.storemanagement.entity.RoomDO;
-import org.apache.ibatis.annotations.Delete;
-import org.apache.ibatis.annotations.Insert;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
+
+import java.util.List;
 
 public interface RoomMapper extends BaseMapper<RoomDO> {
 
-    @Select("select max(id) from is_room")
+    @Select("select max(id) from room")
     Integer getMaxId();
 
     @Select("select id, warehouse, goods, attr, nums from is_room where goods = #{goods}")

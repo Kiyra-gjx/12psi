@@ -1,25 +1,23 @@
 package com.zeroone.star.storemanagement.entity;
 
-import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Data
-@TableName("is_extry")
+@TableName("extry")
 public class ExtryDO {
 //其他出库单
-        @TableId(value = "id",type = IdType.AUTO)
-        private Integer id;
+        private String id;
 
-        private Integer customer;
+        private String customer;
 
-        private Integer frame;
+        private String frame;
 
-        private Integer time;
+        private LocalDateTime time;
 
         private String number;
 
@@ -29,7 +27,7 @@ public class ExtryDO {
 
         private BigDecimal cost;
 
-        private Integer people;
+        private String people;
 
         private String logistics;
 
@@ -47,7 +45,7 @@ public class ExtryDO {
         private Integer check;
 
         @TableField("`user`")
-        private Integer user;
+        private String user;
 
     }
 
