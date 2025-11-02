@@ -8,6 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * @BelongsProject: psi-java
@@ -30,12 +31,14 @@ public interface BatchMapper extends BaseMapper<BatchDO> {
     int updateBatchStock(@Param("batchNo") String batchNo, @Param("goodsId") String goodsId,
                          @Param("warehouseId") String warehouseId, @Param("nums") BigDecimal nums);
 
-    @Update("INSERT INTO is_batch (number, goods, warehouse, nums) VALUES (#{batchNo}, #{goodsId}, #{warehouseId}, #{nums})")
-    int createBatchInTargetWarehouse(@Param("batchNo") String batchNo, @Param("goodsId") String goodsId,
-                                     @Param("warehouseId") String warehouseId, @Param("nums") BigDecimal nums);
+    @Update("INSERT INTO is_batch (id, room, warehouse, goods, number, time, nums) VALUES (#{id}, #{room}, #{warehouseId}, #{goodsId}, #{number}, #{time}, #{nums})")
+    int createBatchInTargetWarehouse(@Param("id") String id, @Param("room") String room, @Param("warehouseId") String warehouseId, @Param("goodsId") String goodsId,
+                                     @Param("number") String number, @Param("time") LocalDate  time, @Param("nums") BigDecimal nums);
 
     @Select("SELECT id FROM is_batch WHERE number = #{batchNo} AND goods = #{goodsId} AND warehouse = #{warehouseId}")
     String getBatchId(@Param("batchNo") String batchNo, @Param("goodsId") String goodsId,
                        @Param("warehouseId") String warehouseId);
 
+    @Select("SELECT time FROM is_batch WHERE number = #{batchNo}")
+    LocalDate getTimeByBatchNo(@Param("batchNo") String batchNo);
 }

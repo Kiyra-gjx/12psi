@@ -16,7 +16,7 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
     @Select("select max(id) from room")
     Integer getMaxId();
 
-    @Select("select id, warehouse, goods, attr, nums from room where goods = #{goods}")
+    @Select("select id, warehouse, goods, attr, nums from is_room where goods = #{goods}")
     RoomDO getByGoods(String goods);
 
     @Insert("insert into room(id,warehouse, goods, attr, nums) values(#{id},#{warehouse}, #{goods}, #{attr}, #{nums})")
@@ -39,9 +39,9 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
     int updateRoomStock(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId,
                         @Param("nums") BigDecimal nums);
 
-    @Update("INSERT INTO is_room (goods, warehouse, nums) VALUES (#{goodsId}, #{warehouseId}, #{nums})")
-    int createRoomInTargetWarehouse(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId,
-                                    @Param("nums") BigDecimal nums);
+    @Update("INSERT INTO is_room (id, goods, warehouse, attr, nums) VALUES (#{id}, #{goodsId}, #{warehouseId}, #{attr}, #{nums})")
+    int createRoomInTargetWarehouse(@Param("id") String id, @Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId,
+                                    @Param("attr") String attr, @Param("nums") BigDecimal nums);
 
     @Select("SELECT id FROM is_room WHERE goods = #{goodsId} AND warehouse = #{warehouseId}")
     String getRoomId(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId);

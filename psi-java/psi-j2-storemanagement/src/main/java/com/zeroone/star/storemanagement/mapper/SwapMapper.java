@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 @Mapper
@@ -20,7 +21,7 @@ public interface SwapMapper extends BaseMapper<SwapDO> {
     /**
      * 更新调拨单信息
      */
-    int updateSwap(SwapDO swap);
+    int updateSwap(SwapDO swap, @Param("total") BigDecimal total);
 
     /**
      * 批量删除

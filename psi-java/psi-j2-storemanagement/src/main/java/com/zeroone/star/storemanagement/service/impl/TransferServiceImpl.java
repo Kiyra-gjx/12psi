@@ -14,9 +14,9 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.ZoneId;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -27,50 +27,63 @@ public class TransferServiceImpl implements ITransferService {
     private final RoomInfoMapper roomInfoMapper;
     private final BatchMapper batchMapper;
     private final BatchInfoMapper batchInfoMapper;
+    private final CostMapper costMapper;
 
     public TransferServiceImpl(SwapMapper swapMapper, SwapInfoMapper swapInfoMapper,
                                RoomMapper roomMapper, RoomInfoMapper roomInfoMapper,
-                               BatchMapper batchMapper, BatchInfoMapper batchInfoMapper) {
+                               BatchMapper batchMapper, BatchInfoMapper batchInfoMapper, CostMapper costMapper) {
         this.swapMapper = swapMapper;
         this.swapInfoMapper = swapInfoMapper;
         this.roomMapper = roomMapper;
         this.roomInfoMapper = roomInfoMapper;
         this.batchMapper = batchMapper;
         this.batchInfoMapper = batchInfoMapper;
+        this.costMapper = costMapper;
     }
+
+    private static String classId = "0";
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public JsonVO<String> modifyTransfer(TransferDetailDTO dto) {
         try {
-            // 2.查询调拨单当前状态
+            // 1.查询调拨单当前状态
             String pid = swapInfoMapper.getSwapById(dto.getInfo().getId());
             Integer currentStatus = swapMapper.getStatusById(pid);
             if (pid == null || currentStatus == null) {
                 return JsonVO.fail("调拨单不存在");
             }
 
-            // 3.检查状态是否为未审核
+            // 2.检查状态是否为未审核
             if (currentStatus != 0) {
                 return JsonVO.fail("只能修改草稿状态的调拨单");
             }
 
-            // 4.数据合法性校验
+            // 3.数据合法性校验
             if (!validateData(dto)) {
                 return JsonVO.fail("数据不合法");
             }
 
-            // 4.1 检查调出仓库和调入仓库是否相同
+            // 4 检查调出仓库和调入仓库是否相同
             if (dto.getInfo().getWarehouse().equals(dto.getInfo().getStorehouse())) {
                 return JsonVO.fail("调出仓库和调入仓库不能相同");
             }
 
-            // 5.更新调拨单信息
+            // 5.计算单据费用总和
+            BigDecimal totalCost = BigDecimal.ZERO;
+            if (dto.getCost() != null) {
+                for (TransferDetailDTO.costInfo costInfo : dto.getCost()) {
+                    if (costInfo.getMoney() != null) {
+                        totalCost = totalCost.add(costInfo.getMoney());
+                    }
+                }
+            }
+
+            // 6.更新调拨单信息
             SwapInfoDO swapInfoDO = new SwapInfoDO();
 
             if (dto.getInfo() != null) {
                 TransferDetailDTO.Info info = dto.getInfo();
-
                 // 设置 swapInfoDO
                 swapInfoDO.setId(info.getId());
                 if (info.getWarehouse() != null) {
@@ -79,25 +92,37 @@ public class TransferServiceImpl implements ITransferService {
                 if (info.getStorehouse() != null) {
                     swapInfoDO.setStorehouse(info.getStorehouse());
                 }
+                swapInfoDO.setBatch(info.getBatch());
+                swapInfoDO.setMfd(info.getMfd());
                 swapInfoDO.setPrice(info.getPrice());
                 swapInfoDO.setNums(info.getNums());
+                swapInfoDO.setTotal(info.getPrice().multiply(info.getNums()));
                 swapInfoDO.setData(info.getData());
             }
 
-            // 6.更新 swap 表
+            // 7.更新 swap 表
             SwapDO swapDO = new SwapDO();
             // 设置 ID
             swapDO.setId(pid);
 
             // 设置其他字段
             if (dto.getClassInfo() != null) {
-                swapDO.setData(dto.getClassInfo().getData());
-                swapDO.setLogistics(dto.getClassInfo().getLogistics());
+                swapDO.setTime(dto.getClassInfo().getTime());
+                swapDO.setNumber(dto.getClassInfo().getNumber());
+                swapDO.setTotal(swapInfoDO.getTotal());
+                swapDO.setCost(totalCost); // 设置计算出的费用总和
                 swapDO.setPeople(dto.getClassInfo().getPeople());
+                swapDO.setLogistics(dto.getClassInfo().getLogistics());
                 swapDO.setFile(dto.getClassInfo().getFile());
+                swapDO.setData(dto.getClassInfo().getData());
             }
 
-            int updateCount1 = swapMapper.updateSwap(swapDO);
+            // 处理单据费用
+            if (dto.getCost() != null) {
+                handleTransferCosts(pid, dto.getCost(), dto.getClassInfo().getTime());
+            }
+
+            int updateCount1 = swapMapper.updateSwap(swapDO, dto.getInfo().getPrice().multiply(dto.getInfo().getNums()));
             int updateCount2 = swapInfoMapper.updateSwap(swapInfoDO);
             int updateCount = Math.max(updateCount1, updateCount2);
 
@@ -112,6 +137,58 @@ public class TransferServiceImpl implements ITransferService {
         } catch (Exception e) {
             log.error("修改调拨单失败", e);
             return JsonVO.fail("修改调拨单失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 处理单据费用
+     */
+    private void handleTransferCosts(String transferId, List<TransferDetailDTO.costInfo> costInfos, LocalDate transferTime) {
+        // 1. 获取现有的费用列表
+        List<CostDO> existingCosts = costMapper.findByTransferId(transferId);
+
+        // 2. 构建新费用ID集合
+        Set<String> newCostIds = costInfos.stream()
+                .map(TransferDetailDTO.costInfo::getId)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        // 3. 删除不在新列表中的费用
+        for (CostDO existing : existingCosts) {
+            if (!newCostIds.contains(existing.getId())) {
+                costMapper.deleteById(existing.getId());
+                log.info("删除费用记录: id={}", existing.getId());
+            }
+        }
+
+        // // 4. 将 LocalDate 转换为时间戳
+        // Integer timestamp = null;
+        // if (transferTime != null) {
+        //     timestamp = (int) (transferTime.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000);
+        // }
+
+        // 4. 新增或更新费用
+        for (TransferDetailDTO.costInfo costInfo : costInfos) {
+            CostDO costDO = new CostDO();
+            costDO.setId(costInfo.getId());
+            costDO.setType("swap");  // 类型为调拨单
+            costDO.setCls(transferId);   // 关联调拨单ID
+            costDO.setTime(transferTime);
+            costDO.setIet(costInfo.getIet());  // 支出类别
+            costDO.setMoney(costInfo.getMoney());  // 金额
+            costDO.setData(costInfo.getData());    // 备注
+            costDO.setSettle(BigDecimal.ZERO);     // 结算金额，默认0
+            costDO.setState(0);                    // 状态，默认0
+
+            if (!costMapper.isExist(costDO.getId())) {
+                costMapper.insert(costDO);
+                log.info("新增费用记录: iet={}, money={}", costInfo.getIet(), costInfo.getMoney());
+            } else {
+                // 更新
+                costDO.setId(costInfo.getId());
+                costMapper.updateById(costDO);
+                log.info("更新费用记录: id={}", costInfo.getId());
+            }
         }
     }
 
@@ -249,16 +326,16 @@ public class TransferServiceImpl implements ITransferService {
 
         try {
             // 1.处理批次库存调拨
-            boolean batchSuccess = processBatchTransfer(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId, price, 0);
+            boolean batchSuccess = processBatchTransfer(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId);
             if (!batchSuccess) {
                 return false;
             }
 
             // 2.处理仓库总库存调拨
-            boolean roomSuccess = processRoomTransfer(goodsId, fromWarehouse, toWarehouse, nums, swapInfoId, price, 0);
+            boolean roomSuccess = processRoomTransfer(goodsId, fromWarehouse, toWarehouse, nums, swapInfoId, price);
             if (!roomSuccess) {
                 // 回滚批次库存
-                processBatchTransfer(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price, 1);
+                processBatchTransfer(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
                 return false;
             }
 
@@ -276,8 +353,7 @@ public class TransferServiceImpl implements ITransferService {
      * 处理批次库存调拨
      */
     private boolean processBatchTransfer(String batchNo, String goodsId, String fromWarehouse,
-                                         String toWarehouse, BigDecimal nums, String swapInfoId,
-                                         BigDecimal price, Integer direction) {
+                                         String toWarehouse, BigDecimal nums, String swapInfoId) {
         // 1.减少源仓库的批次库存
         int updateSource = batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums.negate());
         if (updateSource <= 0) {
@@ -287,9 +363,12 @@ public class TransferServiceImpl implements ITransferService {
 
         // 2.记录批次出库流水
         String fromBatchId = batchMapper.getBatchId(batchNo, goodsId, fromWarehouse);
+        // 修改 classId 为自增（参考数据库）
+        classId = String.valueOf(Integer.parseInt(classId) + 1);
+        String uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
+        BatchInfoDO batchInfoOut = createBatchInfo(uniqueId, fromBatchId, "swapOut", classId,
+                swapInfoId, 0, nums);
         if (fromBatchId != null) {
-            BatchInfoDO batchInfoOut = createBatchInfo(fromBatchId, "swapOut", "1",
-                    swapInfoId, 0, nums.negate());
             batchInfoMapper.insert(batchInfoOut);
         }
 
@@ -302,24 +381,39 @@ public class TransferServiceImpl implements ITransferService {
                 log.error("增加目标仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
                 batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
+                // 回滚批次出库流水
+                batchInfoMapper.deleteById(batchInfoOut.getId());
+                // 回滚所属类 classId
+                classId = String.valueOf(Integer.parseInt(classId) - 1);
                 return false;
             }
         } else {
             // 目标仓库不存在该批次，创建新的批次记录
-            boolean createSuccess = batchMapper.createBatchInTargetWarehouse(batchNo, goodsId, toWarehouse, nums) > 0;
+            LocalDate time = batchMapper.getTimeByBatchNo(batchNo);
+            String roomId = roomMapper.getRoomId(goodsId, toWarehouse);
+            uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
+            boolean createSuccess = batchMapper.createBatchInTargetWarehouse(uniqueId, roomId, toWarehouse, goodsId, batchNo, time, nums) > 0;
             if (!createSuccess) {
                 log.error("在目标仓库创建批次失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
                 batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
+                // 回滚批次出库流水
+                batchInfoMapper.deleteById(batchInfoOut.getId());
+                // 回滚所属类 classId
+                classId = String.valueOf(Integer.parseInt(classId) - 1);
                 return false;
             }
         }
 
         // 4.记录批次入库流水
         String toBatchId = batchMapper.getBatchId(batchNo, goodsId, toWarehouse);
+        // 修改 classId 为自增（参考数据库）
+        classId = String.valueOf(Integer.parseInt(classId) + 1);
+        uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
+        BatchInfoDO batchInfoIn = createBatchInfo(uniqueId, toBatchId, "swapEnter", classId,
+                swapInfoId, 1, nums);
         if (toBatchId != null) {
-            BatchInfoDO batchInfoIn = createBatchInfo(toBatchId, "swapEnter", "1",
-                    swapInfoId, 1, nums);
+
             batchInfoMapper.insert(batchInfoIn);
         }
 
@@ -330,7 +424,7 @@ public class TransferServiceImpl implements ITransferService {
      * 处理仓库总库存调拨
      */
     private boolean processRoomTransfer(String goodsId, String fromWarehouse, String toWarehouse,
-                                        BigDecimal nums, String swapInfoId, BigDecimal price, Integer direction) {
+                                        BigDecimal nums, String swapInfoId, BigDecimal price) {
         // 1.减少源仓库总库存
         int updateSourceRoom = roomMapper.updateRoomStock(goodsId, fromWarehouse, nums.negate());
         if (updateSourceRoom <= 0) {
@@ -340,9 +434,12 @@ public class TransferServiceImpl implements ITransferService {
 
         // 2.记录仓库出库流水
         String fromRoomId = roomMapper.getRoomId(goodsId, fromWarehouse);
+        // 修改 classId 为自增（参考数据库，且非全局）
+        classId = String.valueOf(Integer.parseInt(classId) + 1);
+        String uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
+        RoomInfoDO roomInfoOut = createRoomInfo(uniqueId, fromRoomId, "swapOut", classId,
+                swapInfoId, LocalDateTime.now(), 0, price, nums.negate());
         if (fromRoomId != null) {
-            RoomInfoDO roomInfoOut = createRoomInfo(fromRoomId, "swapOut", "1",
-                    swapInfoId, LocalDateTime.now(), 0, price, nums.negate());
             roomInfoMapper.insert(roomInfoOut);
         }
 
@@ -355,11 +452,17 @@ public class TransferServiceImpl implements ITransferService {
                 log.error("增加目标仓库总库存失败，商品: {}，仓库: {}", goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
                 roomMapper.updateRoomStock(goodsId, fromWarehouse, nums);
+                // 回滚仓库出库流水
+                roomInfoMapper.deleteById(roomInfoOut.getId());
+                // 回滚所属类 classId
+                classId = String.valueOf(Integer.parseInt(classId) - 1);
                 return false;
             }
         } else {
             // 目标仓库不存在该商品，创建新的库存记录
-            boolean createRoomSuccess = roomMapper.createRoomInTargetWarehouse(goodsId, toWarehouse, nums) > 0;
+            uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
+            String attr = swapInfoMapper.getAttrById(swapInfoId);
+            boolean createRoomSuccess = roomMapper.createRoomInTargetWarehouse(uniqueId, goodsId, toWarehouse, attr, nums) > 0;
             if (!createRoomSuccess) {
                 log.error("在目标仓库创建库存记录失败，商品: {}，仓库: {}", goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
@@ -370,9 +473,11 @@ public class TransferServiceImpl implements ITransferService {
 
         // 4.记录仓库入库流水
         String toRoomId = roomMapper.getRoomId(goodsId, toWarehouse);
+        uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
+        // 修改 classId 为自增（参考数据库，且非全局）
+        RoomInfoDO roomInfoIn = createRoomInfo(uniqueId, toRoomId, "swapEnter", "1",
+                swapInfoId, LocalDateTime.now(), 1, price, nums);
         if (toRoomId != null) {
-            RoomInfoDO roomInfoIn = createRoomInfo(toRoomId, "swapEnter", "1",
-                    swapInfoId, LocalDateTime.now(), 1, price, nums);
             roomInfoMapper.insert(roomInfoIn);
         }
 
@@ -393,16 +498,16 @@ public class TransferServiceImpl implements ITransferService {
 
         try {
             // 1.处理批次库存还原（反向调拨）
-            boolean batchSuccess = processBatchTransfer(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price, 1);
+            boolean batchSuccess = processBatchTransfer(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
             if (!batchSuccess) {
                 return false;
             }
 
             // 2.处理仓库总库存还原（反向调拨）
-            boolean roomSuccess = processRoomTransfer(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price, 1);
+            boolean roomSuccess = processRoomTransfer(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price);
             if (!roomSuccess) {
                 // 回滚批次库存
-                processBatchTransfer(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId, price, 0);
+                processBatchTransfer(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId);
                 return false;
             }
 
@@ -419,9 +524,10 @@ public class TransferServiceImpl implements ITransferService {
     /**
      * 创建批次流水记录
      */
-    private BatchInfoDO createBatchInfo(String pid, String type, String classId,
+    private BatchInfoDO createBatchInfo(String id, String pid, String type, String classId,
                                         String info, Integer direction, BigDecimal nums) {
         BatchInfoDO batchInfo = new BatchInfoDO();
+        batchInfo.setId(id);
         batchInfo.setPid(pid);
         batchInfo.setType(type);
         batchInfo.setCls(classId);
@@ -434,9 +540,10 @@ public class TransferServiceImpl implements ITransferService {
     /**
      * 创建仓库流水记录
      */
-    private RoomInfoDO createRoomInfo(String pid, String type, String classId,
+    private RoomInfoDO createRoomInfo(String id, String pid, String type, String classId,
                                       String info, LocalDateTime time, Integer direction, BigDecimal price, BigDecimal nums) {
         RoomInfoDO roomInfo = new RoomInfoDO();
+        roomInfo.setId(id);
         roomInfo.setPid(pid);
         roomInfo.setType(type);
         roomInfo.setCls(classId);

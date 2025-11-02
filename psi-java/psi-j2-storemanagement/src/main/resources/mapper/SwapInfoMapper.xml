@@ -17,13 +17,16 @@
         where i.id = #{id}
     </select>
 
-    <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapInfoDO">
+    <update id="updateSwap">
         UPDATE is_swap_info
         <set>
             <if test="warehouse != null and warehouse != ''">warehouse = #{warehouse},</if>
             <if test="storehouse != null and storehouse != ''">storehouse = #{storehouse},</if>
+            <if test="batch != null and batch != ''">batch = #{batch},</if>
+            <if test="mfd != null">mfd = 1704067200,</if>
             <if test="price != null">price = #{price},</if>
             <if test="nums != null">nums = #{nums},</if>
+            <if test="total != null">total = #{total},</if>
             <if test="data != null and data != ''">data = #{data},</if>
         </set>
         WHERE id = #{id}

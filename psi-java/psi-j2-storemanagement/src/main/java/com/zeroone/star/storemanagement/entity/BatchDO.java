@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 @TableName("batch")
@@ -29,7 +29,7 @@ public class BatchDO {
     private String number;
 
     @TableField("time")
-    private LocalDateTime time;
+    private LocalDate time;
 
     @TableField("nums")
     private BigDecimal nums;

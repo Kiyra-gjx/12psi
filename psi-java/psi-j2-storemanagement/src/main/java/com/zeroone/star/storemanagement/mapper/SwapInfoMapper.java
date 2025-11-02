@@ -31,12 +31,6 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
      */
     List<String> getPidListByIds(@Param("ids") List<Integer> ids);
 
-    /**
-     * 根据调拨单的批次号查询批次是否存在
-     */
-    @Select("SELECT EXISTS(SELECT 1 FROM is_batch WHERE number = #{batch})")
-    boolean isBatchExist(@Param("batch") String batch);
-
     ArrayList<TransferDetailListDTO> getTransferDetailListDTO(@Param("id") String id);
 
     /**
@@ -52,8 +46,8 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
     SwapInfoDO getTransferDetail(String id);
 
     /**
-     * 根据批次号、商品id、仓库id查询批次库存
+     * 根据id查询商品属性
      */
-    @Select("SELECT nums FROM is_batch WHERE number = #{batchNo} AND goods = #{goodsId} AND warehouse = #{fromWarehouse}")
-    BigDecimal getBatchStock(String batchNo, String goodsId, String fromWarehouse);
+    @Select("SELECT attr FROM is_swap_info WHERE id = #{goodsId}")
+    String getAttrById(String goodsId);
 }

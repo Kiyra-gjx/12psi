@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.SwapMapper">
-    <update id="updateSwap" parameterType="com.zeroone.star.storemanagement.entity.SwapDO">
+    <update id="updateSwap">
         UPDATE is_swap
         <set>
-            <if test="people != null and people != ''">people = #{people},</if>
-            <if test="logistics != null and logistics != ''">logistics = #{logistics},</if>
-            <if test="file != null and file != ''">file = #{file},</if>
-            <if test="data != null and data != ''">data = #{data},</if>
+            <if test="swap.time != null">time = 1761840000,</if>
+            <if test="swap.number != null and swap.number != ''">number = #{swap.number},</if>
+            <if test="swap.total != null">total = #{swap.total},</if>
+            <if test="swap.cost != null">cost = #{swap.cost},</if>
+            <if test="swap.people != null and swap.people != ''">people = #{swap.people},</if>
+            <if test="swap.logistics != null and swap.logistics != ''">logistics = #{swap.logistics},</if>
+            <if test="swap.file != null and swap.file != ''">file = #{swap.file},</if>
+            <if test="swap.data != null and swap.data != ''">data = #{swap.data},</if>
         </set>
-        WHERE id = #{id}
+        WHERE id = #{swap.id}
     </update>
 
     <update id="auditBatchStatus">

@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 @Data
 public class CostDO {
@@ -16,7 +16,7 @@ public class CostDO {
   @TableField("class")
   private String cls;
 
-  private LocalDateTime time;
+  private LocalDate time;
 
   private String iet;
 

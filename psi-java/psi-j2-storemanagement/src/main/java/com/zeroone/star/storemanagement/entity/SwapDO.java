@@ -4,7 +4,7 @@ package com.zeroone.star.storemanagement.entity;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 public class SwapDO {
@@ -13,7 +13,7 @@ public class SwapDO {
 
     private String frame;
 
-    private Date time;
+    private LocalDate time;
 
     private String number;
 

@@ -8,4 +8,24 @@
             (#{item.id},#{item.type},#{item.cls},#{item.time},#{item.iet},#{item.money},#{item.data},#{item.settle},#{item.state})
         </foreach>
     </insert>
+
+    <update id="updateById" parameterType="com.zeroone.star.storemanagement.entity.CostDO">
+        UPDATE is_cost
+        <set>
+            <if test="type != null">type = #{type},</if>
+            <if test="cls != null">class = #{cls},</if>
+            <if test="time != null">time = 1761840000,</if>
+            <if test="iet != null">iet = #{iet},</if>
+            <if test="money != null">money = #{money},</if>
+            <if test="data != null">data = #{data},</if>
+            <if test="settle != null">settle = #{settle},</if>
+            <if test="state != null">state = #{state}</if>
+        </set>
+        WHERE id = #{id}
+    </update>
+
+    <insert id="insert" parameterType="com.zeroone.star.storemanagement.entity.CostDO">
+        INSERT INTO is_cost (id, type, class, time, iet, money, data, settle, state)
+        VALUES (#{id}, #{type}, #{cls}, 1761840000, #{iet}, #{money}, #{data}, #{settle}, #{state})
+    </insert>
 </mapper>
