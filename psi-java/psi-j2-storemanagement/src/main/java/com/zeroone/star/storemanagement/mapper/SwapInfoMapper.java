@@ -6,9 +6,6 @@ import com.zeroone.star.storemanagement.entity.SwapInfoDO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-
-import java.lang.reflect.Array;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,12 +29,6 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
     List<String> getPidListByIds(@Param("ids") List<Integer> ids);
 
     ArrayList<TransferDetailListDTO> getTransferDetailListDTO(@Param("id") String id);
-
-    /**
-     * 根据调拨单的id查询库存是否充足
-     */
-    @Select("SELECT EXISTS(SELECT 1 FROM is_room WHERE goods = #{goods} AND warehouse = #{warehouse} AND nums >= #{nums})")
-    boolean isNumsEnough(@Param("goods") String goods, @Param("warehouse") String warehouse, @Param("nums") BigDecimal nums);
 
     /**
      * 根据调拨单的id查询调拨单详情

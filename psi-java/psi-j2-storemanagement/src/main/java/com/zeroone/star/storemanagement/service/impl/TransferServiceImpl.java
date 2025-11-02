@@ -14,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -118,6 +117,9 @@ public class TransferServiceImpl implements ITransferService {
             }
 
             // 处理单据费用
+            if (dto.getClassInfo() == null) {
+                return JsonVO.fail("单据信息不能为空");
+            }
             if (dto.getCost() != null) {
                 handleTransferCosts(pid, dto.getCost(), dto.getClassInfo().getTime());
             }
