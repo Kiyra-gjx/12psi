@@ -21,8 +21,8 @@ import java.util.List;
 @ApiModel("批次查询对象")
 public class BatchQuery extends PageQuery {
 
-    @ApiModelProperty(value = "商品ID",example = "1")
-    private String  goodsId;
+    @ApiModelProperty(value = "商品名称",example = "1")
+    private String  goodsName;
 
     @ApiModelProperty(value = "商品编号",example = "0001")
     private String goodsNumber;
@@ -38,6 +38,9 @@ public class BatchQuery extends PageQuery {
 
     @ApiModelProperty(value = "商品类别ID",example = "1")
     private String  goodsCategoryId;
+
+    @ApiModelProperty(hidden = true)
+    private List<String> goodsCategoryIds;//类别树ID列表(内部处理字段)
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
     private String goodsBrand;

@@ -38,55 +38,55 @@
 
         <!-- 单据ID -->
         CASE
-        WHEN bi.type = 'buy' THEN b.id
-        WHEN bi.type = 'sell' THEN s.id
-        WHEN bi.type = 'bre' THEN br.id
-        WHEN bi.type = 'sre' THEN sr.id
-        WHEN bi.type = 'swapOut' THEN sw.id
-        WHEN bi.type = 'swapEnter' THEN sw.id
-        WHEN bi.type = 'entry' THEN e.id
-        WHEN bi.type = 'extry' THEN ex.id
+            WHEN bi.type = 'buy' THEN b.id
+            WHEN bi.type = 'sell' THEN s.id
+            WHEN bi.type = 'bre' THEN br.id
+            WHEN bi.type = 'sre' THEN sr.id
+            WHEN bi.type = 'swapOut' THEN sw.id
+            WHEN bi.type = 'swapEnter' THEN sw.id
+            WHEN bi.type = 'entry' THEN e.id
+            WHEN bi.type = 'extry' THEN ex.id
         ELSE NULL
         END as "costData.id",
 
         <!-- 单据编号 -->
         CASE
-        WHEN bi.type = 'buy' THEN b.number
-        WHEN bi.type = 'sell' THEN s.number
-        WHEN bi.type = 'bre' THEN br.number
-        WHEN bi.type = 'sre' THEN sr.number
-        WHEN bi.type = 'swapOut' THEN sw.number
-        WHEN bi.type = 'swapEnter' THEN sw.number
-        WHEN bi.type = 'entry' THEN e.number
-        WHEN bi.type = 'extry' THEN ex.number
+            WHEN bi.type = 'buy' THEN b.number
+            WHEN bi.type = 'sell' THEN s.number
+            WHEN bi.type = 'bre' THEN br.number
+            WHEN bi.type = 'sre' THEN sr.number
+            WHEN bi.type = 'swapOut' THEN sw.number
+            WHEN bi.type = 'swapEnter' THEN sw.number
+            WHEN bi.type = 'entry' THEN e.number
+            WHEN bi.type = 'extry' THEN ex.number
         ELSE ''
         END as "costData.number",
 
         <!-- 组织信息：costData.frameData -->
         <!-- 组织ID -->
         CASE
-        WHEN bi.type = 'buy' THEN f_b.id
-        WHEN bi.type = 'sell' THEN f_s.id
-        WHEN bi.type = 'bre' THEN f_br.id
-        WHEN bi.type = 'sre' THEN f_sr.id
-        WHEN bi.type = 'swapOut' THEN f_sw.id
-        WHEN bi.type = 'swapEnter' THEN f_sw.id
-        WHEN bi.type = 'entry' THEN f_e.id
-        WHEN bi.type = 'extry' THEN f_ex.id
-        ELSE NULL
+            WHEN bi.type = 'buy' THEN f_b.id
+            WHEN bi.type = 'sell' THEN f_s.id
+            WHEN bi.type = 'bre' THEN f_br.id
+            WHEN bi.type = 'sre' THEN f_sr.id
+            WHEN bi.type = 'swapOut' THEN f_sw.id
+            WHEN bi.type = 'swapEnter' THEN f_sw.id
+            WHEN bi.type = 'entry' THEN f_e.id
+            WHEN bi.type = 'extry' THEN f_ex.id
+            ELSE NULL
         END as "costData.frameData.id",
 
         <!-- 组织名称 -->
         CASE
-        WHEN bi.type = 'buy' THEN f_b.name
-        WHEN bi.type = 'sell' THEN f_s.name
-        WHEN bi.type = 'bre' THEN f_br.name
-        WHEN bi.type = 'sre' THEN f_sr.name
-        WHEN bi.type = 'swapOut' THEN f_sw.name
-        WHEN bi.type = 'swapEnter' THEN f_sw.name
-        WHEN bi.type = 'entry' THEN f_e.name
-        WHEN bi.type = 'extry' THEN f_ex.name
-        ELSE ''
+            WHEN bi.type = 'buy' THEN f_b.name
+            WHEN bi.type = 'sell' THEN f_s.name
+            WHEN bi.type = 'bre' THEN f_br.name
+            WHEN bi.type = 'sre' THEN f_sr.name
+            WHEN bi.type = 'swapOut' THEN f_sw.name
+            WHEN bi.type = 'swapEnter' THEN f_sw.name
+            WHEN bi.type = 'entry' THEN f_e.name
+            WHEN bi.type = 'extry' THEN f_ex.name
+            ELSE ''
         END as "costData.frameData.name"
 
         FROM is_batch_info bi

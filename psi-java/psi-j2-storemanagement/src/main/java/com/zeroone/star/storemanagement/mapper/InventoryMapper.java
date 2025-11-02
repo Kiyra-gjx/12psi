@@ -45,9 +45,4 @@ public interface InventoryMapper extends BaseMapper<GoodsDO> {
      * @return
      */
     List<String> selectChildCategoryIds(@Param("parentId") String parentId);
-
-    /**
-     * 查询所有仓库ID
-     */
-    List<String> selectAllWarehouseIds();
 }

@@ -18,7 +18,6 @@ import java.util.List;
 @Data
 @ApiModel("批次列表数据对象")
 public class BatchListDTO {
-
     @ApiModelProperty(value = "商品id", example = "1")
     private String id;
 
@@ -31,17 +30,17 @@ public class BatchListDTO {
     @ApiModelProperty(value = "保质期（天）", example = "365")
     private Integer protect;
 
-    @ApiModelProperty(value = "库存阈值", example = "30")
-    private BigDecimal  threshold;
+    @ApiModelProperty(value = "预警阈值", example = "10")
+    private Integer threshold ;
+
+    @ApiModelProperty(value = "库存阈值",hidden = true)
+    private BigDecimal stock;
 
     @ApiModelProperty(value = "商品编号", example = "0001")
     private String number;
 
     @ApiModelProperty(value = "规格型号", example = "500ml")
     private String spec;
-
-    @ApiModelProperty(value = "商品分类")
-    private CategoryDataDTO categoryData;
 
     @ApiModelProperty(value = "商品品牌", example = "伊利")
     private String brand;
@@ -55,13 +54,19 @@ public class BatchListDTO {
     @ApiModelProperty(value = "商品备注", example = "")
     private String data;
 
-    @ApiModelProperty(value = "批次产品[0:关闭|1:启用]", example = "0")
-    private Integer batch;
+    @ApiModelProperty(value = "商品分类ID")
+    private String categoryId;
 
-    @ApiModelProperty(value = "批次号列表")
-    private List<BatchNumberDTO> batches;
+    @ApiModelProperty(value = "商品分类名称")
+    private String categoryName;
 
-    @ApiModelProperty(value = "仓库库存信息，主商品的库存信息")
-    private List<WarehouseStockDTO> warehouses;
+    @ApiModelProperty(value = "是否有属性", example = "true")
+    private Boolean hasAttr;
+
+    @ApiModelProperty(value = "属性批次列表")
+    private List<BatchAttrDTO> attrBatches;
+
+    @ApiModelProperty(value = "无属性批次列表")
+    private List<BatchNumberDTO> noAttrBatches;
 
 }

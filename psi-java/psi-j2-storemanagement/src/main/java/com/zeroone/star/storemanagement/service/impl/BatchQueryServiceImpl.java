@@ -19,6 +19,7 @@ import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -49,10 +50,16 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
     @Override
     public PageDTO<BatchListDTO> listBatch(BatchQuery query) {
         try {
+            // 处理分类递归查询
+            if (query.getGoodsCategoryId() != null && !query.getGoodsCategoryId().isEmpty()) {
+                Set<String> allCategoryIds = getCategoryTreeIds(query.getGoodsCategoryId());
+                query.setGoodsCategoryIds(new ArrayList<>(allCategoryIds));
+            }
+
             // 创建分页对象
             Page<BatchListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
 
-            // 1. 查询商品基本信息（第一层）- 商品级别筛选
+            // 1. 查询商品基本信息（第一层）
             Page<BatchListDTO> goodsPage = batchListMapper.selectBatchGoodsList(page, query);
             List<BatchListDTO> goodsList = goodsPage.getRecords();
 
@@ -60,62 +67,155 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
                 return PageDTO.create(goodsPage);
             }
 
-            // 提取商品ID列表
+            // 提取商品ID列表和商品信息
             List<String> goodsIds = goodsList.stream()
                     .map(BatchListDTO::getId)
                     .collect(Collectors.toList());
 
-            // 2. 查询仓库库存信息（第一层）
-            List<WarehouseStockDTO> warehouseStocks = batchListMapper.selectGoodsWarehouseStock(goodsIds);
-            Map<String, List<WarehouseStockDTO>> warehouseStockMap = warehouseStocks.stream()
-                    .collect(Collectors.groupingBy(WarehouseStockDTO::getGoodsId));
+            Map<String, BigDecimal> goodsStockMap = goodsList.stream()
+                    .collect(Collectors.toMap(BatchListDTO::getId, BatchListDTO::getStock));
 
-            // 3. 查询批次详情信息（第三层）- 严格应用所有批次条件
+            Map<String, Integer> goodsProtectMap = goodsList.stream()
+                    .collect(Collectors.toMap(BatchListDTO::getId, BatchListDTO::getProtect));
+
+            // 2. 查询商品属性信息
+            List<BatchAttrDTO> attrStocks = batchListMapper.selectGoodsAttrStock(goodsIds);
+            Map<String, List<BatchAttrDTO>> goodsAttrMap = attrStocks.stream()
+                    .collect(Collectors.groupingBy(BatchAttrDTO::getGoodsId));
+
+            // 3. 查询批次详情信息
             List<BatchDocumentDTO> allBatchDocuments = batchListMapper.selectBatchDocumentsByGoodsIds(goodsIds, query);
 
-            // 4. 按商品ID和批次号进行双重分组
-            Map<String, Map<String, List<BatchDocumentDTO>>> batchGroupMap = allBatchDocuments.stream()
-                    .collect(Collectors.groupingBy(
-                            BatchDocumentDTO::getGoodsId,
-                            Collectors.groupingBy(BatchDocumentDTO::getBatchNumber)
-                    ));
+            // 4. 设置预警状态和过期日期
+            for (BatchDocumentDTO document : allBatchDocuments) {
+                BigDecimal stockThreshold = goodsStockMap.get(document.getGoodsId());
+                document.setIsWarning(document.getNums().compareTo(stockThreshold) <= 0);
 
-            // 5. 组装数据
-            for (BatchListDTO goods : goodsList) {
-                String goodsId = goods.getId();
-
-                // 设置仓库库存信息
-                goods.setWarehouses(warehouseStockMap.getOrDefault(goodsId, new ArrayList<>()));
-
-                // 设置批次信息
-                Map<String, List<BatchDocumentDTO>> goodsBatchMap = batchGroupMap.getOrDefault(goodsId, new HashMap<>());
-                List<BatchNumberDTO> batchNumbers = new ArrayList<>();
-
-                for (Map.Entry<String, List<BatchDocumentDTO>> entry : goodsBatchMap.entrySet()) {
-                    BatchNumberDTO batchNumberDTO = new BatchNumberDTO();
-                    batchNumberDTO.setBatchNumber(entry.getKey());
-                    batchNumberDTO.setGoodsId(goodsId);
-                    batchNumberDTO.setBatchDocuments(entry.getValue());
-
-                    // 计算该批次号的总库存
-                    BigDecimal totalStock = entry.getValue().stream()
-                            .map(BatchDocumentDTO::getNums)
-                            .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    batchNumberDTO.setTotalStock(totalStock);
-
-                    batchNumbers.add(batchNumberDTO);
+                // 计算过期日期：生产日期 + 保质期天数
+                Integer protectDays = goodsProtectMap.get(document.getGoodsId());
+                if (document.getProductDate() != null && protectDays != null && protectDays > 0) {
+                    LocalDate expireDate = document.getProductDate().plusDays(protectDays);
+                    document.setExpireDate(expireDate);
                 }
-
-                goods.setBatches(batchNumbers);
             }
 
-            // 返回分页结果
+            // 5. 按商品ID、属性名称、批次号进行分组
+            Map<String, Map<String, Map<String, List<BatchDocumentDTO>>>> batchGroupMap = allBatchDocuments.stream()
+                    .collect(Collectors.groupingBy(
+                            BatchDocumentDTO::getGoodsId,
+                            Collectors.groupingBy(
+                                    dto -> dto.getAttrName() == null ? "NO_ATTR" : dto.getAttrName(),
+                                    Collectors.groupingBy(BatchDocumentDTO::getBatchNumber)
+                            )
+                    ));
+
+            // 6. 组装数据
+            for (BatchListDTO goods : goodsList) {
+                String goodsId = goods.getId();
+                BigDecimal stockThreshold = goods.getStock();
+
+                // 判断商品是否有属性
+                List<BatchAttrDTO> attrs = goodsAttrMap.get(goodsId);
+                boolean hasAttr = attrs != null && !attrs.isEmpty();
+
+                goods.setHasAttr(hasAttr);
+
+                if (hasAttr) {
+                    // 有属性商品：按属性分组
+                    List<BatchAttrDTO> attrBatches = new ArrayList<>();
+
+                    for (BatchAttrDTO attr : attrs) {
+                        BatchAttrDTO attrDTO = new BatchAttrDTO();
+                        attrDTO.setAttrName(attr.getAttrName());
+                        attrDTO.setAttrStock(attr.getAttrStock());
+
+                        // 获取该属性下的批次信息
+                        Map<String, Map<String, List<BatchDocumentDTO>>> goodsBatchMap = batchGroupMap.getOrDefault(goodsId, new HashMap<>());
+                        Map<String, List<BatchDocumentDTO>> attrBatchMap = goodsBatchMap.getOrDefault(attr.getAttrName(), new HashMap<>());
+
+                        List<BatchNumberDTO> batchNumbers = buildBatchNumbers(attrBatchMap, stockThreshold,query);
+                        attrDTO.setBatches(batchNumbers);
+
+                        attrBatches.add(attrDTO);
+                    }
+
+                    goods.setAttrBatches(attrBatches);
+                    goods.setNoAttrBatches(new ArrayList<>());
+                } else {
+                    // 无属性商品：直接显示批次
+                    Map<String, Map<String, List<BatchDocumentDTO>>> goodsBatchMap = batchGroupMap.getOrDefault(goodsId, new HashMap<>());
+                    Map<String, List<BatchDocumentDTO>> noAttrBatchMap = goodsBatchMap.getOrDefault("NO_ATTR", new HashMap<>());
+
+                    List<BatchNumberDTO> batchNumbers = buildBatchNumbers(noAttrBatchMap, stockThreshold,query);
+                    goods.setNoAttrBatches(batchNumbers);
+                    goods.setAttrBatches(new ArrayList<>());
+                }
+            }
+
             return PageDTO.create(goodsPage);
 
         } catch (Exception e) {
             log.error("查询批次列表失败", e);
             throw new RuntimeException("查询批次列表失败", e);
         }
+    }
+
+    /**
+     * 递归获取类别树的所有ID
+     */
+    private Set<String> getCategoryTreeIds(String categoryId) {
+        Set<String> result = new HashSet<>();
+        result.add(categoryId);
+        findChildCategoriesRecursive(categoryId, result);
+        return result;
+    }
+
+    /**
+     * 具体的递归方法
+     */
+    private void findChildCategoriesRecursive(String parentId, Set<String> result) {
+        List<String> childIds = batchListMapper.selectChildCategoryIds(parentId);
+        if (childIds != null && !childIds.isEmpty()) {
+            for (String childId : childIds) {
+                if (!result.contains(childId)) {
+                    result.add(childId);
+                    findChildCategoriesRecursive(childId, result);
+                }
+            }
+        }
+    }
+
+    private List<BatchNumberDTO> buildBatchNumbers(Map<String, List<BatchDocumentDTO>> batchMap, BigDecimal stockThreshold, BatchQuery query) {
+        List<BatchNumberDTO> batchNumbers = new ArrayList<>();
+
+        for (Map.Entry<String, List<BatchDocumentDTO>> entry : batchMap.entrySet()) {
+            String batchNumber = entry.getKey();
+            List<BatchDocumentDTO> documents = entry.getValue();
+
+            // 判断批次号是否预警：只要有一个明细记录 nums <= stock
+            boolean isBatchWarning = documents.stream()
+                    .anyMatch(doc -> doc.getNums().compareTo(stockThreshold) <= 0);
+
+            // 如果是预警批次查询，只显示预警的批次
+            if (query.getBatchState() != null && query.getBatchState() == 1 && !isBatchWarning) {
+                continue; // 跳过非预警批次
+            }
+
+            BatchNumberDTO batchNumberDTO = new BatchNumberDTO();
+            batchNumberDTO.setBatchNumber(batchNumber);
+            batchNumberDTO.setBatchDocuments(documents);
+
+            // 计算该批次总库存
+            BigDecimal totalStock = documents.stream()
+                    .map(BatchDocumentDTO::getNums)
+                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+            batchNumberDTO.setTotalStock(totalStock);
+            batchNumberDTO.setIsWarning(isBatchWarning);
+
+            batchNumbers.add(batchNumberDTO);
+        }
+
+        return batchNumbers;
     }
 
 
@@ -158,8 +258,8 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
             exportQuery.setPageSize(10000L);  // 设置一个较大的数字获取所有数据
 
             // 复制原查询条件的过滤参数
-            if (query.getGoodsId() != null) {
-                exportQuery.setGoodsId(query.getGoodsId());
+            if (query.getGoodsName() != null) {
+                exportQuery.setGoodsName(query.getGoodsName());
             }
             if (query.getGoodsNumber() != null) {
                 exportQuery.setGoodsNumber(query.getGoodsNumber());

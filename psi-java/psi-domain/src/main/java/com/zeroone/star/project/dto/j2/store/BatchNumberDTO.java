@@ -1,5 +1,6 @@
 package com.zeroone.star.project.dto.j2.store;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -10,16 +11,17 @@ import java.util.List;
 @ApiModel("批次号对象")
 public class BatchNumberDTO {
 
-    @ApiModelProperty(value = "批次号", example = "BATCH001")
+    @ApiModelProperty(value = "批次号")
     private String batchNumber;
 
-    @ApiModelProperty(value = "库存数量", example = "300")
+    @ApiModelProperty(value = "该批次总库存")
     private BigDecimal totalStock;
 
-    @ApiModelProperty(value = "商品ID", example = "1")
-    private String goodsId;
+    @ApiModelProperty(value = "是否预警")
+    @JsonIgnore
+    private Boolean isWarning;
 
-    @ApiModelProperty(value = "批次详细对象")
-    List<BatchDocumentDTO> batchDocuments;
+    @ApiModelProperty(value = "批次详情列表")
+    private List<BatchDocumentDTO> batchDocuments;
 
 }
