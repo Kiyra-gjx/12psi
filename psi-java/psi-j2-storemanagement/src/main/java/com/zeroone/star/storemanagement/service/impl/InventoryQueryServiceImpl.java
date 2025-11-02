@@ -62,7 +62,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
         Page<InventoryListDTO> page = new Page<>(query.getPageIndex(), query.getPageSize());
         Page<InventoryListDTO> goodsPage = inventoryMapper.selectInventoryBaseList(page, query);
 
-        if (goodsPage.getRecords().isEmpty()){
+        if (goodsPage.getRecords().isEmpty()) {
             return PageDTO.create(goodsPage);
         }
 
@@ -117,7 +117,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
      */
     private void assembleInventoryData(List<InventoryListDTO> goodsList,
                                        List<AttrStockDTO> attributes,
-                                       List<WarehouseStockDTO> warehouseStocks){
+                                       List<WarehouseStockDTO> warehouseStocks) {
         //1.将库存信息构建两层Map：goodsId->attrId -> List<WarehouseStockDTO>
         Map<String, Map<String, List<WarehouseStockDTO>>> warehouseGroupMap = warehouseStocks.stream()
                 .collect(Collectors.groupingBy(
@@ -130,7 +130,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
                 .collect(Collectors.groupingBy(AttrStockDTO::getPid));
 
         //执行组装逻辑
-        for (InventoryListDTO goods : goodsList){
+        for (InventoryListDTO goods : goodsList) {
             String goodsId = goods.getId();
 
             //获取商品的所有库存分组
@@ -139,13 +139,13 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
             //判断是否有属性
             boolean hasAttributes = goodsAttrMap.containsKey(goodsId);
 
-            if(hasAttributes){
+            if (hasAttributes) {
                 //有属性值
                 List<AttrStockDTO> goodAttrs = goodsAttrMap.get(goodsId);
                 List<AttrStockDTO> validAttrs = new ArrayList<>(); // 用于存储所有属性
                 List<WarehouseStockDTO> allWarehouseStocks = new ArrayList<>(); // 存储所有仓库库存信息
 
-                for (AttrStockDTO attr : goodAttrs){
+                for (AttrStockDTO attr : goodAttrs) {
                     //给每个属性设置库存
                     List<WarehouseStockDTO> attrStocks = goodsStockMap.getOrDefault(attr.getAttrId(), new ArrayList<>());
                     attr.setWarehouses(attrStocks);
@@ -183,7 +183,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
                 }
                 goods.setWarehouses(new ArrayList<>(warehouseSumMap.values()));
 
-            }else{
+            } else {
                 //没有属性值
                 //设置商品库存列表
                 List<WarehouseStockDTO> goodsStock = goodsStockMap.getOrDefault("", new ArrayList<>());
@@ -219,14 +219,13 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
             InventoryListDTO goods = iterator.next();
             boolean hasWarning = false;
 
-            // 1.检查商品是否有预警
             if (goods.getAttrs() != null && !goods.getAttrs().isEmpty()) {
-                // 1.1有属性商品：检查每个属性是否有预警
+                // 有属性商品：检查每个属性是否有预警
                 Iterator<AttrStockDTO> attrIterator = goods.getAttrs().iterator();
                 while (attrIterator.hasNext()) {
                     AttrStockDTO attr = attrIterator.next();
 
-                    // 检查单个属性是否有预警
+                    // 修复：传递选中的仓库ID
                     boolean attrHasWarning = checkIfAttributeHasWarningStock(attr, goods.getStock(), selectedWarehouseIds);
 
                     if (attrHasWarning) {
@@ -242,105 +241,52 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
                     hasWarning = false;
                 }
             } else {
-                // 1.2无属性商品：检查商品是否有预警
+                // 无属性商品：只要有一个库存记录 < 阈值就算预警
+                // 修复：传递选中的仓库ID
                 hasWarning = checkIfGoodsHasWarningStock(goods, selectedWarehouseIds);
             }
 
             // 如果商品没有预警库存，移除该商品
             if (!hasWarning) {
                 iterator.remove();
-            }else{
-                // 3.额外检查：检查在仓库中是否有任何库存记录
-                boolean hasAnyRecordInWarehouses = checkIfHasAnyRecordInWarehouses(goods, selectedWarehouseIds);
-                if (!hasAnyRecordInWarehouses) {
-                    iterator.remove();
-                }
             }
         }
     }
 
     /**
-     * 检查有属性的商品是否是预警库存
+     * 检查有属性的商品是否是预警库存 - 修复版本
      */
     private boolean checkIfAttributeHasWarningStock(AttrStockDTO attr, BigDecimal stockThreshold, List<String> selectedWarehouseIds) {
-        // 确定要检查的仓库列表
-        List<String> warehouseIdsToCheck = selectedWarehouseIds;
-        if (warehouseIdsToCheck == null || warehouseIdsToCheck.isEmpty()) {
-            // 如果没选仓库，就查所有仓库
-            warehouseIdsToCheck = inventoryMapper.selectAllWarehouseIds();
-        }
         List<WarehouseStockDTO> attrStocks = attr.getWarehouses();
 
-        // 对每个仓库进行检查
-        for (String warehouseId : warehouseIdsToCheck) {
-            Optional<WarehouseStockDTO> stockRecord = attrStocks.stream()
-                    .filter(stock -> warehouseId.equals(stock.getWarehouseId()))
-                    .findFirst();
-            //有记录用实际库存，没有记录库存为0
-            BigDecimal stockNum = stockRecord.isPresent() ? stockRecord.get().getStockNum() : BigDecimal.ZERO;
-
-            if (stockNum.compareTo(stockThreshold) <= 0) {
-                return true;// 只要有一个仓库预警，就返回true
-            }
+        // 如果没有选中具体仓库，检查所有库存
+        if (selectedWarehouseIds == null || selectedWarehouseIds.isEmpty()) {
+            return attrStocks.stream()
+                    .anyMatch(stock -> stock.getStockNum().compareTo(stockThreshold) < 0);
         }
-        return false;// 所有仓库都不预警
+
+        // 如果选中了具体仓库，只检查这些仓库的库存
+        return attrStocks.stream()
+                .filter(stock -> selectedWarehouseIds.contains(stock.getWarehouseId()))
+                .anyMatch(stock -> stock.getStockNum().compareTo(stockThreshold) < 0);
     }
 
     /**
-     * 检查没有属性的商品是否有预警库存
+     * 检查没有属性的商品是否有预警库存 - 修复版本
      */
     private boolean checkIfGoodsHasWarningStock(InventoryListDTO goods, List<String> selectedWarehouseIds) {
-        // 确定要检查的仓库列表
-        List<String> warehouseIdsToCheck = selectedWarehouseIds;
-        if (warehouseIdsToCheck == null || warehouseIdsToCheck.isEmpty()) {
-            // 如果没选仓库，就查所有仓库
-            warehouseIdsToCheck = inventoryMapper.selectAllWarehouseIds();
-        }
-
         List<WarehouseStockDTO> goodsStocks = goods.getWarehouses();
 
-        for (String warehouseId : warehouseIdsToCheck) {
-            Optional<WarehouseStockDTO> stockRecord = goodsStocks.stream()
-                    .filter(stock -> warehouseId.equals(stock.getWarehouseId()))
-                    .findFirst();
-
-            BigDecimal stockNum = stockRecord.isPresent() ? stockRecord.get().getStockNum() : BigDecimal.ZERO;
-
-            if (stockNum.compareTo(goods.getStock()) <= 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-    /**
-     * 检查商品在仓库中是否有任何库存记录
-     */
-    private boolean checkIfHasAnyRecordInWarehouses(InventoryListDTO goods, List<String> selectedWarehouseIds) {
-        // 确定要检查的仓库列表
-        List<String> warehouseIdsToCheck = selectedWarehouseIds;
-        if (warehouseIdsToCheck == null || warehouseIdsToCheck.isEmpty()) {
-            // 如果没选仓库，就查所有仓库
-            warehouseIdsToCheck = inventoryMapper.selectAllWarehouseIds();
+        // 如果没有选中具体仓库，检查所有库存
+        if (selectedWarehouseIds == null || selectedWarehouseIds.isEmpty()) {
+            return goodsStocks.stream()
+                    .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) < 0);
         }
 
-        if (goods.getAttrs() != null && !goods.getAttrs().isEmpty()) {
-            // 有属性商品：检查所有属性在仓库中是否有记录
-            for (AttrStockDTO attr : goods.getAttrs()) {
-                for (WarehouseStockDTO stock : attr.getWarehouses()) {
-                    if (warehouseIdsToCheck.contains(stock.getWarehouseId())) {
-                        return true;  // 找到一条记录就返回
-                    }
-                }
-            }
-        } else {
-            // 无属性商品：检查在仓库中是否有记录
-            for (WarehouseStockDTO stock : goods.getWarehouses()) {
-                if (warehouseIdsToCheck.contains(stock.getWarehouseId())) {
-                    return true;
-                }
-            }
-        }
-        return false; // 没有任何记录
+        // 如果选中了具体仓库，只检查这些仓库的库存
+        return goodsStocks.stream()
+                .filter(stock -> selectedWarehouseIds.contains(stock.getWarehouseId()))
+                .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) < 0);
     }
     /**
      * 过滤非零库存

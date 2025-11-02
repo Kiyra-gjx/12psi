@@ -20,7 +20,6 @@
             g.code,
             g.`data` as remark,
             c.id as "categoryData.id",
-            c.pid as "categoryData.pid",
             c.name as "categoryData.name",
             <!-- 使用子查询计算总库存 -->
             COALESCE((
@@ -103,7 +102,4 @@
         </if>
     </select>
 
-    <select id="selectAllWarehouseIds" resultType="java.lang.String">
-        SELECT CAST(id AS CHAR) as id FROM is_warehouse
-    </select>
 </mapper>
