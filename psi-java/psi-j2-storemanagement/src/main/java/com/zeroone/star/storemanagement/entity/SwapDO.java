@@ -1,12 +1,14 @@
 package com.zeroone.star.storemanagement.entity;
 
 
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
+@TableName("is_swap")
 public class SwapDO {
 
     private String id;

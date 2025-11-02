@@ -25,7 +25,7 @@
         </foreach>
     </update>
 
-    <delete id="deleteBatchIds">
+    <delete id="deleteByIdList">
         DELETE FROM is_swap
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">

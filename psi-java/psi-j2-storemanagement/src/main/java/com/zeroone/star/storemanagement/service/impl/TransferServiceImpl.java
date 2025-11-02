@@ -440,7 +440,7 @@ public class TransferServiceImpl implements ITransferService {
         classId = String.valueOf(Integer.parseInt(classId) + 1);
         String uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
         RoomInfoDO roomInfoOut = createRoomInfo(uniqueId, fromRoomId, "swapOut", classId,
-                swapInfoId, LocalDateTime.now(), 0, price, nums.negate());
+                swapInfoId, LocalDateTime.now(), 0, price, nums);
         if (fromRoomId != null) {
             roomInfoMapper.insert(roomInfoOut);
         }
@@ -567,6 +567,9 @@ public class TransferServiceImpl implements ITransferService {
             }
 
             // 1.检查调拨单状态并收集需要删除的数据
+            List<String> cannotDeleteIds = new ArrayList<>();
+            List<String> validPidList = new ArrayList<>();
+
             for (Integer id : ids) {
                 String pid = swapInfoMapper.getSwapById(id.toString());
                 if (pid == null) {
@@ -574,30 +577,46 @@ public class TransferServiceImpl implements ITransferService {
                 }
 
                 Integer status = swapMapper.getStatusById(pid);
-                if (status == null || status != 0) {
-                    return JsonVO.fail("只能删除草稿状态的调拨单，ID: " + id);
+                if (status == null) {
+                    return JsonVO.fail("调拨单状态异常，ID: " + id);
+                }
+
+                if (status != 0) {
+                    cannotDeleteIds.add(id.toString());
+                } else {
+                    validPidList.add(pid);
                 }
             }
 
-            // 2.获取对应的主表ID
-            List<String> pidList = swapInfoMapper.getPidListByIds(ids);
-
-            // 3.先删除 swap_info 表中的记录
-            int deleteInfoCount = swapInfoMapper.deleteBatchIds(ids);
-
-            // 4.再删除 swap 表中的记录
-            int deleteMainCount = 0;
-            if (pidList != null && !pidList.isEmpty()) {
-                deleteMainCount = swapMapper.deleteBatchIds(pidList);
+            // 2.如果有已审核的调拨单，返回错误
+            if (!cannotDeleteIds.isEmpty()) {
+                return JsonVO.fail("只能删除草稿状态的调拨单，以下调拨单已审核不可删除: " + String.join(", ", cannotDeleteIds));
             }
 
-            log.info("删除调拨单成功: 删除详情记录 {} 条, 删除主表记录 {} 条", deleteInfoCount, deleteMainCount);
+            // 3.如果没有可删除的调拨单，直接返回
+
+            // 4.先删除对应的单据费用 (is_cost表)
+            int deleteCostCount = 0;
+            for (String pid : validPidList) {
+                int count = costMapper.deleteByTransferId(pid);
+                deleteCostCount += count;
+                log.info("删除调拨单 {} 对应的费用记录 {} 条", pid, count);
+            }
+
+            // 5.删除 swap_info 表中的记录
+            int deleteInfoCount = swapInfoMapper.deleteBatchIds(ids);
+
+            // 6.删除 swap 表中的记录
+            int deleteMainCount = swapMapper.deleteBatchIds(validPidList);
+
+            log.info("删除调拨单成功: 删除详情记录 {} 条, 删除主表记录 {} 条, 删除费用记录 {} 条",
+                    deleteInfoCount, deleteMainCount, deleteCostCount);
 
             if (deleteInfoCount == 0) {
                 return JsonVO.fail("删除调拨单失败");
             }
 
-            return JsonVO.success(ids.toString());
+            return JsonVO.success("成功删除 " + deleteInfoCount + " 条调拨单记录");
 
         } catch (Exception e) {
             log.error("删除调拨单失败", e);

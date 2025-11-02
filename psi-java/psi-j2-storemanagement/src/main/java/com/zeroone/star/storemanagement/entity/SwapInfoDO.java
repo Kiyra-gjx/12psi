@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-@TableName("swap_info")
+@TableName("is_swap_info")
 public class SwapInfoDO {
 
     private String id;

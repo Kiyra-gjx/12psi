@@ -44,4 +44,9 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
      */
     @Select("SELECT attr FROM is_swap_info WHERE id = #{goodsId}")
     String getAttrById(String goodsId);
+
+    /**
+     * 批量删除调拨单详情
+     */
+    int deleteByIdList(@Param("ids") List<Integer> ids);
 }

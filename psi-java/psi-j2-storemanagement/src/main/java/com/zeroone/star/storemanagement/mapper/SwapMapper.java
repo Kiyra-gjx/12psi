@@ -26,7 +26,7 @@ public interface SwapMapper extends BaseMapper<SwapDO> {
     /**
      * 批量删除
      */
-    int deleteBatchIds(@Param("ids") List<String> ids);
+    int deleteByIdList(@Param("ids") List<String> ids);
 
     /**
      * 获取调拨单列表

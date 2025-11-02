@@ -48,4 +48,12 @@ public interface CostMapper extends BaseMapper<CostDO> {
      */
     @Select("SELECT EXISTS(SELECT 1 FROM is_cost WHERE id = #{id})")
     boolean isExist(String id);
+
+    /**
+     * 根据调拨单ID删除对应的费用记录
+     * @param transferId 调拨单ID (对应cls字段)
+     * @return 删除的记录数
+     */
+    @Delete("DELETE FROM is_cost WHERE class = #{transferId} AND type = 'swap'")
+    int deleteByTransferId(String transferId);
 }
