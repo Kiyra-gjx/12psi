@@ -42,7 +42,10 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
     /**
      * 根据调拨单的id查询调拨单详情
      */
-    @Select("SELECT * FROM is_swap_info WHERE id = #{id}")
+    // @Select("SELECT * FROM is_swap_info WHERE id = #{id}")
+    @Select("SELECT id, pid, goods, attr, unit, warehouse, storehouse, batch, " +
+            "FROM_UNIXTIME(mfd) as mfd, price, nums, serial, total, data " +
+            "FROM is_swap_info WHERE id = #{id}")
     SwapInfoDO getTransferDetail(String id);
 
     /**

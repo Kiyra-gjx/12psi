@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Data
-@TableName("batch")
+@TableName("is_batch")
 public class BatchDO {
 
     @TableId(value = "id",type = IdType.AUTO)

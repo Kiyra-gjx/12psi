@@ -12,7 +12,12 @@ public interface RoomInfoMapper extends BaseMapper<RoomInfoDO> {
     @Select("select max(id) from room_info")
     Integer getMaxId();
 
-    @Insert("insert into room_info (id, pid, type, class, info, time, direction, price, nums) VALUE (#{id},#{pid},#{type},#{cls},#{info},#{time},#{direction},#{price},#{nums})")
+    // @Insert("insert into is_room_info (id, pid, type, class, info, time, direction, price, nums) " +
+    //         "VALUE (#{id},#{pid},#{type},#{cls},#{info},#{time},#{direction},#{price},#{nums})")
+    @Insert("INSERT INTO is_room_info (id, pid, type, class, info, time, direction, price, nums) " +
+            "VALUES (#{id}, #{pid}, #{type}, #{cls}, #{info}, " +
+            "UNIX_TIMESTAMP(#{time}), " +  // 将 LocalDateTime 转换为时间戳
+            "#{direction}, #{price}, #{nums})")
     int insert(RoomInfoDO roomInfoDO);
 
     @Delete("delete from room_info where info = #{info}")

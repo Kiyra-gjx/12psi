@@ -132,7 +132,7 @@ public class TransferServiceImpl implements ITransferService {
                 return JsonVO.fail("更新调拨单失败");
             }
 
-            return JsonVO.success("修改调拨单成功，ID: " + dto.getInfo().getId());
+            return JsonVO.success(dto.getInfo().getId());
 
         } catch (Exception e) {
             log.error("修改调拨单失败", e);
@@ -304,7 +304,7 @@ public class TransferServiceImpl implements ITransferService {
             // 4.记录操作日志
             log.info("批量{}调拨单成功，操作数量：{}，ID列表：{}", operationName, successCount, ids);
 
-            return JsonVO.success("成功" + operationName + " " + successCount + " 个调拨单");
+            return JsonVO.success(ids.toString());
 
         } catch (Exception e) {
             log.error("批量审核调拨单失败", e);
@@ -595,7 +595,7 @@ public class TransferServiceImpl implements ITransferService {
                 return JsonVO.fail("删除调拨单失败");
             }
 
-            return JsonVO.success("成功删除 " + deleteInfoCount + " 个调拨单");
+            return JsonVO.success(ids.toString());
 
         } catch (Exception e) {
             log.error("删除调拨单失败", e);
