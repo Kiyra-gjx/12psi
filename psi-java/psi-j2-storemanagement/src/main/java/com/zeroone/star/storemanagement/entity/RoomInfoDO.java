@@ -1,28 +1,29 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
-@TableName("room_info")
+@TableName("is_room_info")
 public class RoomInfoDO {
+    @TableId(value = "id",type = IdType.AUTO)
+    private Integer id;
 
-    private String id;
-
-    private String pid;
+    private Integer pid;
 
     private String type;
 
     @TableField("class")
-    private String cls;
+    private Integer cls;
 
-    private String info;
+    private Integer info;
 
-    private LocalDateTime time;
+    private Integer time;
 
     private Integer direction;
 

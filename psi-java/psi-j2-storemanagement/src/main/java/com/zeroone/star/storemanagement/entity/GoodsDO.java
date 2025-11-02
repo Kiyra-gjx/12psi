@@ -1,15 +1,17 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
 
 @Data
-@TableName("goods")
+@TableName("is_goods")
 public class GoodsDO {
-
-    private String id;
+    @TableId(value = "id",type = IdType.AUTO)
+    private Integer id;
 
     private String name;
 
@@ -19,7 +21,7 @@ public class GoodsDO {
 
     private String spec;
 
-    private String category;
+    private Integer category;
 
     private String brand;
 
