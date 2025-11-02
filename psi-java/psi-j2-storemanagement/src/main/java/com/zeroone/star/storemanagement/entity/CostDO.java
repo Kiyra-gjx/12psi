@@ -16,7 +16,7 @@ public class CostDO {
   @TableField("class")
   private String cls;
 
-  private LocalDateTime time;
+  private long time;
 
   private String iet;
 

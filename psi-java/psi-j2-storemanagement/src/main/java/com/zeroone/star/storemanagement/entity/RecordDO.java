@@ -1,20 +1,23 @@
 package com.zeroone.star.storemanagement.entity;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
-import java.time.LocalDateTime;
-
 @Data
+@TableName("is_record")
 public class RecordDO {
-    private String id;
+    @TableId(value = "id",type = IdType.AUTO)
+    private Integer id;
 
     private String type;
 
-    private String source;
+    private Integer source;
 
-    private LocalDateTime time;
+    private Integer time;
 
-    private String user;
+    private Integer user;
 
     private String info;
 }

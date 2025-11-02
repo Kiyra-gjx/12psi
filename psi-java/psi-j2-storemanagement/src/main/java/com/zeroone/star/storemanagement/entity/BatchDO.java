@@ -7,29 +7,28 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
 
 @Data
-@TableName("batch")
+@TableName("is_batch")
 public class BatchDO {
 
     @TableId(value = "id",type = IdType.AUTO)
-    private String id;
+    private  Integer id;
 
     @TableField("room")
-    private String room;
+    private Integer room;
 
     @TableField("warehouse")
-    private String warehouse;
+    private Integer warehouse;
 
     @TableField("goods")
-    private String goods;
+    private Integer goods;
 
     @TableField("number")
     private String number;
 
     @TableField("time")
-    private LocalDateTime time;
+    private Integer time;
 
     @TableField("nums")
     private BigDecimal nums;
