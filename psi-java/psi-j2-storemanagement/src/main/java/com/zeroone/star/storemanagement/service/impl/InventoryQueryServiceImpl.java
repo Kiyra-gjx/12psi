@@ -9,6 +9,7 @@ import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
 import com.zeroone.star.project.components.user.UserHolder;
 import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.*;
+import com.zeroone.star.project.dto.j2.store.InventoryListExcelDTO;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import com.zeroone.star.storemanagement.entity.LogDO;
@@ -31,7 +32,10 @@ import java.math.BigDecimal;
 import java.net.URLEncoder;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.List;
+import java.util.ArrayList;
 import java.util.stream.Collectors;
+import org.springframework.beans.BeanUtils;
 
 @Service
 @Slf4j
@@ -377,19 +381,66 @@ public class InventoryQueryServiceImpl implements IInventoryQueryService {
 
         // TODO 获取库存列表数据
 //        List<InventoryListDTO> inventoryListDTOS = inventoryMapper.getInventroyList();
-        List<InventoryListDTO> inventoryListDTOS = null;
+        // 设置查询参数以获取所有数据（不分页）
+        InventoryQuery allDataQuery = new InventoryQuery();
+        // 复制原始查询条件
+        BeanUtils.copyProperties(query, allDataQuery);
+        // 设置分页参数为获取全部数据
+        allDataQuery.setPageIndex(1);
+        allDataQuery.setPageSize(Integer.MAX_VALUE);
+        List<InventoryListDTO> inventoryListDTOS = getInventoryList(allDataQuery).getRows();
 
-        // 生成Excel
-        excel.export("库存列表", out, InventoryListDTO.class, inventoryListDTOS);
+        // 将数据转换为扁平化的导出DTO列表
+        List<InventoryListExcelDTO> exportList = new ArrayList<>();
+        for (InventoryListDTO inventory : inventoryListDTOS) {
+            List<WarehouseStockDTO> warehouses = inventory.getGoodsWarehouses();
+            
+            // 如果没有仓库数据，创建一条基本记录
+            if (warehouses == null || warehouses.isEmpty()) {
+                InventoryListExcelDTO exportDTO = new InventoryListExcelDTO();
+                BeanUtils.copyProperties(inventory, exportDTO);
+                exportDTO.setWarehouseName("无仓库数据");
+                exportDTO.setStockNum(BigDecimal.ZERO);
+                exportList.add(exportDTO);
+            } else {
+                // 为每个仓库创建一条记录
+                for (WarehouseStockDTO warehouse : warehouses) {
+                    InventoryListExcelDTO exportDTO = new InventoryListExcelDTO();
+                    BeanUtils.copyProperties(inventory, exportDTO);
+                    BeanUtils.copyProperties(warehouse, exportDTO);
+                    exportDTO.setWarehouseName(warehouse.getWarehouseName());
+                    exportDTO.setStockNum(warehouse.getStockNum());
+                    exportList.add(exportDTO);
+                }
+            }
+        }
+        
+        // 生成Excel，使用扁平化的DTO类
+        excel.export("库存列表", out, InventoryListExcelDTO.class, exportList);
 
         // 响应给前端
         HttpHeaders headers = new HttpHeaders();
         String filename = "库存列表" + DateTime.now().toString("yyyyMMddHHmmssS") + ".xlsx";
+        try {
+            // 对文件名进行URL编码，确保中文能正确显示
+            filename = URLEncoder.encode(filename, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 编码失败时使用默认文件名
+            filename = "inventory_detail_" + DateTime.now().toString("yyyyMMddHHmmssS") + ".xlsx";
+        }
         headers.setContentDispositionFormData("attachment", filename);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         ResponseEntity<byte[]> res = new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.CREATED);
         out.close();
 
+        log.info("库存列表数据已导出");
+        LogDO logDO = new LogDO();
+        // TODO 获取当前用户 开发表改类型
+        logDO.setUser(String.valueOf(1));
+        logDO.setTime(LocalDateTime.now());
+        logDO.setInfo("导出库存列表");
+        logDO.setId(String.valueOf(snowflake.nextId() % 100000000));
+        logMapper.insert(logDO);
         return res;
     }
 

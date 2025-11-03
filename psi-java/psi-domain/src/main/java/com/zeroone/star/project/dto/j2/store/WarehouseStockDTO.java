@@ -1,6 +1,7 @@
 package com.zeroone.star.project.dto.j2.store;
 
 
+import com.alibaba.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,6 +20,7 @@ public class WarehouseStockDTO {
     @ApiModelProperty(value = "所属仓库ID", example = "1")
     private String warehouseId;
 
+    @ExcelProperty(value = "仓库名称",index = 2)
     @ApiModelProperty(value = "所属仓库名称", example = "上海仓库")
     private String warehouseName;
 
