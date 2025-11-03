@@ -107,10 +107,10 @@ public class OtherOutController implements OtherOutApis {
     }
 
 
-    @PostMapping("/exportEasyExcel")
+    @GetMapping("/exportEasyExcel")
     @ApiOperation(value = "导出其他出库单数据Excel")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestBody List<String> ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportOrderListExcel(@RequestParam("ids") List<String> ids) {
         try {
             if(ids.isEmpty()) {
                 JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
@@ -151,10 +151,10 @@ public class OtherOutController implements OtherOutApis {
     }
 
 
-    @PostMapping("/exportDetailExcel")
+    @GetMapping("/exportDetailExcel")
     @ApiOperation(value = "导出其他出库单详情数据Excel")
     @Override
-    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestBody List<String> ids) {
+    public JsonVO<ResponseEntity<byte[]>> exportOrderDetailExcel(@RequestParam("ids") List<String> ids) {
         try {
             if(ids.isEmpty()) {
                 JsonVO<ResponseEntity<byte[]>> result = new JsonVO<>();
