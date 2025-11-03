@@ -68,6 +68,22 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
                 return PageDTO.create(goodsPage);
             }
 
+            // 注意：不管是不是预警批次，都过滤没有库存记录的商品
+            goodsList = goodsList.stream()
+                    .filter(goods -> goods.getTotalStock().compareTo(BigDecimal.ZERO) > 0)
+                    .collect(Collectors.toList());
+
+            // 如果过滤后没有商品，直接返回空结果
+            if (goodsList.isEmpty()) {
+                goodsPage.setRecords(new ArrayList<>());
+                goodsPage.setTotal(0);
+                return PageDTO.create(goodsPage);
+            }
+
+            // 更新分页对象的记录
+            goodsPage.setRecords(goodsList);
+            goodsPage.setTotal(goodsList.size());
+
             // 提取商品ID列表和商品信息
             List<String> goodsIds = goodsList.stream()
                     .map(BatchListDTO::getId)
@@ -80,7 +96,7 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
                     .collect(Collectors.toMap(BatchListDTO::getId, BatchListDTO::getProtect));
 
             // 2. 查询商品属性信息
-            List<BatchAttrDTO> attrStocks = batchListMapper.selectGoodsAttrStock(goodsIds);
+            List<BatchAttrDTO> attrStocks = batchListMapper.selectGoodsAttrStock(goodsIds, query);
             Map<String, List<BatchAttrDTO>> goodsAttrMap = attrStocks.stream()
                     .collect(Collectors.groupingBy(BatchAttrDTO::getGoodsId));
 
@@ -105,7 +121,13 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
                     .collect(Collectors.groupingBy(
                             BatchDocumentDTO::getGoodsId,
                             Collectors.groupingBy(
-                                    dto -> dto.getAttrName() == null ? "NO_ATTR" : dto.getAttrName(),
+                                    dto -> {
+                                        // 修正无属性商品的处理
+                                        if (dto.getAttrName() == null || dto.getAttrName().isEmpty()) {
+                                            return "NO_ATTR";
+                                        }
+                                        return dto.getAttrName();
+                                    },
                                     Collectors.groupingBy(BatchDocumentDTO::getBatchNumber)
                             )
                     ));
@@ -134,7 +156,7 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
                         Map<String, Map<String, List<BatchDocumentDTO>>> goodsBatchMap = batchGroupMap.getOrDefault(goodsId, new HashMap<>());
                         Map<String, List<BatchDocumentDTO>> attrBatchMap = goodsBatchMap.getOrDefault(attr.getAttrName(), new HashMap<>());
 
-                        List<BatchNumberDTO> batchNumbers = buildBatchNumbers(attrBatchMap, stockThreshold,query);
+                        List<BatchNumberDTO> batchNumbers = buildBatchNumbers(attrBatchMap, stockThreshold, query);
                         attrDTO.setBatches(batchNumbers);
 
                         attrBatches.add(attrDTO);
@@ -147,8 +169,14 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
                     Map<String, Map<String, List<BatchDocumentDTO>>> goodsBatchMap = batchGroupMap.getOrDefault(goodsId, new HashMap<>());
                     Map<String, List<BatchDocumentDTO>> noAttrBatchMap = goodsBatchMap.getOrDefault("NO_ATTR", new HashMap<>());
 
-                    List<BatchNumberDTO> batchNumbers = buildBatchNumbers(noAttrBatchMap, stockThreshold,query);
-                    goods.setNoAttrBatches(batchNumbers);
+                    List<BatchNumberDTO> batchNumbers = buildBatchNumbers(noAttrBatchMap, stockThreshold, query);
+
+                    // 只有当有批次数据时才设置
+                    if (!batchNumbers.isEmpty()) {
+                        goods.setNoAttrBatches(batchNumbers);
+                    } else {
+                        goods.setNoAttrBatches(new ArrayList<>());
+                    }
                     goods.setAttrBatches(new ArrayList<>());
                 }
             }

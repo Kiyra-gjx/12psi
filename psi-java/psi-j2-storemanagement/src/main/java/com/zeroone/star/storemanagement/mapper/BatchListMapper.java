@@ -20,7 +20,7 @@ public interface BatchListMapper {
     /**
      * 查询商品属性库存信息
      */
-    List<BatchAttrDTO> selectGoodsAttrStock(@Param("goodsIds") List<String> goodsIds);
+    List<BatchAttrDTO> selectGoodsAttrStock(@Param("goodsIds") List<String> goodsIds, @Param("query") BatchQuery query);
 
     /**
      * 批量查询批次详情信息
@@ -32,9 +32,5 @@ public interface BatchListMapper {
      */
     List<String> selectChildCategoryIds(@Param("parentId") String parentId);
 
-    /**
-     * 查询所有仓库ID
-     */
-    List<String> selectAllWarehouseIds();
 
 }
