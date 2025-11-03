@@ -44,26 +44,11 @@ public class UserHolder {
         // 不是通过网关过来的，那么执行解析验证JWT
         if (userStr == null) {
             //从token中解析用户信息并设置到Header中去
-            // 🔧 关键修复：添加空值检查，防止NullPointerException
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader == null || authHeader.trim().isEmpty()) {
-                // 没有Authorization头，返回null
-                return null;
-            }
-            String realToken = authHeader.replace("Bearer ", "");
-            if (realToken.trim().isEmpty()) {
-                return null;
-            }
+            String realToken = request.getHeader("Authorization").replace("Bearer ", "");
             userStr = jwtComponent.defaultRsaVerify(realToken);
         } else {
             userStr = UriEncoder.decode(userStr);
         }
-
-        // 🔧 添加userStr的空值检查
-        if (userStr == null || userStr.trim().isEmpty()) {
-            return null;
-        }
-
         JSONObject userJsonObject = new JSONObject(userStr);
 
         // HARD_CODE 在没有办法使用token时候可以修改这里的代码伪造用户信息，注意伪造用户代码不要提交到仓库中
