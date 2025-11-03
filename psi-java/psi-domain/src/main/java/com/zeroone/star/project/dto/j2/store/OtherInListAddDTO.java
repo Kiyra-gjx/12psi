@@ -66,7 +66,6 @@ public class OtherInListAddDTO {
     private String data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
-    // TODO
     private Object more;
 
     @ExcelProperty(value = "审核状态", index = 8)
