@@ -1,10 +1,8 @@
 package com.zeroone.star.storemanagement.convertor;
 
-import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
-import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
-import com.zeroone.star.project.dto.j2.store.OtherOutListInfoDTO;
+import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.storemanagement.entity.EntryDO;
+import com.zeroone.star.storemanagement.entity.EntryInfoDO;
 import com.zeroone.star.storemanagement.entity.ExtryInfoDO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -44,4 +42,9 @@ public interface MsEntryMapper {
     @Mapping(target = "file", source = "file", qualifiedByName = "fileToJson")
     @Mapping(target = "logistics", source = "logistics", qualifiedByName = "logisticsToJson")
     EntryDO otherInListDetailDtoToEntry(OtherInListDetailDTO dto);
+
+
+    EntryInfoDO addDtoToEntryInfo(OtherInListAddDTO dto);
+
+    EntryInfoDO addDetailDtoToEntryInfo(OtherInListDetailInfoDTO detail);
 }

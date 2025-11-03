@@ -30,4 +30,6 @@ public interface OtherInMapper extends BaseMapper<EntryDO> {
      EntryDO selectById(String id);
 
     List<EntryDO> selectBatchIds(List<Integer> ids);
+
+    void deleteById(String id);
 }

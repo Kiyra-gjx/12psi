@@ -12,11 +12,13 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -76,10 +78,12 @@ public class OtherInController implements OtherInApis {
     }
 
     @DeleteMapping("/delete")
-    @ApiOperation(value = "删除其他入库单（支持批量）")
-    @Override
-    public JsonVO<List<String>> removeOtherInList(List<String> ids) {
-        return JsonVO.success(otherInListService.removeOtherInList(ids));
+    @ApiOperation("删除其他入库单")
+    public JsonVO<List<String>> removeOtherInList(
+            @RequestParam("ids") Integer[] ids) {
+        // 将数组转换为 List
+        List<Integer> idList = Arrays.asList(ids);
+        return JsonVO.success(otherInListService.removeOtherInList(idList));
     }
 
     @PostMapping("/import")

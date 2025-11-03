@@ -29,6 +29,7 @@ import com.zeroone.star.storemanagement.mapper.OtherInInfoMapper;
 import com.zeroone.star.storemanagement.mapper.OtherInListMapper;
 import com.zeroone.star.storemanagement.mapper.OtherInMapper;
 import com.zeroone.star.storemanagement.service.IOtherInService;
+import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
@@ -394,9 +395,8 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
     @Override
     @Transactional
     public JsonVO<String> saveOtherInList(OtherInListAddDTO dto) {
-        // TODO 新增操作
         // 1.参数校验
-        if (validate(dto) == null) { // 没有返回错误信息即通过校验
+        if (validate(dto) != null) { // 没有返回错误信息即通过校验
             return JsonVO.fail("参数不合法");
         }
         // 2.检查用户权限
@@ -406,15 +406,37 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
         // 3.新增入库单
         EntryDO entryDO = ms.addDtoToEntry(dto);
         otherInMapper.insert(entryDO);
+
+        String entryId = entryDO.getId();
+        System.out.println("生成的主表ID: " + entryId);
+
+        // 检查是否有详情数据
+        if (dto.getOtherInListDetailInfoDTOList() == null || dto.getOtherInListDetailInfoDTOList().isEmpty()) {
+            return JsonVO.fail("入库单详情不能为空");
+        }
+
+        // 遍历所有详情项并插入
+        for (OtherInListDetailInfoDTO detail : dto.getOtherInListDetailInfoDTOList()) {
+            EntryInfoDO entryInfoDO = ms.addDetailDtoToEntryInfo(detail); // 使用详情DTO转换
+            entryInfoDO.setPid(entryId);
+
+            // 调试输出
+            System.out.println("插入详情: goods=" + entryInfoDO.getGoods() +
+                    ", nums=" + entryInfoDO.getNums() +
+                    ", price=" + entryInfoDO.getPrice());
+
+            otherInInfoMapper.insertByOne(entryInfoDO);
+        }
+
         // 4.记录操作日志
         logOperation(String.valueOf(entryDO.getId()), "新增入库单");
         return JsonVO.success("新增入库单成功");
     }
 
-
     @Override
     @Transactional
-    public List<String> removeOtherInList(List<String> ids) {
+    public List<String> removeOtherInList(List<Integer> ids) {
+        System.out.println(ids);
         // 用于记录成功删除的入库单编号
         List<String> deletedList = new ArrayList<>();
 
@@ -439,6 +461,8 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             } else {
                 // 4.删除入库单
                 otherInInfoMapper.deleteById(entryDO.getId());
+                // 5.删除入库单详细
+                otherInMapper.deleteById(entryDO.getId());
                 count++;
                 // 记录成功删除的入库单编号
                 deletedList.add(entryDO.getNumber());
@@ -539,14 +563,14 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             return "单据日期不能晚于当前时间";
         }
 
-        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListDetailInfoDTOList();
-        // 关联数据校验
-        if (validateOtherInListInfo(otherInListInfoDTO) == null) {
-            return "入库单详细信息不能为空";
-        }
-        if (validateCost((CostDTO) dto.getCostDTOList()) == null) {
-            return "单据费用列表不能为空";
-        }
+//        OtherInListInfoDTO otherInListInfoDTO = (OtherInListInfoDTO) dto.getOtherInListDetailInfoDTOList();
+//        // 关联数据校验
+//        if (validateOtherInListInfo(otherInListInfoDTO) == null) {
+//            return "入库单详细信息不能为空";
+//        }
+//        if (validateCost((CostDTO) dto.getCostDTOList()) == null) {
+//            return "单据费用列表不能为空";
+//        }
 
         return null; // 返回null表示校验通过
     }
