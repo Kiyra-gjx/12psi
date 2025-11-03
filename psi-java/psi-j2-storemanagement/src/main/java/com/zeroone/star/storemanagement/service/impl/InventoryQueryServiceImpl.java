@@ -379,8 +379,6 @@ public class InventoryQueryServiceImpl implements IInventoryQueryService {
         // 定义输出流
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
-        // TODO 获取库存列表数据
-//        List<InventoryListDTO> inventoryListDTOS = inventoryMapper.getInventroyList();
         // 设置查询参数以获取所有数据（不分页）
         InventoryQuery allDataQuery = new InventoryQuery();
         // 复制原始查询条件
@@ -390,7 +388,7 @@ public class InventoryQueryServiceImpl implements IInventoryQueryService {
         allDataQuery.setPageSize(Integer.MAX_VALUE);
         List<InventoryListDTO> inventoryListDTOS = getInventoryList(allDataQuery).getRows();
 
-        // 将数据转换为扁平化的导出DTO列表
+        // 将数据转换为导出DTO列表
         List<InventoryListExcelDTO> exportList = new ArrayList<>();
         for (InventoryListDTO inventory : inventoryListDTOS) {
             List<WarehouseStockDTO> warehouses = inventory.getGoodsWarehouses();
@@ -415,7 +413,7 @@ public class InventoryQueryServiceImpl implements IInventoryQueryService {
             }
         }
         
-        // 生成Excel，使用扁平化的DTO类
+        // 生成Excel
         excel.export("库存列表", out, InventoryListExcelDTO.class, exportList);
 
         // 响应给前端
