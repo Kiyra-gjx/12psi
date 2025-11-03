@@ -500,16 +500,16 @@ public class TransferServiceImpl implements ITransferService {
 
         try {
             // 1.处理批次库存还原（反向调拨）
-            boolean batchSuccess = processBatchTransfer(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
+            boolean batchSuccess = processBatchUnaudit(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
             if (!batchSuccess) {
                 return false;
             }
 
             // 2.处理仓库总库存还原（反向调拨）
-            boolean roomSuccess = processRoomTransfer(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price);
+            boolean roomSuccess = processRoomUnaudit(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price);
             if (!roomSuccess) {
                 // 回滚批次库存
-                processBatchTransfer(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId);
+                processBatchUnaudit(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId);
                 return false;
             }
 
@@ -521,6 +521,62 @@ public class TransferServiceImpl implements ITransferService {
             log.error("调拨单反审核处理异常", e);
             return false;
         }
+    }
+
+    /**
+     * 处理批次库存反审核
+     */
+    private boolean processBatchUnaudit(String batchNo, String goodsId, String fromWarehouse,
+                                        String toWarehouse, BigDecimal nums, String swapInfoId) {
+        // 1.删除批次流水记录
+        int deleteBatchInfoCount = batchInfoMapper.deleteBySwapInfoId(swapInfoId);
+        log.info("删除批次流水记录，调拨单ID: {}，删除记录数: {}", swapInfoId, deleteBatchInfoCount);
+
+        // 2.减少源仓库的批次库存（反审核时从原调入仓库减少）
+        int updateSource = batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums.negate());
+        if (updateSource <= 0) {
+            log.error("减少源仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, fromWarehouse);
+            return false;
+        }
+
+        // 3.增加目标仓库的批次库存（反审核时加到原调出仓库）
+        int updateTarget = batchMapper.updateBatchStock(batchNo, goodsId, toWarehouse, nums);
+        if (updateTarget <= 0) {
+            log.error("增加目标仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, toWarehouse);
+            // 回滚源仓库的库存减少
+            batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * 处理仓库总库存反审核
+     */
+    private boolean processRoomUnaudit(String goodsId, String fromWarehouse, String toWarehouse,
+                                       BigDecimal nums, String swapInfoId, BigDecimal price) {
+        // 1.删除仓库流水记录
+        int deleteRoomInfoCount = roomInfoMapper.deleteBySwapInfoId(swapInfoId);
+        log.info("删除仓库流水记录，调拨单ID: {}，删除记录数: {}", swapInfoId, deleteRoomInfoCount);
+
+        // 2.减少源仓库总库存（反审核时从原调入仓库减少）
+        int updateSourceRoom = roomMapper.updateRoomStock(goodsId, fromWarehouse, nums.negate());
+        if (updateSourceRoom <= 0) {
+            log.error("减少源仓库总库存失败，商品: {}，仓库: {}", goodsId, fromWarehouse);
+            return false;
+        }
+
+        // 3.增加目标仓库总库存（反审核时加到原调出仓库）
+        int updateTargetRoom = roomMapper.updateRoomStock(goodsId, toWarehouse, nums);
+        if (updateTargetRoom <= 0) {
+            log.error("增加目标仓库总库存失败，商品: {}，仓库: {}", goodsId, toWarehouse);
+            // 回滚源仓库的库存减少
+            roomMapper.updateRoomStock(goodsId, fromWarehouse, nums);
+            return false;
+        }
+
+        return true;
     }
 
     /**

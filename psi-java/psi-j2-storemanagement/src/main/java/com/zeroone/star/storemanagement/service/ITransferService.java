@@ -5,8 +5,6 @@ import com.zeroone.star.project.dto.j2.store.RemoveTransferDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
 import com.zeroone.star.project.vo.JsonVO;
 
-import java.util.List;
-
 public interface ITransferService {
 
     /**

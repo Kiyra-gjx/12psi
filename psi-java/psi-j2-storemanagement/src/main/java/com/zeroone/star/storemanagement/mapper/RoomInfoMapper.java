@@ -22,4 +22,7 @@ public interface RoomInfoMapper extends BaseMapper<RoomInfoDO> {
 
     @Delete("delete from room_info where info = #{info}")
     void deleteByInfo(String id);
+
+    @Delete("delete from is_room_info where info = #{swapInfoId}")
+    int deleteBySwapInfoId(String swapInfoId);
 }

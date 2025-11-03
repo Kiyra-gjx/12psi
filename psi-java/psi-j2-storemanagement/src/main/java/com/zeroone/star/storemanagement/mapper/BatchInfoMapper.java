@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zeroone.star.project.dto.j2.store.BatchDetailDTO;
 import com.zeroone.star.project.query.j2.store.BatchDetailQuery;
 import com.zeroone.star.storemanagement.entity.BatchInfoDO;
+import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -28,4 +29,11 @@ public interface BatchInfoMapper extends BaseMapper<BatchInfoDO> {
      */
     Page<BatchDetailDTO> getBatchDetail(Page<BatchDetailDTO> page, @Param("batchDetailQuery") BatchDetailQuery batchDetailQuery);
 
+    /**
+     * 根据换货单ID删除批次信息
+     * @param swapInfoId 换货单ID
+     * @return 删除的批次信息数量
+     */
+    @Delete("delete from is_batch_info where info = #{swapInfoId}")
+    int deleteBySwapInfoId(String swapInfoId);
 }
