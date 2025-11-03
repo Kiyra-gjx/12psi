@@ -43,4 +43,21 @@
         </foreach>
     </select>
 
+    <select id="getStatusByIds" resultType="java.util.Map">
+        SELECT id, CAST(examine AS SIGNED) as status
+        FROM is_swap
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <delete id="deleteBatchIds">
+        DELETE FROM is_swap
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
 </mapper>

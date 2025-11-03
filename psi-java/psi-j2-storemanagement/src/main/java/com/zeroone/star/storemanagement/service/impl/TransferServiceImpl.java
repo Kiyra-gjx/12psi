@@ -7,6 +7,8 @@ import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.entity.*;
 import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.service.ITransferService;
+import io.swagger.models.auth.In;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -200,111 +202,124 @@ public class TransferServiceImpl implements ITransferService {
         try {
             List<String> ids = dto.getIds();
             Integer operation = dto.getOperation();
+
             if (operation != 0 && operation != 1) {
                 return JsonVO.fail("操作参数错误，0-反审核，1-审核");
-            } else if (ids == null || ids.isEmpty()) {
+            }
+            if (ids == null || ids.isEmpty()) {
                 return JsonVO.fail("请选择要" + (operation == 1 ? "审核" : "反审核") + "的调拨单");
             }
 
-            // 1.检查调拨单状态并收集需要审核/反审核的数据
-            List<SwapInfoDO> transferList = new ArrayList<>();
-            String operationName = operation == 1 ? "审核" : "反审核";
+            // 1. 批量查询调拨单基础信息
+            List<Map<String, Object>> statusList = swapInfoMapper.getBatchTransferStatus(ids);
+            Map<String, TransferBatchData> transferMap = new HashMap<>();
 
-            for (String id : ids) {
-                // 1.1 获取对应的主表ID
-                String pid = swapInfoMapper.getSwapById(id);
-                if (pid == null) {
-                    return JsonVO.fail("调拨单不存在，ID: " + id);
-                }
-
-                // 1.2 获取当前状态
-                Integer status = swapMapper.getStatusById(pid);
-                if (status == null) {
-                    return JsonVO.fail("调拨单状态异常，ID: " + id);
-                }
-
-                // 1.3 验证状态转换的合法性
-                if ((status ^ operation) != 1) {
-                    return JsonVO.fail("调拨单状态转换异常，ID: " + id + " 当前状态: " + (status == 0 ? "未审核" : "已审核"));
-                }
-
-                SwapInfoDO swapInfoDO = swapInfoMapper.getTransferDetail(id);
-                if (swapInfoDO == null) {
-                    return JsonVO.fail("调拨单详情不存在，ID: " + id);
-                }
-
-                // 1.4 检查调出仓库和调入仓库是否相同
-                if (swapInfoDO.getWarehouse().equals(swapInfoDO.getStorehouse())) {
-                    return JsonVO.fail("调出仓库和调入仓库不能相同，ID: " + id);
-                }
-
-                // 1.5 检查调拨单的批次号是否存在
-                if (!batchMapper.isBatchExist(swapInfoDO.getBatch())) {
-                    return JsonVO.fail("调拨单批次号不存在，ID: " + id);
-                }
-
-                // 1.6 检查库存是否充足（审核时检查）
-                if (operation == 1) {
-                    // 检查批次库存
-                    BigDecimal batchStock = batchMapper.getBatchStock(swapInfoDO.getBatch(),
-                            swapInfoDO.getGoods(), swapInfoDO.getWarehouse());
-                    if (batchStock == null || batchStock.compareTo(swapInfoDO.getNums()) < 0) {
-                        return JsonVO.fail("调拨单批次库存不足，ID: " + id + "，需要: " + swapInfoDO.getNums() + "，实际: " + batchStock);
-                    }
-
-                    // 检查仓库总库存
-                    if (!roomMapper.isNumsEnough(swapInfoDO.getGoods(),
-                            swapInfoDO.getWarehouse(), swapInfoDO.getNums())) {
-                        return JsonVO.fail("调拨单仓库库存不足，ID: " + id);
-                    }
-                }
-
-                transferList.add(swapInfoDO);
+            for (Map<String, Object> record : statusList) {
+                String id = String.valueOf(record.get("id"));
+                String pid = String.valueOf(record.get("pid"));
+                Integer status = Integer.parseInt(record.get("status").toString());
+                transferMap.put(id, new TransferBatchData(id, pid, status));
             }
 
-            // 2.执行批量审核/反审核操作
-            int successCount = 0;
-            for (SwapInfoDO transfer : transferList) {
+            // 2. 验证调拨单是否存在
+            int existsCount = swapInfoMapper.getExistsCountByIds(ids);
+            if (existsCount != ids.size()) {
+                List<String> notFoundIds = new ArrayList<>(ids);
+                notFoundIds.removeAll(transferMap.keySet());
+                return JsonVO.fail("以下调拨单不存在: " + String.join(", ", notFoundIds));
+            }
+
+            // 3. 批量查询调拨单详情
+            List<SwapInfoDO> detailList = swapInfoMapper.getBatchTransferDetail(ids);
+            for (SwapInfoDO detail : detailList) {
+                TransferBatchData data = transferMap.get(detail.getId());
+                if (data != null) {
+                    data.setDetail(detail);
+                }
+            }
+
+            // 4. 状态验证
+            List<String> statusErrorIds = new ArrayList<>();
+            for (TransferBatchData data : transferMap.values()) {
+                if ((data.getStatus() ^ operation) != 1) {
+                    data.setValid(false);
+                    data.setErrorMsg("状态转换异常");
+                    statusErrorIds.add(data.getId());
+                }
+            }
+            if (!statusErrorIds.isEmpty()) {
+                return JsonVO.fail("以下调拨单状态异常: " + String.join(", ", statusErrorIds));
+            }
+
+            // 5. 仓库相同性检查
+            List<String> warehouseErrorIds = new ArrayList<>();
+            for (TransferBatchData data : transferMap.values()) {
+                if (data.getDetail().getWarehouse().equals(data.getDetail().getStorehouse())) {
+                    data.setValid(false);
+                    data.setErrorMsg("调出调入仓库相同");
+                    warehouseErrorIds.add(data.getId());
+                }
+            }
+            if (!warehouseErrorIds.isEmpty()) {
+                return JsonVO.fail("以下调拨单仓库相同: " + String.join(", ", warehouseErrorIds));
+            }
+
+            // 6. 批次存在性检查
+            List<String> batchNos = transferMap.values().stream()
+                    .map(data -> data.getDetail().getBatch())
+                    .distinct()
+                    .collect(Collectors.toList());
+            List<String> existingBatchNos = batchMapper.getExistingBatchNos(batchNos);
+            Set<String> existingBatchSet = new HashSet<>(existingBatchNos);
+
+            List<String> batchErrorIds = new ArrayList<>();
+            for (TransferBatchData data : transferMap.values()) {
+                if (!existingBatchSet.contains(data.getDetail().getBatch())) {
+                    data.setValid(false);
+                    data.setErrorMsg("批次不存在");
+                    batchErrorIds.add(data.getId());
+                }
+            }
+            if (!batchErrorIds.isEmpty()) {
+                return JsonVO.fail("以下调拨单批次不存在: " + String.join(", ", batchErrorIds));
+            }
+
+            // 7. 库存充足性检查（仅审核操作）
+            if (operation == 1) {
+                List<String> stockErrorIds = validateBatchStock(transferMap.values());
+                if (!stockErrorIds.isEmpty()) {
+                    return JsonVO.fail("以下调拨单库存不足: " + String.join(", ", stockErrorIds));
+                }
+            }
+
+            // 8. 执行批量处理
+            List<TransferBatchData> validTransfers = transferMap.values().stream()
+                    .filter(TransferBatchData::isValid)
+                    .collect(Collectors.toList());
+
+            List<String> processedPids = new ArrayList<>();
+
+            for (TransferBatchData data : validTransfers) {
                 try {
-                    if (operation == 1) {
-                        // 审核操作：调拨库存
-                        boolean auditSuccess = processTransferAudit(transfer);
-                        if (auditSuccess) {
-                            successCount++;
-                        }
-                    } else {
-                        // 反审核操作：还原库存
-                        boolean unAuditSuccess = processTransferUnaudit(transfer);
-                        if (unAuditSuccess) {
-                            successCount++;
+                    boolean result = operation == 1 ?
+                            processTransferAudit(data.getDetail()) :
+                            processTransferUnaudit(data.getDetail());
+
+                    if (result) {
+                        if (!processedPids.contains(data.getPid())) {
+                            processedPids.add(data.getPid());
                         }
                     }
                 } catch (Exception e) {
-                    log.error("处理调拨单失败，ID: {}", transfer.getId(), e);
-                    throw new RuntimeException("处理调拨单失败，ID: " + transfer.getId() + "，错误: " + e.getMessage());
+                    log.error("处理调拨单失败，ID: {}", data.getId(), e);
+                    // 继续处理其他单据
                 }
             }
 
-            // 3.更新调拨单状态
-            List<String> validPidList = new ArrayList<>();
-            for (SwapInfoDO transfer : transferList) {
-                String pid = swapInfoMapper.getSwapById(transfer.getId());
-                if (pid != null) {
-                    validPidList.add(pid);
-                }
+            // 9. 批量更新状态
+            if (!processedPids.isEmpty()) {
+                swapMapper.auditBatchStatus(processedPids, operation);
             }
-
-            if (!validPidList.isEmpty()) {
-                int statusUpdateCount = swapMapper.auditBatchStatus(validPidList, operation);
-                log.info("更新调拨单状态，操作: {}，更新数量: {}", operationName, statusUpdateCount);
-            }
-
-            if (successCount == 0) {
-                return JsonVO.fail(operationName + "调拨单失败，未找到符合条件的记录");
-            }
-
-            // 4.记录操作日志
-            log.info("批量{}调拨单成功，操作数量：{}，ID列表：{}", operationName, successCount, ids);
 
             return JsonVO.success(ids.toString());
 
@@ -312,6 +327,57 @@ public class TransferServiceImpl implements ITransferService {
             log.error("批量审核调拨单失败", e);
             return JsonVO.fail("批量审核调拨单失败: " + e.getMessage());
         }
+    }
+
+    /**
+     * 批量验证库存是否充足
+     */
+    private List<String> validateBatchStock(Collection<TransferBatchData> transfers) {
+        List<String> errorIds = new ArrayList<>();
+
+        // 准备批量查询参数
+        List<String> batchNos = new ArrayList<>();
+        List<String> goodsIds = new ArrayList<>();
+        List<String> warehouseIds = new ArrayList<>();
+
+        for (TransferBatchData data : transfers) {
+            batchNos.add(data.getDetail().getBatch());
+            goodsIds.add(data.getDetail().getGoods());
+            warehouseIds.add(data.getDetail().getWarehouse());
+        }
+
+        // 批量查询批次库存
+        List<Map<String, Object>> batchStocks = batchMapper.getBatchStocks(batchNos, goodsIds, warehouseIds);
+        Map<String, BigDecimal> batchStockMap = new HashMap<>();
+        for (Map<String, Object> stock : batchStocks) {
+            String key = stock.get("batchNo") + "_" + stock.get("goodsId") + "_" + stock.get("warehouseId");
+            batchStockMap.put(key, (BigDecimal) stock.get("nums"));
+        }
+
+        // 批量查询仓库库存
+        List<Map<String, Object>> roomStocks = roomMapper.getRoomStocks(goodsIds, warehouseIds);
+        Map<String, BigDecimal> roomStockMap = new HashMap<>();
+        for (Map<String, Object> stock : roomStocks) {
+            String key = stock.get("goods") + "_" + stock.get("warehouse");
+            roomStockMap.put(key, (BigDecimal) stock.get("nums"));
+        }
+
+        // 验证每个调拨单
+        for (TransferBatchData data : transfers) {
+            SwapInfoDO detail = data.getDetail();
+            String batchKey = detail.getBatch() + "_" + detail.getGoods() + "_" + detail.getWarehouse();
+            String roomKey = detail.getGoods() + "_" + detail.getWarehouse();
+
+            BigDecimal batchStock = batchStockMap.get(batchKey);
+            BigDecimal roomStock = roomStockMap.get(roomKey);
+
+            if (batchStock == null || batchStock.compareTo(detail.getNums()) < 0 ||
+                    roomStock == null || roomStock.compareTo(detail.getNums()) < 0) {
+                errorIds.add(data.getId());
+            }
+        }
+
+        return errorIds;
     }
 
     /**
@@ -495,7 +561,6 @@ public class TransferServiceImpl implements ITransferService {
         String fromWarehouse = transfer.getWarehouse();  // 原调出仓库（现在要加回去）
         String toWarehouse = transfer.getStorehouse();   // 原调入仓库（现在要减回去）
         BigDecimal nums = transfer.getNums();
-        BigDecimal price = transfer.getPrice() != null ? transfer.getPrice() : BigDecimal.ZERO;
         String swapInfoId = transfer.getId();
 
         try {
@@ -506,7 +571,7 @@ public class TransferServiceImpl implements ITransferService {
             }
 
             // 2.处理仓库总库存还原（反向调拨）
-            boolean roomSuccess = processRoomUnaudit(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId, price);
+            boolean roomSuccess = processRoomUnaudit(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
             if (!roomSuccess) {
                 // 回滚批次库存
                 processBatchUnaudit(batchNo, goodsId, fromWarehouse, toWarehouse, nums, swapInfoId);
@@ -555,7 +620,7 @@ public class TransferServiceImpl implements ITransferService {
      * 处理仓库总库存反审核
      */
     private boolean processRoomUnaudit(String goodsId, String fromWarehouse, String toWarehouse,
-                                       BigDecimal nums, String swapInfoId, BigDecimal price) {
+                                       BigDecimal nums, String swapInfoId) {
         // 1.删除仓库流水记录
         int deleteRoomInfoCount = roomInfoMapper.deleteBySwapInfoId(swapInfoId);
         log.info("删除仓库流水记录，调拨单ID: {}，删除记录数: {}", swapInfoId, deleteRoomInfoCount);
@@ -622,57 +687,41 @@ public class TransferServiceImpl implements ITransferService {
                 return JsonVO.fail("请选择要删除的调拨单");
             }
 
-            // 1.检查调拨单状态并收集需要删除的数据
-            List<String> cannotDeleteIds = new ArrayList<>();
-            List<String> validPidList = new ArrayList<>();
+            // 转换ID类型
+            List<String> idStrs = ids.stream().map(String::valueOf).collect(Collectors.toList());
 
-            for (Integer id : ids) {
-                String pid = swapInfoMapper.getSwapById(id.toString());
-                if (pid == null) {
-                    return JsonVO.fail("调拨单不存在，ID: " + id);
-                }
+            // 批量获取主表ID
+            List<String> pidList = swapInfoMapper.getSwapByIds(idStrs);
 
-                Integer status = swapMapper.getStatusById(pid);
-                if (status == null) {
-                    return JsonVO.fail("调拨单状态异常，ID: " + id);
-                }
+            // 批量查询状态
+            List<Map<String, Object>> statusList = swapMapper.getStatusByIds(pidList);
+            Map<String, Integer> statusMap = statusList.stream()
+                    .collect(Collectors.toMap(
+                            record -> String.valueOf(record.get("id")),
+                            record -> Integer.parseInt(String.valueOf(record.get("status")))
+                    ));
 
-                if (status != 0) {
-                    cannotDeleteIds.add(id.toString());
-                } else {
-                    validPidList.add(pid);
-                }
+            // 检查状态
+            List<String> cannotDeletePids = statusMap.entrySet().stream()
+                    .filter(entry -> entry.getValue() != 0)
+                    .map(Map.Entry::getKey)
+                    .collect(Collectors.toList());
+
+            if (!cannotDeletePids.isEmpty()) {
+                return JsonVO.fail("只能删除草稿状态的调拨单");
             }
 
-            // 2.如果有已审核的调拨单，返回错误
-            if (!cannotDeleteIds.isEmpty()) {
-                return JsonVO.fail("只能删除草稿状态的调拨单，以下调拨单已审核不可删除: " + String.join(", ", cannotDeleteIds));
-            }
-
-            // 3.如果没有可删除的调拨单，直接返回
-
-            // 4.先删除对应的单据费用 (is_cost表)
-            int deleteCostCount = 0;
-            for (String pid : validPidList) {
-                int count = costMapper.deleteByTransferId(pid);
-                deleteCostCount += count;
-                log.info("删除调拨单 {} 对应的费用记录 {} 条", pid, count);
-            }
-
-            // 5.删除 swap_info 表中的记录
+            // 批量删除
             int deleteInfoCount = swapInfoMapper.deleteBatchIds(ids);
+            int deleteMainCount = swapMapper.deleteBatchIds(pidList);
 
-            // 6.删除 swap 表中的记录
-            int deleteMainCount = swapMapper.deleteBatchIds(validPidList);
-
-            log.info("删除调拨单成功: 删除详情记录 {} 条, 删除主表记录 {} 条, 删除费用记录 {} 条",
-                    deleteInfoCount, deleteMainCount, deleteCostCount);
-
-            if (deleteInfoCount == 0) {
-                return JsonVO.fail("删除调拨单失败");
+            // 删除费用记录
+            for (String pid : pidList) {
+                costMapper.deleteByTransferId(pid);
             }
 
-            return JsonVO.success("成功删除 " + deleteInfoCount + " 条调拨单记录");
+            log.info("删除调拨单成功: 详情记录 {} 条, 主表记录 {} 条", deleteInfoCount, deleteMainCount);
+            return JsonVO.success(ids.toString());
 
         } catch (Exception e) {
             log.error("删除调拨单失败", e);
@@ -694,5 +743,21 @@ public class TransferServiceImpl implements ITransferService {
             return false;
         }
         return dto.getInfo().getNums() == null || dto.getInfo().getNums().compareTo(BigDecimal.ZERO) >= 0;
+    }
+
+    @Data
+    private static class TransferBatchData {
+        private String id;
+        private String pid;
+        private Integer status;
+        private SwapInfoDO detail;
+        private boolean valid = true;
+        private String errorMsg;
+
+        public TransferBatchData(String id, String pid, Integer status) {
+            this.id = id;
+            this.pid = pid;
+            this.status = status;
+        }
     }
 }

@@ -7,6 +7,7 @@ import org.apache.ibatis.annotations.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 
 public interface RoomMapper extends BaseMapper<RoomDO> {
 
@@ -28,9 +29,9 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
     @Delete("delete from room where id = #{id}")
     void deleteById(String id);
 
-    @Select("SELECT EXISTS(SELECT 1 FROM is_room WHERE goods = #{goods} AND warehouse = #{warehouse} AND nums >= #{nums})")
-    boolean isNumsEnough(@Param("goods") String goods, @Param("warehouse") String warehouse,
-                         @Param("nums") BigDecimal nums);
+    // @Select("SELECT EXISTS(SELECT 1 FROM is_room WHERE goods = #{goods} AND warehouse = #{warehouse} AND nums >= #{nums})")
+    // boolean isNumsEnough(@Param("goods") String goods, @Param("warehouse") String warehouse,
+    //                      @Param("nums") BigDecimal nums);
 
     @Select("SELECT * FROM is_room WHERE goods = #{goodsId} AND warehouse = #{warehouseId}")
     RoomDO getRoomByGoodsAndWarehouse(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId);
@@ -45,4 +46,11 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
 
     @Select("SELECT id FROM is_room WHERE goods = #{goodsId} AND warehouse = #{warehouseId}")
     String getRoomId(@Param("goodsId") String goodsId, @Param("warehouseId") String warehouseId);
+
+    /**
+     * 批量检查仓库库存
+     */
+    @MapKey("goodsId")
+    List<Map<String, Object>> getRoomStocks(@Param("goodsIds") List<String> goodsIds,
+                                            @Param("warehouseIds") List<String> warehouseIds);
 }

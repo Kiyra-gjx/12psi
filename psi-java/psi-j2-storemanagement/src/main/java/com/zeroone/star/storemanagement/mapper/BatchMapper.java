@@ -2,13 +2,12 @@ package com.zeroone.star.storemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.storemanagement.entity.BatchDO;
-import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Param;
-import org.apache.ibatis.annotations.Select;
-import org.apache.ibatis.annotations.Update;
+import org.apache.ibatis.annotations.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @BelongsProject: psi-java
@@ -20,8 +19,8 @@ import java.time.LocalDate;
  */
 @Mapper
 public interface BatchMapper extends BaseMapper<BatchDO> {
-    @Select("SELECT EXISTS(SELECT 1 FROM is_batch WHERE number = #{batch})")
-    boolean isBatchExist(@Param("batch") String batch);
+    // @Select("SELECT EXISTS(SELECT 1 FROM is_batch WHERE number = #{batch})")
+    // boolean isBatchExist(@Param("batch") String batch);
 
     @Select("SELECT nums FROM is_batch WHERE number = #{batchNo} AND goods = #{goodsId} AND warehouse = #{warehouseId}")
     BigDecimal getBatchStock(@Param("batchNo") String batchNo, @Param("goodsId") String goodsId,
@@ -41,4 +40,17 @@ public interface BatchMapper extends BaseMapper<BatchDO> {
 
     @Select("SELECT time FROM is_batch WHERE number = #{batchNo}")
     LocalDate getTimeByBatchNo(@Param("batchNo") String batchNo);
+
+    /**
+     * 批量检查批次是否存在
+     */
+    List<String> getExistingBatchNos(@Param("batchNos") List<String> batchNos);
+
+    /**
+     * 批量查询批次库存
+     */
+    @MapKey("batchNo")
+    List<Map<String, Object>> getBatchStocks(@Param("batchNos") List<String> batchNos,
+                                             @Param("goodsIds") List<String> goodsIds,
+                                             @Param("warehouseIds") List<String> warehouseIds);
 }

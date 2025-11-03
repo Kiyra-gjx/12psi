@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.zeroone.star.storemanagement.mapper.BatchMapper">
+
+    <select id="getExistingBatchNos" resultType="java.lang.String">
+        SELECT number FROM is_batch
+        WHERE number IN
+        <foreach collection="batchNos" item="batchNo" open="(" separator="," close=")">
+            #{batchNo}
+        </foreach>
+    </select>
+
+    <select id="getBatchStocks" resultType="java.util.Map">
+        SELECT number as batchNo, goods as goodsId, warehouse as warehouseId, nums
+        FROM is_batch
+        WHERE (number, goods, warehouse) IN
+        <foreach collection="batchNos" item="batchNo" index="index" open="(" separator="," close=")">
+            (#{batchNo}, #{goodsIds[${index}]}, #{warehouseIds[${index}]})
+        </foreach>
+    </select>
+
+</mapper>

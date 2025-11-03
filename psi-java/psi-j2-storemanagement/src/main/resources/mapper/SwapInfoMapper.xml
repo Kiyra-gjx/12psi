@@ -40,4 +40,40 @@
         </foreach>
     </delete>
 
+    <select id="getBatchTransferStatus" resultType="java.util.Map">
+        SELECT si.id, si.pid, CAST(s.examine AS SIGNED) as status, si.warehouse, si.storehouse, si.batch,
+        si.goods, si.nums, si.price
+        FROM is_swap_info si
+        JOIN is_swap s ON si.pid = s.id
+        WHERE si.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getBatchTransferDetail" resultType="com.zeroone.star.storemanagement.entity.SwapInfoDO">
+        SELECT id, pid, goods, warehouse, storehouse, batch, nums, price, FROM_UNIXTIME(mfd / 1000, '%Y-%m-%d') AS mfd, total, data
+        FROM is_swap_info
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getSwapByIds" resultType="java.lang.String">
+        SELECT pid FROM is_swap_info
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <select id="getExistsCountByIds" resultType="java.lang.Integer">
+        SELECT COUNT(*) FROM is_swap_info
+        WHERE id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>
