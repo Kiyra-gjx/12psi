@@ -462,7 +462,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
     @Override
     public JsonVO<PageDTO<OtherInListDTO>> getOtherInList(OtherInQuery query) {
         // 创建分页对象
-        Page<OtherInListDTO> doPage = new Page<>(query.getPageIndex(), query.getPageSize());
+        Page<EntryDO> doPage = new Page<>(query.getPageIndex(), query.getPageSize());
         // 调用mapper进行分页查询
         Page<EntryDO> doResult = otherInListMapper.selectOtherInListPage(doPage, query);
         // 使用MapStruct 转换器进行批量转换
