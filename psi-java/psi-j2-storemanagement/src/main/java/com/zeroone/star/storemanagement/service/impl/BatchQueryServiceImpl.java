@@ -14,6 +14,7 @@ import com.zeroone.star.storemanagement.service.IBatchQueryService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import java.time.format.DateTimeFormatter;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
@@ -240,66 +241,213 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
     }
 
     /**
-     * 导出批次列表到Excel
-     *
-     * @param query 批次查询条件
-     * @return Excel文件字节流
-     * @throws IOException IO异常
+     * 将BatchListDTO转换为扁平化的导出DTO列表 - 改进版本
+     */
+    private List<BatchListExportDTO> convertToExportDTO(List<BatchListDTO> batchList) {
+        List<BatchListExportDTO> exportList = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        log.info("开始转换数据，总商品数: {}", batchList.size());
+
+        for (BatchListDTO batch : batchList) {
+            log.debug("处理商品: {}, hasAttr: {}", batch.getName(), batch.getHasAttr());
+
+            // 标记是否已添加该商品的任何数据
+            boolean hasAddedAnyRow = false;
+
+            // 情况1：有属性的商品
+            if (Boolean.TRUE.equals(batch.getHasAttr()) && batch.getAttrBatches() != null) {
+                for (BatchAttrDTO attrBatch : batch.getAttrBatches()) {
+                    String attrName = attrBatch.getAttrName() != null ? attrBatch.getAttrName() : "";
+
+                    // 情况1.1：属性下有批次信息
+                    if (attrBatch.getBatches() != null && !attrBatch.getBatches().isEmpty()) {
+                        for (BatchNumberDTO batchNumber : attrBatch.getBatches()) {
+                            String batchNum = batchNumber.getBatchNumber() != null ? batchNumber.getBatchNumber() : "";
+
+                            // 情况1.1.1：批次下有明细单据
+                            if (batchNumber.getBatchDocuments() != null && !batchNumber.getBatchDocuments().isEmpty()) {
+                                for (BatchDocumentDTO doc : batchNumber.getBatchDocuments()) {
+                                    BatchListExportDTO exportDTO = createExportDTO(batch, attrName, batchNum, doc, formatter);
+                                    exportList.add(exportDTO);
+                                    hasAddedAnyRow = true;
+                                }
+                            } else {
+                                // 情况1.1.2：批次下没有明细单据，但有批次汇总信息
+                                BatchListExportDTO exportDTO = createExportDTO(batch, attrName, batchNum, null, formatter);
+                                exportDTO.setStock(batchNumber.getTotalStock() != null ? batchNumber.getTotalStock() : BigDecimal.ZERO);
+                                exportDTO.setIsWarning(Boolean.TRUE.equals(batchNumber.getIsWarning()) ? "是" : "否");
+                                exportList.add(exportDTO);
+                                hasAddedAnyRow = true;
+                            }
+                        }
+                    } else {
+                        // 情况1.2：属性下没有批次信息，显示属性库存
+                        BatchListExportDTO exportDTO = createExportDTO(batch, attrName, "", null, formatter);
+                        exportDTO.setStock(attrBatch.getAttrStock() != null ? attrBatch.getAttrStock() : BigDecimal.ZERO);
+                        exportDTO.setIsWarning("否");
+                        exportList.add(exportDTO);
+                        hasAddedAnyRow = true;
+                    }
+                }
+            }
+
+            // 情况2：无属性的商品
+            if (batch.getNoAttrBatches() != null && !batch.getNoAttrBatches().isEmpty()) {
+                for (BatchNumberDTO batchNumber : batch.getNoAttrBatches()) {
+                    String batchNum = batchNumber.getBatchNumber() != null ? batchNumber.getBatchNumber() : "";
+
+                    // 情况2.1：批次下有明细单据
+                    if (batchNumber.getBatchDocuments() != null && !batchNumber.getBatchDocuments().isEmpty()) {
+                        for (BatchDocumentDTO doc : batchNumber.getBatchDocuments()) {
+                            BatchListExportDTO exportDTO = createExportDTO(batch, "", batchNum, doc, formatter);
+                            exportList.add(exportDTO);
+                            hasAddedAnyRow = true;
+                        }
+                    } else {
+                        // 情况2.2：批次下没有明细单据，但有批次汇总信息
+                        BatchListExportDTO exportDTO = createExportDTO(batch, "", batchNum, null, formatter);
+                        exportDTO.setStock(batchNumber.getTotalStock() != null ? batchNumber.getTotalStock() : BigDecimal.ZERO);
+                        exportDTO.setIsWarning(Boolean.TRUE.equals(batchNumber.getIsWarning()) ? "是" : "否");
+                        exportList.add(exportDTO);
+                        hasAddedAnyRow = true;
+                    }
+                }
+            }
+
+            // 情况3：既没有属性信息也没有批次信息，至少要显示商品基本信息
+            if (!hasAddedAnyRow) {
+                BatchListExportDTO exportDTO = createExportDTO(batch, "", "", null, formatter);
+                exportDTO.setStock(batch.getTotalStock() != null ? batch.getTotalStock() : BigDecimal.ZERO);
+                exportDTO.setIsWarning("否");
+                exportList.add(exportDTO);
+                log.debug("商品 {} 没有属性和批次信息，添加基本信息行", batch.getName());
+            }
+        }
+
+        log.info("数据转换完成，导出行数: {}", exportList.size());
+        return exportList;
+    }
+
+    /**
+     * 创建导出对象 - 改进版本，确保所有字段都有值
+     */
+    private BatchListExportDTO createExportDTO(
+            BatchListDTO batch,
+            String attrName,
+            String batchNumber,
+            BatchDocumentDTO doc,
+            DateTimeFormatter formatter) {
+
+        BatchListExportDTO exportDTO = new BatchListExportDTO();
+
+        // 商品基本信息 - 确保不为null，使用空字符串作为默认值
+        exportDTO.setName(batch.getName() != null ? batch.getName() : "");
+        exportDTO.setNumber(batch.getNumber() != null ? batch.getNumber() : "");
+        exportDTO.setSpec(batch.getSpec() != null ? batch.getSpec() : "");
+        exportDTO.setBrand(batch.getBrand() != null ? batch.getBrand() : "");
+        exportDTO.setUnit(batch.getUnit() != null ? batch.getUnit() : "");
+        exportDTO.setCode(batch.getCode() != null ? batch.getCode() : "");
+        exportDTO.setCategoryName(batch.getCategoryName() != null ? batch.getCategoryName() : "");
+        exportDTO.setProtect(batch.getProtect() != null ? batch.getProtect() : 0);
+        exportDTO.setThreshold(batch.getStock() != null ? batch.getStock() : BigDecimal.ZERO);
+        exportDTO.setData(batch.getData() != null ? batch.getData() : "");
+
+        // 属性信息 - 空属性显示"无属性"
+        exportDTO.setAttrName(attrName != null && !attrName.isEmpty() ? attrName : "无属性");
+
+        // 批次号
+        exportDTO.setBatchNumber(batchNumber != null ? batchNumber : "");
+
+        // 批次明细信息
+        if (doc != null) {
+            // 有具体单据明细
+            exportDTO.setProductDate(doc.getProductDate() != null ?
+                    doc.getProductDate().format(formatter) : "");
+            exportDTO.setExpireDate(doc.getExpireDate() != null ?
+                    doc.getExpireDate().format(formatter) : "");
+            exportDTO.setStock(doc.getNums() != null ? doc.getNums() : BigDecimal.ZERO);
+            exportDTO.setIsWarning(Boolean.TRUE.equals(doc.getIsWarning()) ? "是" : "否");
+        } else {
+            // 没有具体单据明细，使用默认值
+            exportDTO.setProductDate("");
+            exportDTO.setExpireDate("");
+            // stock 由调用方设置
+            if (exportDTO.getStock() == null) {
+                exportDTO.setStock(BigDecimal.ZERO);
+            }
+            // isWarning 由调用方设置
+            if (exportDTO.getIsWarning() == null) {
+                exportDTO.setIsWarning("否");
+            }
+        }
+
+        return exportDTO;
+    }
+
+    /**
+     * 导出批次列表Excel - 修复版本
      */
     @Override
     public ByteArrayOutputStream exportBatchListExcel(BatchQuery query) throws IOException {
         try {
-            log.info("开始导出批次列表Excel，查询条件: {}", query);
+            log.info("=== 开始导出批次列表Excel ===");
+            log.info("原始查询条件: {}", query);
 
-            // 设置一个较大的分页查询，获取所有数据用于导出
-            // 如果数据量特别大，可以考虑分批导出
-            BatchQuery exportQuery = new BatchQuery();
-            exportQuery.setPageIndex(1L);
-            exportQuery.setPageSize(10000L);  // 设置一个较大的数字获取所有数据
+            // 保存原始的分页参数
+            Long originalPageIndex = query.getPageIndex();
+            Long originalPageSize = query.getPageSize();
 
-            // 复制原查询条件的过滤参数
-            if (query.getGoodsName() != null) {
-                exportQuery.setGoodsName(query.getGoodsName());
-            }
-            if (query.getGoodsNumber() != null) {
-                exportQuery.setGoodsNumber(query.getGoodsNumber());
-            }
-            if (query.getBatchNumber() != null) {
-                exportQuery.setBatchNumber(query.getBatchNumber());
-            }
-            if (query.getProductDate() != null) {
-                exportQuery.setProductDate(query.getProductDate());
-            }
-            if (query.getGoodsSpec() != null) {
-                exportQuery.setGoodsSpec(query.getGoodsSpec());
-            }
-            if (query.getGoodsCategoryId() != null) {
-                exportQuery.setGoodsCategoryId(query.getGoodsCategoryId());
-            }
-            if (query.getGoodsBrand() != null) {
-                exportQuery.setGoodsBrand(query.getGoodsBrand());
-            }
-            if (query.getGoodsCode() != null) {
-                exportQuery.setGoodsCode(query.getGoodsCode());
-            }
-            if (query.getBatchState() != null) {
-                exportQuery.setBatchState(query.getBatchState());
-            }
+            // 修改为大分页获取所有数据
+            query.setPageIndex(1L);
+            query.setPageSize(10000L);
 
-            // 查询数据
-            PageDTO<BatchListDTO> batchData = this.listBatch(exportQuery);
+            log.info("修改后的查询条件（用于导出）: pageIndex={}, pageSize={}",
+                    query.getPageIndex(), query.getPageSize());
+
+            // 直接使用传入的query对象查询，这样可以保持所有条件和内部处理逻辑
+            log.info("开始查询批次数据...");
+            PageDTO<BatchListDTO> batchData = this.listBatch(query);
+
+            // 恢复原始分页参数（避免影响外部）
+            query.setPageIndex(originalPageIndex);
+            query.setPageSize(originalPageSize);
+
             List<BatchListDTO> dataList = batchData.getRows();
+            log.info("查询到 {} 条商品数据，总记录数: {}",
+                    dataList != null ? dataList.size() : 0,
+                    batchData.getTotal());
 
             if (dataList == null || dataList.isEmpty()) {
                 log.warn("批次列表数据为空，将导出空Excel");
                 dataList = new ArrayList<>();
             }
 
-            // 使用EasyExcel组件导出数据
-            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-            easyExcelComponent.export("批次列表", outputStream, BatchListDTO.class, dataList);
+            // 转换为扁平化的导出DTO
+            log.info("开始转换数据为导出格式...");
+            List<BatchListExportDTO> exportList = convertToExportDTO(dataList);
+            log.info("转换完成，共 {} 行导出数据", exportList.size());
 
-            log.info("成功导出批次列表Excel，共{}条记录", dataList.size());
+            // 打印前几行数据用于调试
+            if (!exportList.isEmpty()) {
+                log.info("导出数据预览（前3行）:");
+                for (int i = 0; i < Math.min(3, exportList.size()); i++) {
+                    log.info("  第{}行: 商品={}, 属性={}, 批次={}, 库存={}",
+                            i + 1,
+                            exportList.get(i).getName(),
+                            exportList.get(i).getAttrName(),
+                            exportList.get(i).getBatchNumber(),
+                            exportList.get(i).getStock());
+                }
+            }
+
+            // 使用EasyExcel组件导出数据
+            log.info("开始生成Excel文件...");
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            easyExcelComponent.export("批次列表", outputStream, BatchListExportDTO.class, exportList);
+
+            log.info("=== 成功导出批次列表Excel，共 {} 条记录，文件大小: {} bytes ===",
+                    exportList.size(), outputStream.size());
             return outputStream;
 
         } catch (Exception e) {
@@ -307,6 +455,8 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
             throw new IOException("导出批次列表Excel失败: " + e.getMessage(), e);
         }
     }
+
+
 
     /**
      * 导出批次详情到Excel
