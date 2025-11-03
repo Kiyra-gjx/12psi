@@ -24,8 +24,20 @@ public class InventoryDetailDTO {
     @ApiModelProperty(value = "单据类型", example = "采购单")
     private String type;
 
-    @ApiModelProperty(value = "单据信息")
-    private CostDataDTO costData;
+    @ApiModelProperty(value = "操作时间", example = "2025-10-15")
+    private LocalDate time;
+
+    @ApiModelProperty(value = "单据ID", example = "1")
+    private String id;
+
+    @ApiModelProperty(value = "单据编号", example = "ZCGD2510151056420")
+    private String number;
+
+    @ApiModelProperty(value = "组织ID", example = "1")
+    private String frameId;
+
+    @ApiModelProperty(value = "组织名称", example = "默认组织")
+    private String frameName;
 
     @ExcelProperty(value = "操作类型", index = 4)
     @ApiModelProperty(

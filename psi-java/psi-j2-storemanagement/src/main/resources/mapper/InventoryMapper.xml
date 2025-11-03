@@ -19,8 +19,8 @@
             g.unit,
             g.code,
             g.`data` as remark,
-            c.id as "categoryData.id",
-            c.name as "categoryData.name",
+            c.id as "categoryId",
+            c.name as "categoryName",
             <!-- 使用子查询计算总库存 -->
             COALESCE((
                 SELECT SUM(r2.nums)

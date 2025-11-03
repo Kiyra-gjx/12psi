@@ -20,7 +20,21 @@
             g.threshold,
             g.category as categoryId,
             c.name as categoryName,
-            COALESCE(SUM(r.nums), 0) as totalStock
+            <!-- 根据仓库条件计算总库存 -->
+            <choose>
+                <when test="query.warehouseIds != null and query.warehouseIds.size() > 0">
+                    COALESCE(SUM(
+                    CASE WHEN r.warehouse IN
+                    <foreach collection="query.warehouseIds" item="warehouseId" open="(" separator="," close=")">
+                        #{warehouseId}
+                    </foreach>
+                    THEN r.nums ELSE 0 END
+                    ), 0) as totalStock
+                </when>
+                <otherwise>
+                    COALESCE(SUM(r.nums), 0) as totalStock
+                </otherwise>
+            </choose>
         FROM is_goods g
         LEFT JOIN is_room r ON r.goods = g.id
         LEFT JOIN is_category c ON g.category = c.id
@@ -51,7 +65,7 @@
                 AND g.code LIKE CONCAT('%', #{query.goodsCode}, '%')
             </if>
 
-            <!-- 批次相关条件（商品级别存在性检查） -->
+            <!-- 批次相关条件 -->
             <if test="query.batchNumber != null and query.batchNumber != ''">
                 AND EXISTS (
                 SELECT 1 FROM is_batch b
@@ -86,6 +100,13 @@
             #{goodsId}
         </foreach>
         AND r.attr IS NOT NULL AND r.attr != ''
+        <!-- 仓库条件 -->
+        <if test="query.warehouseIds != null and query.warehouseIds.size() > 0">
+            AND r.warehouse IN
+            <foreach collection="query.warehouseIds" item="warehouseId" open="(" separator="," close=")">
+                #{warehouseId}
+            </foreach>
+        </if>
         GROUP BY r.goods, r.attr
     </select>
 

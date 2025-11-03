@@ -161,13 +161,13 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
                     WarehouseStockDTO sumStock = warehouseSumMap.get(warehouseId);
                     sumStock.setStockNum(sumStock.getStockNum().add(stock.getStockNum()));
                 }
-                goods.setWarehouses(new ArrayList<>(warehouseSumMap.values()));
+                goods.setGoodsWarehouses(new ArrayList<>(warehouseSumMap.values()));
 
             } else {
                 //没有属性值
                 //设置商品库存列表
                 List<WarehouseStockDTO> goodsStock = goodsStockMap.getOrDefault("", new ArrayList<>());
-                goods.setWarehouses(goodsStock);
+                goods.setGoodsWarehouses(goodsStock);
                 goods.setAttrs(new ArrayList<>());
             }
         }
@@ -234,7 +234,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
     }
 
     /**
-     * 检查有属性的商品是否是预警库存 - 修复版本
+     * 检查有属性的商品是否是预警库存
      */
     private boolean checkIfAttributeHasWarningStock(AttrStockDTO attr, BigDecimal stockThreshold, List<String> selectedWarehouseIds) {
         List<WarehouseStockDTO> attrStocks = attr.getWarehouses();
@@ -242,31 +242,31 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
         // 如果没有选中具体仓库，检查所有库存
         if (selectedWarehouseIds == null || selectedWarehouseIds.isEmpty()) {
             return attrStocks.stream()
-                    .anyMatch(stock -> stock.getStockNum().compareTo(stockThreshold) < 0);
+                    .anyMatch(stock -> stock.getStockNum().compareTo(stockThreshold) <= 0);
         }
 
         // 如果选中了具体仓库，只检查这些仓库的库存
         return attrStocks.stream()
                 .filter(stock -> selectedWarehouseIds.contains(stock.getWarehouseId()))
-                .anyMatch(stock -> stock.getStockNum().compareTo(stockThreshold) < 0);
+                .anyMatch(stock -> stock.getStockNum().compareTo(stockThreshold) <= 0);
     }
 
     /**
-     * 检查没有属性的商品是否有预警库存 - 修复版本
+     * 检查没有属性的商品是否有预警库存
      */
     private boolean checkIfGoodsHasWarningStock(InventoryListDTO goods, List<String> selectedWarehouseIds) {
-        List<WarehouseStockDTO> goodsStocks = goods.getWarehouses();
+        List<WarehouseStockDTO> goodsStocks = goods.getGoodsWarehouses();
 
         // 如果没有选中具体仓库，检查所有库存
         if (selectedWarehouseIds == null || selectedWarehouseIds.isEmpty()) {
             return goodsStocks.stream()
-                    .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) < 0);
+                    .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) <= 0);
         }
 
         // 如果选中了具体仓库，只检查这些仓库的库存
         return goodsStocks.stream()
                 .filter(stock -> selectedWarehouseIds.contains(stock.getWarehouseId()))
-                .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) < 0);
+                .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) <= 0);
     }
     /**
      * 过滤非零库存
@@ -296,7 +296,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
                 }
             } else {
                 // 无属性商品：检查商品是否有库存
-                hasStock = goods.getWarehouses().stream()
+                hasStock = goods.getGoodsWarehouses().stream()
                         .anyMatch(stock -> stock.getStockNum().compareTo(BigDecimal.ZERO) != 0);
             }
 

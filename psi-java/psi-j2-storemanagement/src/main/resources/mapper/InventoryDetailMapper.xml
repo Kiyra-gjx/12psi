@@ -34,7 +34,7 @@
             WHEN bi.type = 'entry' THEN FROM_UNIXTIME(e.time)
             WHEN bi.type = 'extry' THEN FROM_UNIXTIME(ex.time)
             ELSE NOW()
-        END as "costData.time",
+        END as `time`,
 
         <!-- 单据ID -->
         CASE
@@ -47,7 +47,7 @@
             WHEN bi.type = 'entry' THEN e.id
             WHEN bi.type = 'extry' THEN ex.id
         ELSE NULL
-        END as "costData.id",
+        END as id,
 
         <!-- 单据编号 -->
         CASE
@@ -60,9 +60,9 @@
             WHEN bi.type = 'entry' THEN e.number
             WHEN bi.type = 'extry' THEN ex.number
         ELSE ''
-        END as "costData.number",
+        END as number,
 
-        <!-- 组织信息：costData.frameData -->
+        <!-- 组织信息 -->
         <!-- 组织ID -->
         CASE
             WHEN bi.type = 'buy' THEN f_b.id
@@ -74,7 +74,7 @@
             WHEN bi.type = 'entry' THEN f_e.id
             WHEN bi.type = 'extry' THEN f_ex.id
             ELSE NULL
-        END as "costData.frameData.id",
+        END as frameId,
 
         <!-- 组织名称 -->
         CASE
@@ -87,7 +87,7 @@
             WHEN bi.type = 'entry' THEN f_e.name
             WHEN bi.type = 'extry' THEN f_ex.name
             ELSE ''
-        END as "costData.frameData.name"
+        END as frameName
 
         FROM is_batch_info bi
 
@@ -147,7 +147,53 @@
                 (bi.type = 'extry' AND bi_extry.attr = #{query.attrName})
                 )
             </if>
-
+            <!-- 仓库ID过滤条件  -->
+            <if test="query.warehouseIds != null and query.warehouseIds.size() > 0">
+                AND (
+                <!-- 直接从各个详情表的warehouse字段过滤 -->
+                (bi.type = 'buy' AND bi_buy.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                    #{warehouseId}
+                </foreach>
+                ) OR
+                (bi.type = 'sell' AND bi_sell.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                    #{warehouseId}
+                </foreach>
+                ) OR
+                (bi.type = 'bre' AND bi_bre.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                    #{warehouseId}
+                </foreach>
+                ) OR
+                (bi.type = 'sre' AND bi_sre.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                    #{warehouseId}
+                </foreach>
+                ) OR
+                <!-- 调拨单特殊处理：根据方向判断仓库 -->
+                (bi.type = 'swapOut' AND bi_swap.warehouse IN
+                    <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                        #{warehouseId}
+                    </foreach>
+                ) OR
+                (bi.type = 'swapEnter' AND bi_swap.storehouse IN
+                    <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                        #{warehouseId}
+                    </foreach>
+                ) OR
+                (bi.type = 'entry' AND bi_entry.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                    #{warehouseId}
+                </foreach>
+                ) OR
+                (bi.type = 'extry' AND bi_extry.warehouse IN
+                <foreach collection="query.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                    #{warehouseId}
+                </foreach>
+                )
+                )
+            </if>
             <!-- 单据类型过滤：前端传英文类型 -->
             <if test="query.documentTypes != null and query.documentTypes.size() > 0">
                 AND bi.type IN
@@ -212,27 +258,27 @@
         ri.time AS time,
         <!-- 将英文类型转换为中文显示 -->
         CASE
-        WHEN ri.type = 'buy' THEN '采购单'
-        WHEN ri.type = 'sell' THEN '销售单'
-        WHEN ri.type = 'bre' THEN '采购退货单'
-        WHEN ri.type = 'sre' THEN '销售退货单'
-        WHEN ri.type = 'swap' THEN '调拨单'
-        WHEN ri.type = 'swapEnter' THEN '调拨单-入'
-        WHEN ri.type = 'swapOut' THEN '调拨单-出'
-        WHEN ri.type = 'entry' THEN '其它入库单'
-        WHEN ri.type = 'extry' THEN '其它出库单'
-        ELSE ri.type
+            WHEN ri.type = 'buy' THEN '采购单'
+            WHEN ri.type = 'sell' THEN '销售单'
+            WHEN ri.type = 'bre' THEN '采购退货单'
+            WHEN ri.type = 'sre' THEN '销售退货单'
+            WHEN ri.type = 'swap' THEN '调拨单'
+            WHEN ri.type = 'swapEnter' THEN '调拨单-入'
+            WHEN ri.type = 'swapOut' THEN '调拨单-出'
+            WHEN ri.type = 'entry' THEN '其它入库单'
+            WHEN ri.type = 'extry' THEN '其它出库单'
+            ELSE ri.type
         END AS type,
         <!-- 根据type动态关联不同的单据表获取number -->
         CASE
-        WHEN ri.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ri.class)
-        WHEN ri.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ri.class)
-        WHEN ri.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ri.class)
-        WHEN ri.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ri.class)
-        WHEN ri.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ri.class)
-        WHEN ri.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ri.class)
-        WHEN ri.type = 'swap' OR ri.type = 'swapEnter' OR ri.type = 'swapOut' THEN (SELECT number FROM is_swap WHERE id = ri.class)
-        END AS number,
+            WHEN ri.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = ri.class)
+            WHEN ri.type = 'extry' THEN (SELECT number FROM is_extry WHERE id = ri.class)
+            WHEN ri.type = 'buy' THEN (SELECT number FROM is_buy WHERE id = ri.class)
+            WHEN ri.type = 'sell' THEN (SELECT number FROM is_sell WHERE id = ri.class)
+            WHEN ri.type = 'bre' THEN (SELECT number FROM is_bre WHERE id = ri.class)
+            WHEN ri.type = 'sre' THEN (SELECT number FROM is_sre WHERE id = ri.class)
+            WHEN ri.type = 'swap' OR ri.type = 'swapEnter' OR ri.type = 'swapOut' THEN (SELECT number FROM is_swap WHERE id = ri.class)
+            END AS number,
         CAST(ri.direction AS SIGNED INTEGER) AS direction,
         CAST(ri.nums AS DECIMAL(10,2)) AS nums
         FROM is_room_info ri

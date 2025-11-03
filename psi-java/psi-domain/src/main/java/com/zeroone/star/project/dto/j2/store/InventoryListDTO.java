@@ -1,6 +1,7 @@
 package com.zeroone.star.project.dto.j2.store;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -43,8 +44,11 @@ public class InventoryListDTO {
     @ApiModelProperty(value = "规格型号", example = "17pro")
     private String spec;
 
-    @ApiModelProperty(value = "商品分类")
-    private CategoryDataDTO categoryData;
+    @ApiModelProperty(value = "商品类别id", example = "1")
+    private String categoryId;
+
+    @ApiModelProperty(value = "类别名称", example = "默认类别")
+    private String categoryName;
 
     @ExcelProperty(value = "商品品牌", index = 8)
     @ApiModelProperty(value = "商品品牌", example = "苹果")
@@ -63,6 +67,7 @@ public class InventoryListDTO {
     private String remark;
 
     @ApiModelProperty(value = "库存阈值", example = "100")
+    @JsonIgnore
     private BigDecimal stock;
 
     @ApiModelProperty(value = "商品辅助属性信息")
@@ -70,6 +75,6 @@ public class InventoryListDTO {
 
     @ExcelProperty(value = "商品名称", index = 2)
     @ApiModelProperty(value = "商品的仓库库存明细信息")
-    private List<WarehouseStockDTO> warehouses;
+    private List<WarehouseStockDTO> goodsWarehouses;
 
 }
