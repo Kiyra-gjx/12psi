@@ -13,8 +13,19 @@
             parameterType="com.zeroone.star.project.query.j2.store.BatchDetailQuery">
         SELECT
         bi.pid AS pid,                   <!-- 批次唯一标识 -->
-        MAX(r.time) AS time,           <!-- 操作时间（取最新） -->
-        bi.type AS type,                <!-- 单据类型（entry/buy/sell等） -->
+        FROM_UNIXTIME(MAX(r.time), '%Y-%m-%d') AS time,           <!-- 操作时间（取最新，转换为LocalDate格式） -->
+        <!-- 将英文类型转换为中文显示 -->
+        CASE bi.type
+        WHEN 'entry' THEN '其他入库单'
+        WHEN 'extry' THEN '其他出库单'
+        WHEN 'swapOut' THEN '调拨单-出'
+        WHEN 'swapEnter' THEN '调拨单-入'
+        WHEN 'buy' THEN '采购单'
+        WHEN 'bre' THEN '采购退货单'
+        WHEN 'sell' THEN '销售单'
+        WHEN 'sre' THEN '销售退货单'
+        ELSE bi.type
+        END AS type,                <!-- 单据类型（中文显示） -->
         <!-- 根据单据类型动态查询对应的单据编号-->
         CASE
         WHEN bi.type = 'entry' THEN (SELECT number FROM is_entry WHERE id = bi.class)
@@ -40,6 +51,8 @@
         LEFT JOIN
         is_record r ON ((bi.type = 'swapOut' OR bi.type = 'swapEnter' OR bi.type = 'swap') AND r.type = 'swap' AND bi.class = r.source) OR
                       (bi.type NOT IN ('swapOut', 'swapEnter', 'swap') AND bi.type = r.type AND bi.class = r.source)  <!-- 关联操作记录表 -->
+        LEFT JOIN
+        is_batch b ON bi.pid = b.id     <!-- 关联批次主表，用于仓库筛选 -->
         WHERE
         <if test="batchDetailQuery.pid != null and batchDetailQuery.pid.size() > 0">
             bi.pid IN
@@ -64,6 +77,13 @@
             AND r.time &lt;= UNIX_TIMESTAMP(#{batchDetailQuery.endTime})
         </if>
 
+        <!-- 仓库ID过滤条件 -->
+        <if test="batchDetailQuery.warehouseIds != null and batchDetailQuery.warehouseIds.size() > 0">
+            AND b.warehouse IN
+            <foreach collection="batchDetailQuery.warehouseIds" item="warehouseId" open="(" close=")" separator=",">
+                #{warehouseId}
+            </foreach>
+        </if>
         <!-- 单据编号模糊查询条件 -->
         <if test="batchDetailQuery.number != null and batchDetailQuery.number != ''">
             AND (
@@ -81,6 +101,7 @@
         GROUP BY
         bi.pid,
         bi.type,
+        bi.class,  <!-- 添加bi.class以符合only_full_group_by模式 -->
         number,
         bi.direction,
         bi.nums

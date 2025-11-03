@@ -8,6 +8,8 @@ import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
 import org.springframework.http.ResponseEntity;
 
+import java.util.List;
+
 
 public interface IInventoryQueryService  {
 
@@ -37,5 +39,5 @@ public interface IInventoryQueryService  {
      * @param id
      * @return
      */
-    ResponseEntity<byte[]> getDetailExport(String id);
+    ResponseEntity<byte[]> getDetailExport(String id, List<String> warehouseIds);
 }

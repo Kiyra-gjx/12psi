@@ -6,6 +6,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -25,7 +26,7 @@ public class BatchDetailDTO {
     @ExcelProperty(value = "操作时间", index = 2)
     @ColumnWidth(20)
     @ApiModelProperty(value = "操作时间(毫秒时间戳)", example = "2025-10-13")
-    private long time;
+    private LocalDate time;
 
     @ExcelProperty(value = "单据类型", index = 3)
     @ColumnWidth(15)

@@ -11,7 +11,8 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface InventoryDetailMapper extends BaseMapper<RoomInfoDO> {
-    List<InventoryDetailExcelDTO> getDetailList(@Param("id") String id);
+    List<InventoryDetailExcelDTO> getDetailList(@Param("id") String id,
+                                                @Param("warehouseIds") List<String> warehouseIds);
 
-    Page<InventoryDetailDTO> selectInventoryDetailList(Page<InventoryDetailDTO> page, @Param("query")InventoryDetailQuery query);
+    Page<InventoryDetailDTO> selectInventoryDetailList(Page<InventoryDetailDTO> page, @Param("query") InventoryDetailQuery query);
 }

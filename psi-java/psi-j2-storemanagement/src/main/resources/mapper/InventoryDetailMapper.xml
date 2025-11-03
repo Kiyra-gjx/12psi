@@ -255,7 +255,7 @@
 
     <select id="getDetailList" resultType="com.zeroone.star.project.dto.j2.store.InventoryDetailExcelDTO">
         SELECT
-        ri.time AS time,
+        FROM_UNIXTIME(ri.time, '%Y-%m-%d') AS time,           <!-- 操作时间，转换为LocalDate格式 -->
         <!-- 将英文类型转换为中文显示 -->
         CASE
             WHEN ri.type = 'buy' THEN '采购单'
@@ -289,6 +289,12 @@
         FROM is_room_info ri
         INNER JOIN is_room r ON ri.pid = r.id
         WHERE r.goods = #{id}
+        <if test="warehouseIds != null and warehouseIds.size() > 0">
+            AND r.warehouse IN
+            <foreach collection="warehouseIds" item="warehouseId" open="(" separator="," close=")">
+                #{warehouseId}
+            </foreach>
+        </if>
         ORDER BY ri.time DESC
     </select>
 </mapper>

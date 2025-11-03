@@ -255,6 +255,9 @@ public class BatchQueryServiceImpl implements IBatchQueryService {
      */
     @SneakyThrows
     public PageDTO<BatchDetailDTO> getBatchDetail(BatchDetailQuery batchDetailQuery) {
+        if (batchDetailQuery.getPid() == null){
+            throw new Exception("批次pid不能为空");
+        }
         // 创建分页对象
         Page<BatchDetailDTO> page = new Page<>(batchDetailQuery.getPageIndex(), batchDetailQuery.getPageSize());
         // 调用mapper层获取批次详情列表数据（分页）

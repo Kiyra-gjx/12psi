@@ -47,5 +47,5 @@ public interface InventoryQueryApis {
      * @param id
      * @return
      */
-    ResponseEntity<byte[]> exportInventoryDetailExcel(String id);
+    ResponseEntity<byte[]> exportInventoryDetailExcel(String id,List<String> warehouseIds);
 }

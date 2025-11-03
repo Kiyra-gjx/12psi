@@ -1,10 +1,9 @@
 package com.zeroone.star.storemanagement.service.impl;
 
-
 import cn.hutool.core.date.DateTime;
+import cn.hutool.core.lang.Snowflake;
+import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import com.zeroone.star.project.components.easyexcel.EasyExcelComponent;
 import com.zeroone.star.project.components.fastdfs.FastDfsClientComponent;
 import com.zeroone.star.project.components.user.UserHolder;
@@ -12,8 +11,10 @@ import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.*;
 import com.zeroone.star.project.query.j2.store.InventoryDetailQuery;
 import com.zeroone.star.project.query.j2.store.InventoryQuery;
+import com.zeroone.star.storemanagement.entity.LogDO;
 import com.zeroone.star.storemanagement.mapper.InventoryDetailMapper;
 import com.zeroone.star.storemanagement.mapper.InventoryMapper;
+import com.zeroone.star.storemanagement.mapper.LogMapper;
 import com.zeroone.star.storemanagement.service.IInventoryQueryService;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -25,11 +26,16 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.io.ByteArrayOutputStream;
+import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.net.URLEncoder;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
+
 @Service
 @Slf4j
-public class InventoryQueryServiceImpl  implements IInventoryQueryService {
+public class InventoryQueryServiceImpl implements IInventoryQueryService {
 
     @Resource
     private InventoryMapper inventoryMapper;
@@ -44,9 +50,15 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
     private EasyExcelComponent excel;
     @Resource
     UserHolder userHolder;
+    @Resource
+    LogMapper logMapper;
+
+    //雪花算法
+    private final Snowflake snowflake = IdUtil.getSnowflake();
 
     /**
      * 获取库存列表数据（分页）
+     *
      * @param query 查询条件对象，包含商品ID、仓库ID、辅助属性ID、时间范围、库存数量范围、库存状态等过滤条件以及分页参数
      * @return PageDTO<InventoryListDTO> 分页后的库存列表数据，每条记录包含商品ID、商品名称、仓库ID、仓库名称、辅助属性ID、辅助属性名称、库存数量、库存状态等字段
      */
@@ -97,6 +109,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
         findChildCategoriesRecursive(categoryId, result);
         return result;
     }
+
     /**
      * 具体的递归方法
      */
@@ -195,8 +208,9 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
     /**
      * 根据库存状态过滤
-     * @param goodsList 商品列表
-     * @param stockState 库存状态
+     *
+     * @param goodsList            商品列表
+     * @param stockState           库存状态
      * @param selectedWarehouseIds 选中的仓库ID列表
      */
     private void filterByStockState(List<InventoryListDTO> goodsList, Integer stockState, List<String> selectedWarehouseIds) {
@@ -288,6 +302,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
                 .filter(stock -> selectedWarehouseIds.contains(stock.getWarehouseId()))
                 .anyMatch(stock -> stock.getStockNum().compareTo(goods.getStock()) <= 0);
     }
+
     /**
      * 过滤非零库存
      */
@@ -328,9 +343,9 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
     }
 
 
-
     /**
      * 获取库存详情数据（分页）
+     *
      * @param query 详情查询条件对象，包含商品ID、仓库ID、辅助属性ID、时间范围、库存数量范围、库存状态等过滤条件以及分页参数
      * @return PageDTO<InventoryDetailDTO> 分页后的库存详情数据，每条记录包含商品ID、商品名称、仓库ID、仓库名称、辅助属性ID、辅助属性名称、库存数量、库存状态等字段
      */
@@ -350,6 +365,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
     /**
      * 导出库存列表数据Excel
+     *
      * @param query
      * @return
      */
@@ -364,7 +380,7 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
         List<InventoryListDTO> inventoryListDTOS = null;
 
         // 生成Excel
-        excel.export("库存列表",out,InventoryListDTO.class,inventoryListDTOS);
+        excel.export("库存列表", out, InventoryListDTO.class, inventoryListDTOS);
 
         // 响应给前端
         HttpHeaders headers = new HttpHeaders();
@@ -379,17 +395,18 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
 
     /**
      * 导出库存详情数据Excel
+     *
      * @param id
      * @return
      */
     @SneakyThrows
     @Override
-    public ResponseEntity<byte[]> getDetailExport(String id) {
+    public ResponseEntity<byte[]> getDetailExport(String id, List<String> warehouseId) {
         // 定义输出流
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         // 获取库存详情数据
-        List<InventoryDetailExcelDTO> inventoryDetailDTOS = inventoryDetailMapper.getDetailList(id);
+        List<InventoryDetailExcelDTO> inventoryDetailDTOS = inventoryDetailMapper.getDetailList(id, warehouseId);
 
         // 处理数据并设置默认值
         if (inventoryDetailDTOS != null) {
@@ -421,10 +438,25 @@ public class InventoryQueryServiceImpl  implements IInventoryQueryService {
         // 响应给前端
         HttpHeaders headers = new HttpHeaders();
         String filename = "库存详情" + DateTime.now().toString("yyyyMMddHHmmssS") + ".xlsx";
+        try {
+            // 对文件名进行URL编码，确保中文能正确显示
+            filename = URLEncoder.encode(filename, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            // 编码失败时使用默认文件名
+            filename = "inventory_detail_" + DateTime.now().toString("yyyyMMddHHmmssS") + ".xlsx";
+        }
         headers.setContentDispositionFormData("attachment", filename);
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
         ResponseEntity<byte[]> res = new ResponseEntity<>(out.toByteArray(), headers, HttpStatus.CREATED);
         out.close();
+        log.info("库存详情数据已导出");
+        LogDO logDO = new LogDO();
+        // TODO 获取当前用户 开发表改类型
+        logDO.setUser(String.valueOf(1));
+        logDO.setTime(LocalDateTime.now());
+        logDO.setInfo("导出库存详情");
+        logDO.setId(String.valueOf(snowflake.nextId() % 100000000));
+        logMapper.insert(logDO);
         return res;
     }
 }
