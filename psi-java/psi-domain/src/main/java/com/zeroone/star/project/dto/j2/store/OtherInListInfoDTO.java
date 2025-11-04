@@ -6,6 +6,7 @@ import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @BelongsProject: psi-java
@@ -44,7 +45,7 @@ public class OtherInListInfoDTO {
     private BigDecimal nums;
 
     @ApiModelProperty(value = "序列号", example = "1")
-    private String serial;
+    private List<String> serial;
 
     @ApiModelProperty(value = "总成本", example = "1.0000")
     private BigDecimal total;

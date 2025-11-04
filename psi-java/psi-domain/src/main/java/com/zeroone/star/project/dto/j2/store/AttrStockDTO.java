@@ -1,6 +1,7 @@
 package com.zeroone.star.project.dto.j2.store;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -12,17 +13,15 @@ import java.util.List;
 @ApiModel("商品辅助属性对象")
 public class AttrStockDTO {
 
-    @ApiModelProperty(value = "商品辅助属性ID（内部使用）", example = "1")
+    @ApiModelProperty(value = "商品辅助属性ID", example = "1")
     private String attrId;
 
     @ApiModelProperty(value = "商品属性名称", example = "8G+128G")
     private String attrName;
 
-    @ApiModelProperty(value = "所属商品ID（内部使用）", example = "1")
+    @ApiModelProperty(value = "所属商品ID", hidden = true)
+    @JsonIgnore
     private String pid;
-
-    @ApiModelProperty(value = "商品属性条形码", example = "")
-    private String attrCode;
 
     @ApiModelProperty(value = "该商品属性的总库存", example = "200")
     private BigDecimal totalStock;

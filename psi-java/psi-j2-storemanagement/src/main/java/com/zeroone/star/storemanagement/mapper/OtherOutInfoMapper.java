@@ -11,7 +11,7 @@ import java.util.List;
 @Mapper
 public interface OtherOutInfoMapper extends BaseMapper<ExtryInfoDO> {
 
-    List<ExtryInfoDO > selectByMainIds(@Param("mainIds") List<Integer> mainIds);
+    List<ExtryInfoDO> selectByMainIds(@Param("mainIds") List<String> mainIds);
     void insertBatch(List<ExtryInfoDO> extryInfoList);
 
 }

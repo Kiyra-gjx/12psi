@@ -1,11 +1,13 @@
 package com.zeroone.star.project.dto.j2.store;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @ApiModel("其他入库单详细数据信息对象")
@@ -36,6 +38,7 @@ public class OtherInListDetailInfoDTO{
     private String batch;
 
     @ApiModelProperty(value = "生产日期", example = "2023-10-18 18:18:00")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime mfd;
 
     @ApiModelProperty(value = "成本", example = "1.0000")
@@ -43,9 +46,6 @@ public class OtherInListDetailInfoDTO{
 
     @ApiModelProperty(value = "数量", example = "1.0000")
     private BigDecimal nums;
-
-    @ApiModelProperty(value = "序列号", example = "1")
-    private String serial;
 
     @ApiModelProperty(value = "总成本", example = "1.0000")
     private BigDecimal total;

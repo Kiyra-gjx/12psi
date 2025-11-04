@@ -25,20 +25,23 @@ public class InventoryDetailQuery extends PageQuery {
     @ApiModelProperty(value = "商品ID", example = "1",required = true)
     private String goodsId;
 
-    @ApiModelProperty(value = "商品属性ID", example = "101",required = true)
-    private String attrId;
+    @ApiModelProperty(value = "商品属性", example = "8G+128G")
+    private String attrName;
 
-    @ApiModelProperty(value = "单据编号", example = "PUR-20231001")
+    @ApiModelProperty(value = "单据编号", example = "CGD2510311529121")
     private String documentNumber;
 
-    @ApiModelProperty(value = "单据类型（可选多个）")
+    @ApiModelProperty(value = "单据类型（可选多个）",example = "buy,sell")
     private List<String> documentTypes;
 
-    @ApiModelProperty(value = "开始日期", example = "2024-10-01")
+    @ApiModelProperty(value = "仓库ID列表",example = "1,2")
+    private List<String> warehouseIds;
+
+    @ApiModelProperty(value = "开始日期", example = "2025-10-01")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate startDate;
 
-    @ApiModelProperty(value = "结束日期", example = "2024-10-31")
+    @ApiModelProperty(value = "结束日期", example = "2025-10-31")
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
     private LocalDate endDate;
 

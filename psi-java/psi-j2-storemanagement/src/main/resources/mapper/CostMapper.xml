@@ -3,9 +3,9 @@
 <mapper namespace="com.zeroone.star.storemanagement.mapper.CostMapper">
 
     <insert id="insertBatch">
-        insert into cost (id,type, class, time, iet, money, data, settle, state) values
+        insert into is_cost (id,type, class, time, iet, money, data, settle, state) values
         <foreach collection="costList" item="item" separator=",">
-            (#{item.id},#{item.type},#{item.cls},#{item.time},#{item.iet},#{item.money},#{item.data},#{item.settle},#{item.state})
+            (#{item.id},#{item.type},#{item.cls},UNIX_TIMESTAMP(#{item.time}),#{item.iet},#{item.money},#{item.data},#{item.settle},#{item.state})
         </foreach>
     </insert>
 

@@ -1,29 +1,25 @@
 package com.zeroone.star.storemanagement.controller;
 
+import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListAddDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDTO;
 import com.zeroone.star.project.dto.j2.store.OtherInListDetailDTO;
-import com.zeroone.star.project.dto.PageDTO;
 import com.zeroone.star.project.j2.store.OtherInApis;
-import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.project.query.j2.store.OtherInQuery;
+import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.service.IOtherInService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Arrays;
 import java.util.List;
-
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import javax.annotation.Resource;
 
 /**
  * @BelongsProject: psi-java
@@ -47,11 +43,11 @@ public class OtherInController implements OtherInApis {
     @Override
     public JsonVO<String> updateOtherInList(@RequestBody OtherInListDetailDTO otherInListDetailDTO) {
         otherInListService.updateOtherInList(otherInListDetailDTO);
-        return JsonVO.success(otherInListDetailDTO.getId().toString());
+        return JsonVO.success(otherInListDetailDTO.getId());
     }
 
     @PutMapping("/examine")
-    @ApiOperation(value = "审核入库单")
+    @ApiOperation(value = "审核/反审核入库单")
     @Override
     public JsonVO<String> examine(@RequestBody List<Integer> ids) {
         otherInListService.examine(ids);
@@ -59,7 +55,7 @@ public class OtherInController implements OtherInApis {
     }
 
     @PutMapping("/check")
-    @ApiOperation(value = "核对入库单")
+    @ApiOperation(value = "核对/反核对入库单")
     @Override
     public JsonVO<String> check(@RequestBody List<Integer> ids) {
         otherInListService.check(ids);
@@ -77,15 +73,17 @@ public class OtherInController implements OtherInApis {
     @PostMapping("/add")
     @ApiOperation(value = "新增其他入库单")
     @Override
-    public JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
+    public  JsonVO<String> addOtherInList(@RequestBody OtherInListAddDTO dto) {
         return otherInListService.saveOtherInList(dto);
     }
 
     @DeleteMapping("/delete")
-    @ApiOperation(value = "删除其他入库单（支持批量）")
-    @Override
-    public JsonVO<List<String>> removeOtherInList(List<Integer> ids) {
-        return JsonVO.success(otherInListService.removeOtherInList(ids));
+    @ApiOperation("删除其他入库单")
+    public JsonVO<List<String>> removeOtherInList(
+            @RequestParam("ids") Integer[] ids) {
+        // 将数组转换为 List
+        List<Integer> idList = Arrays.asList(ids);
+        return JsonVO.success(otherInListService.removeOtherInList(idList));
     }
 
     @PostMapping("/import")

@@ -2,8 +2,26 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.OtherOutMapper">
 
-    <select id="selectBatchIds" parameterType="java.util.List" resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
-        SELECT * FROM entry WHERE id IN
+    <select id="selectMainIds" parameterType="java.util.List" resultType="com.zeroone.star.storemanagement.entity.ExtryDO">
+        SELECT
+        e.id,
+        e.customer,
+        e.frame,
+        e.time,
+        e.number,
+        e.type,
+        e.total,
+        e.cost,
+        e.people,
+        e.logistics,
+        e.file,
+        e.data,
+        e.more,
+        e.examine,
+        e.cse,
+        e.check,
+        e.user
+        FROM extry e WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>

@@ -12,10 +12,10 @@ import java.util.List;
 @Mapper
 public interface LogMapper  {
 
-    @Select("select max(id) from log")
+    @Select("select max(id) from is_log")
     Integer getMaxId();
 
-    @Insert("insert into log (id, time, user, info) VALUE (#{id},#{time},#{user},#{info})")
+    @Insert("insert into is_log (id, time, user, info) VALUE (#{id},UNIX_TIMESTAMP(#{time}),#{user},#{info})")
     void insert(LogDO log);
 
     void insertBatch(List<LogDO> logList);

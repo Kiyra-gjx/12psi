@@ -10,12 +10,14 @@ import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.service.IInventoryQueryService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @BelongsProject: psi-java
@@ -49,18 +51,19 @@ public class InventoryQueryController implements InventoryQueryApis {
     }
 
 
-    @GetMapping("/export")
+    @GetMapping(value = "/export", produces = "application/octet-stream")
     @ApiOperation(value = "导出库存列表数据Excel")
     @Override
     public ResponseEntity<byte[]> exportInventoryListExcel(InventoryQuery query) {
-        return null;
+        return inventoryService.getListExport(query);
     }
 
     @GetMapping("/exportDetail")
     @ApiOperation(value = "导出库存详情数据Excel")
     @Override
-    public ResponseEntity<byte[]> exportInventoryDetailExcel(InventoryDetailQuery query) {
-        return null;
+    public ResponseEntity<byte[]> exportInventoryDetailExcel(@RequestParam("id") String id, 
+                                                           @RequestParam(value = "warehouseIds") List<String> warehouseIds) {
+        return inventoryService.getDetailExport(id, warehouseIds);
     }
 
 

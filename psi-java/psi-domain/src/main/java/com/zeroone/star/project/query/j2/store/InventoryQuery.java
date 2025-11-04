@@ -1,5 +1,6 @@
 package com.zeroone.star.project.query.j2.store;
 
+
 import com.zeroone.star.project.query.PageQuery;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,26 +20,29 @@ import java.util.List;
 @ApiModel("商品查询对象")
 public class InventoryQuery extends PageQuery {
 
-    // ==================== 商品基础信息条件 ====================
-    @ApiModelProperty(value = "商品ID",example = "1")
-    private String goodsId;
 
-    @ApiModelProperty(value = "商品编号",example = "0001")
+    @ApiModelProperty(value = "商品名称",example = "iPhone")
+    private String goodsName;
+
+    @ApiModelProperty(value = "商品编号",example = "123456")
     private String goodsNumber;
 
     @ApiModelProperty(value = "商品型号",example = "17pro")
     private String goodsSpec;
 
-    @ApiModelProperty(value = "商品类别（可选）",example = "默认类别")
-    private String goodsCategoryName;
+    @ApiModelProperty(hidden = true)
+    private List<String> goodsCategoryIds;//类别树ID列表(内部处理字段)
+
+    @ApiModelProperty(value = "商品类别",example = "0")
+    private String goodsCategoryId;
 
     @ApiModelProperty(value = "商品品牌",example = "苹果")
     private String goodsBrand;
 
-    @ApiModelProperty(value = "商品条码",example = "111222")
+    @ApiModelProperty(value = "商品条码",example = "iPhoneCode")
     private String goodsCode;
-    // ==================== 仓库信息条件 ===================
-    @ApiModelProperty(value = "仓库id",example = "1")
+
+    @ApiModelProperty(value = "仓库id列表",example = "1,2")
     private List<String> warehouseId;
 
     @ApiModelProperty(

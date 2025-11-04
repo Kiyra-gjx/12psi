@@ -1,6 +1,7 @@
 package com.zeroone.star.project.dto.j2.store;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "单据日期", index = 3)
     @ApiModelProperty(value = "单据日期",required = true, example = "2023-10-18 18:18:00")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
     @ExcelProperty(value = "单据编号", index  =4)
@@ -54,17 +56,17 @@ public class OtherInListAddDTO {
     private String people;
 
     @ApiModelProperty(value = "物流信息",required = false, example = "{\"key\":\"auto\",\"name\":\"自动识别\",\"number\":\"\"}")
-    private String logistics;
+    private LogisticsDTO logistics;
 
     @ApiModelProperty(value = "单据附件", required = false, example = "")
-    private String file;
+    private List<FileDTO> file;
 
     @ExcelProperty(value = "备注信息", index = 12)
     @ApiModelProperty(value = "备注信息", required = false,example = "紧急订单，请优先处理")
     private String data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
-    String more;
+    private Object more;
 
     @ExcelProperty(value = "审核状态", index = 8)
     @ApiModelProperty(value = "审核状态[0:未审核|1:已审核]",required = true, example = "0")
@@ -83,8 +85,8 @@ public class OtherInListAddDTO {
     private String user;
 
     @ApiModelProperty(value = "入库单详细信息列表",required = true)
-    List<OtherInListDetailInfoDTO> otherInListInfoDTOList;
+    List<OtherInListDetailInfoDTO> otherInListDetailInfoDTOList;
 
     @ApiModelProperty(value = "单据费用列表",required = true, example = "{id: 7, type: \"entry\", class: 4, time: \"2025-10-15\", iet: 5, money: 111, data: \"\", settle: 0, state: 0}")
-    List<CostDTO> costDTOList;
+    private List<CostDTO> costDTOList;
 }

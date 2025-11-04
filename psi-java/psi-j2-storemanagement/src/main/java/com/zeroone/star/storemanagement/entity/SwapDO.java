@@ -7,6 +7,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
+@TableName("swap")
 @Data
 @TableName("is_swap")
 public class SwapDO {

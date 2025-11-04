@@ -14,7 +14,7 @@
         from swap_info i
         join swap s on s.id = i.pid
         join goods g on g.id = i.goods
-        where i.id = #{id}
+        where i.pid = #{id}
     </select>
 
     <update id="updateSwap">

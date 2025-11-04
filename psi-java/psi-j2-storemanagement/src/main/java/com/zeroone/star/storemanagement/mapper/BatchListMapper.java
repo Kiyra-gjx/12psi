@@ -1,10 +1,9 @@
 package com.zeroone.star.storemanagement.mapper;
 
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.zeroone.star.project.dto.j2.store.BatchAttrDTO;
 import com.zeroone.star.project.dto.j2.store.BatchDocumentDTO;
 import com.zeroone.star.project.dto.j2.store.BatchListDTO;
-import com.zeroone.star.project.dto.j2.store.BatchNumberDTO;
-import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.project.query.j2.store.BatchQuery;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -19,22 +18,19 @@ public interface BatchListMapper {
     Page<BatchListDTO> selectBatchGoodsList(Page<BatchListDTO> page, @Param("query") BatchQuery query);
 
     /**
-     * 批量查询商品的仓库库存信息
+     * 查询商品属性库存信息
      */
-    List<WarehouseStockDTO> selectGoodsWarehouseStock(@Param("goodsIds") List<String> goodsIds);
+    List<BatchAttrDTO> selectGoodsAttrStock(@Param("goodsIds") List<String> goodsIds, @Param("query") BatchQuery query);
 
     /**
-     * 批量查询商品的批次信息
+     * 批量查询批次详情信息
      */
-    List<BatchNumberDTO> selectBatchInfoByGoodsIds(@Param("goodsIds") List<String> goodsIds);
+    List<BatchDocumentDTO> selectBatchDocumentsByGoodsIds(@Param("goodsIds") List<String> goodsIds, @Param("query") BatchQuery query);
 
     /**
-     * 批量查询批次对应的单据详情
+     * 查询指定父分类下的所有子分类ID
      */
-    List<BatchDocumentDTO> selectBatchDocumentsByBatchIds(@Param("batchIds") List<String> batchIds);
+    List<String> selectChildCategoryIds(@Param("parentId") String parentId);
 
-    /**
-     * 批量查询批次的仓库库存信息
-     */
-    List<WarehouseStockDTO> selectBatchWarehouseStock(@Param("batchIds") List<String> batchIds);
+
 }
