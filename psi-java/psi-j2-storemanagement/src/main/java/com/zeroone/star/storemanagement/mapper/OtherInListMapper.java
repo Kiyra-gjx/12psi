@@ -22,5 +22,5 @@ public interface OtherInListMapper extends BaseMapper<EntryDO> {
      * @param query 查询条件参数
      * @return 分页结果
      */
-    Page<EntryDO> selectOtherInListPage(Page<OtherInListDTO> page, @Param("query") OtherInQuery query);
+    Page<EntryDO> selectOtherInListPage(Page<EntryDO> page, @Param("query") OtherInQuery query);
 }

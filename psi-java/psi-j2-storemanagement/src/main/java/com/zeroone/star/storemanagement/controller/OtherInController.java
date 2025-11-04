@@ -109,7 +109,7 @@ public class OtherInController implements OtherInApis {
 
     /**
      * 获取其他入库单列表（条件+分页）
-     * 若不输入查询条件，则默认查询所有数据
+     *      * 若不输入查询条件，则默认查询所有数据
      * @param query 查询参数对象，包含分页信息和各种查询条件
      * @return 返回分页的其他入库单列表
      */
