@@ -32,6 +32,7 @@ import javax.annotation.Resource;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -139,7 +140,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             BeanUtils.copyProperties(costDTO, cost);
             cost.setCls(otherInListDetailDTO.getId());
             cost.setType("entry");
-            cost.setTime(entry.getTime());
+            cost.setTime(LocalDate.from(entry.getTime()));
             cost.setSettle(BigDecimal.valueOf(0.0000));
             cost.setState(0);
             cost.setId((++maxId).toString());

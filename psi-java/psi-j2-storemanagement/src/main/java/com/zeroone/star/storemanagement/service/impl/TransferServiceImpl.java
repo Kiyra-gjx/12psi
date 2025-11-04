@@ -1,5 +1,7 @@
 package com.zeroone.star.storemanagement.service.impl;
 
+import com.alibaba.csp.sentinel.annotation.SentinelResource;
+import com.alibaba.csp.sentinel.slots.block.BlockException;
 import com.zeroone.star.project.dto.j2.store.BatchAuditTransferDTO;
 import com.zeroone.star.project.dto.j2.store.RemoveTransferDTO;
 import com.zeroone.star.project.dto.j2.store.TransferDetailDTO;
@@ -7,7 +9,6 @@ import com.zeroone.star.project.vo.JsonVO;
 import com.zeroone.star.storemanagement.entity.*;
 import com.zeroone.star.storemanagement.mapper.*;
 import com.zeroone.star.storemanagement.service.ITransferService;
-import io.swagger.models.auth.In;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -42,9 +43,18 @@ public class TransferServiceImpl implements ITransferService {
         this.costMapper = costMapper;
     }
 
-    private static String classId = "0";
+    private String generateUniqueId() {
+        return UUID.randomUUID().toString().replace("-", "").substring(0, 20);
+    }
+
+    private String generateClassId() {
+        return String.valueOf(System.currentTimeMillis() % 1000000);
+    }
 
     @Override
+    @SentinelResource(value = "modifyTransfer",
+            blockHandler = "handleModifyTransferBlock",
+            fallback = "handleModifyTransferFallback")
     @Transactional(rollbackFor = Exception.class)
     public JsonVO<String> modifyTransfer(TransferDetailDTO dto) {
         try {
@@ -197,6 +207,9 @@ public class TransferServiceImpl implements ITransferService {
     }
 
     @Override
+    @SentinelResource(value = "batchAuditTransfer",
+            blockHandler = "handleBatchAuditBlock",
+            fallback = "handleBatchAuditFallback")
     @Transactional(rollbackFor = Exception.class)
     public JsonVO<String> batchAuditTransfer(BatchAuditTransferDTO dto) {
         try {
@@ -432,9 +445,7 @@ public class TransferServiceImpl implements ITransferService {
         // 2.记录批次出库流水
         String fromBatchId = batchMapper.getBatchId(batchNo, goodsId, fromWarehouse);
         // 修改 classId 为自增（参考数据库）
-        classId = String.valueOf(Integer.parseInt(classId) + 1);
-        String uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
-        BatchInfoDO batchInfoOut = createBatchInfo(uniqueId, fromBatchId, "swapOut", classId,
+        BatchInfoDO batchInfoOut = createBatchInfo(generateUniqueId(), fromBatchId, "swapOut", generateClassId(),
                 swapInfoId, 0, nums);
         if (fromBatchId != null) {
             batchInfoMapper.insert(batchInfoOut);
@@ -451,24 +462,19 @@ public class TransferServiceImpl implements ITransferService {
                 batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
                 // 回滚批次出库流水
                 batchInfoMapper.deleteById(batchInfoOut.getId());
-                // 回滚所属类 classId
-                classId = String.valueOf(Integer.parseInt(classId) - 1);
                 return false;
             }
         } else {
             // 目标仓库不存在该批次，创建新的批次记录
             LocalDate time = batchMapper.getTimeByBatchNo(batchNo);
             String roomId = roomMapper.getRoomId(goodsId, toWarehouse);
-            uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
-            boolean createSuccess = batchMapper.createBatchInTargetWarehouse(uniqueId, roomId, toWarehouse, goodsId, batchNo, time, nums) > 0;
+            boolean createSuccess = batchMapper.createBatchInTargetWarehouse(generateUniqueId(), roomId, toWarehouse, goodsId, batchNo, time, nums) > 0;
             if (!createSuccess) {
                 log.error("在目标仓库创建批次失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
                 batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
                 // 回滚批次出库流水
                 batchInfoMapper.deleteById(batchInfoOut.getId());
-                // 回滚所属类 classId
-                classId = String.valueOf(Integer.parseInt(classId) - 1);
                 return false;
             }
         }
@@ -476,9 +482,7 @@ public class TransferServiceImpl implements ITransferService {
         // 4.记录批次入库流水
         String toBatchId = batchMapper.getBatchId(batchNo, goodsId, toWarehouse);
         // 修改 classId 为自增（参考数据库）
-        classId = String.valueOf(Integer.parseInt(classId) + 1);
-        uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
-        BatchInfoDO batchInfoIn = createBatchInfo(uniqueId, toBatchId, "swapEnter", classId,
+        BatchInfoDO batchInfoIn = createBatchInfo(generateUniqueId(), toBatchId, "swapEnter", generateClassId(),
                 swapInfoId, 1, nums);
         if (toBatchId != null) {
 
@@ -503,9 +507,7 @@ public class TransferServiceImpl implements ITransferService {
         // 2.记录仓库出库流水
         String fromRoomId = roomMapper.getRoomId(goodsId, fromWarehouse);
         // 修改 classId 为自增（参考数据库，且非全局）
-        classId = String.valueOf(Integer.parseInt(classId) + 1);
-        String uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
-        RoomInfoDO roomInfoOut = createRoomInfo(uniqueId, fromRoomId, "swapOut", classId,
+        RoomInfoDO roomInfoOut = createRoomInfo(generateUniqueId(), fromRoomId, "swapOut", generateClassId(),
                 swapInfoId, LocalDateTime.now(), 0, price, nums);
         if (fromRoomId != null) {
             roomInfoMapper.insert(roomInfoOut);
@@ -522,15 +524,12 @@ public class TransferServiceImpl implements ITransferService {
                 roomMapper.updateRoomStock(goodsId, fromWarehouse, nums);
                 // 回滚仓库出库流水
                 roomInfoMapper.deleteById(roomInfoOut.getId());
-                // 回滚所属类 classId
-                classId = String.valueOf(Integer.parseInt(classId) - 1);
                 return false;
             }
         } else {
             // 目标仓库不存在该商品，创建新的库存记录
-            uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
             String attr = swapInfoMapper.getAttrById(swapInfoId);
-            boolean createRoomSuccess = roomMapper.createRoomInTargetWarehouse(uniqueId, goodsId, toWarehouse, attr, nums) > 0;
+            boolean createRoomSuccess = roomMapper.createRoomInTargetWarehouse(generateUniqueId(), goodsId, toWarehouse, attr, nums) > 0;
             if (!createRoomSuccess) {
                 log.error("在目标仓库创建库存记录失败，商品: {}，仓库: {}", goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
@@ -541,9 +540,7 @@ public class TransferServiceImpl implements ITransferService {
 
         // 4.记录仓库入库流水
         String toRoomId = roomMapper.getRoomId(goodsId, toWarehouse);
-        uniqueId = String.valueOf((System.currentTimeMillis() % 1000000000L) + (long)(Math.random() * 10000L));
-        // 修改 classId 为自增（参考数据库，且非全局）
-        RoomInfoDO roomInfoIn = createRoomInfo(uniqueId, toRoomId, "swapEnter", "1",
+        RoomInfoDO roomInfoIn = createRoomInfo(generateUniqueId(), toRoomId, "swapEnter", "1",
                 swapInfoId, LocalDateTime.now(), 1, price, nums);
         if (toRoomId != null) {
             roomInfoMapper.insert(roomInfoIn);
@@ -679,6 +676,9 @@ public class TransferServiceImpl implements ITransferService {
     }
 
     @Override
+    @SentinelResource(value = "deleteTransfer",
+            blockHandler = "handleDeleteTransferBlock",
+            fallback = "handleDeleteTransferFallback")
     @Transactional(rollbackFor = Exception.class)
     public JsonVO<String> deleteTransfer(RemoveTransferDTO dto) {
         try {
@@ -759,5 +759,37 @@ public class TransferServiceImpl implements ITransferService {
             this.pid = pid;
             this.status = status;
         }
+    }
+
+    // 限流处理方法
+    public JsonVO<String> handleModifyTransferBlock(TransferDetailDTO dto, BlockException ex) {
+        log.warn("modifyTransfer接口被限流", ex);
+        return JsonVO.fail("系统繁忙，请稍后再试");
+    }
+
+    public JsonVO<String> handleBatchAuditBlock(BatchAuditTransferDTO dto, BlockException ex) {
+        log.warn("batchAuditTransfer接口被限流", ex);
+        return JsonVO.fail("系统繁忙，请稍后再试");
+    }
+
+    public JsonVO<String> handleDeleteTransferBlock(RemoveTransferDTO dto, BlockException ex) {
+        log.warn("deleteTransfer接口被限流", ex);
+        return JsonVO.fail("系统繁忙，请稍后再试");
+    }
+
+    // 降级处理方法
+    public JsonVO<String> handleModifyTransferFallback(TransferDetailDTO dto, Throwable ex) {
+        log.error("modifyTransfer接口降级", ex);
+        return JsonVO.fail("服务暂时不可用，请稍后再试");
+    }
+
+    public JsonVO<String> handleBatchAuditFallback(BatchAuditTransferDTO dto, Throwable ex) {
+        log.error("batchAuditTransfer接口降级", ex);
+        return JsonVO.fail("服务暂时不可用，请稍后再试");
+    }
+
+    public JsonVO<String> handleDeleteTransferFallback(RemoveTransferDTO dto, Throwable ex) {
+        log.error("deleteTransfer接口降级", ex);
+        return JsonVO.fail("服务暂时不可用，请稍后再试");
     }
 }
