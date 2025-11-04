@@ -11,8 +11,9 @@
     </insert>
 
     <delete id="deleteById">
-        delete from is_entry_info where id = #{id}
+        DELETE FROM is_entry_info WHERE pid = #{id};
     </delete>
+
     <select id="selectBatchIds" resultType="com.zeroone.star.storemanagement.entity.EntryInfoDO">
         select id,pid, goods, attr, unit, warehouse, batch, FROM_UNIXTIME(mfd/1000) as mfd, price, nums, total, data from is_entry_info where id in
         <foreach item="item" collection="list" separator="," open="(" close=")">
@@ -31,4 +32,10 @@
             #{item}
         </foreach>
     </select>
+    <insert id="insertByOne" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO is_entry_info
+        (pid, goods, attr, unit, warehouse, batch, mfd, price, nums, total, data, serial)
+        VALUES (#{pid}, #{goods}, #{attr}, #{unit}, #{warehouse}, #{batch}, UNIX_TIMESTAMP(#{mfd}), #{price}, #{nums},
+                #{total}, #{data}, '1')
+    </insert>
 </mapper>

@@ -1,5 +1,6 @@
 package com.zeroone.star.project.dto.j2.store;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -19,11 +20,24 @@ import java.math.BigDecimal;
 @ApiModel("单据花费信息")
 public class CostDTO {
     @ApiModelProperty(value = "所属收支", example = "5")
-    private String iet;
+    private Integer iet;
 
     @ApiModelProperty(value = "金额", example = "11.0000")
     private BigDecimal money;
 
     @ApiModelProperty(value = "备注", example = "1")
     private String data;
+
+    private Integer id;
+
+    @TableField("class")
+    private Integer clazz;
+
+    private Integer state;
+
+    private String time;
+
+    private String type;
+
+    private BigDecimal settle;
 }

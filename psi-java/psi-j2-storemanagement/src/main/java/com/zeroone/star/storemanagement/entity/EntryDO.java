@@ -12,7 +12,7 @@ import java.util.List;
 
 @Data
 public class EntryDO {
-        @TableId(type = IdType.ASSIGN_ID)
+//        @TableId(type = IdType.ASSIGN_ID)
         private String id;
 
         private String supplier;

@@ -20,7 +20,7 @@ public interface IOtherInService {
 
     JsonVO<String> saveOtherInList(OtherInListAddDTO dto);
 
-    List<String> removeOtherInList(List<String> ids);
+    List<String> removeOtherInList(List<Integer> ids);
 
     JsonVO<PageDTO<OtherInListDTO>> getOtherInList(OtherInQuery query);
 }

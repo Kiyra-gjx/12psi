@@ -22,4 +22,6 @@ public interface OtherInInfoMapper extends BaseMapper<EntryInfoDO> {
     List<EntryInfoDO> getByPids(List<Integer> pids);
 
     void insertBatch(List<EntryInfoDO> entryInfoList);
+
+    void insertByOne(EntryInfoDO entryInfoDO);
 }

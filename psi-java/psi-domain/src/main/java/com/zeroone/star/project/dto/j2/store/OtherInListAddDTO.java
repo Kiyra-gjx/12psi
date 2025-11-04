@@ -1,6 +1,7 @@
 package com.zeroone.star.project.dto.j2.store;
 
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -31,6 +32,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "单据日期", index = 3)
     @ApiModelProperty(value = "单据日期",required = true, example = "2023-10-18 18:18:00")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime time;
 
     @ExcelProperty(value = "单据编号", index  =4)
@@ -61,7 +63,7 @@ public class OtherInListAddDTO {
 
     @ExcelProperty(value = "备注信息", index = 12)
     @ApiModelProperty(value = "备注信息", required = false,example = "紧急订单，请优先处理")
-    private String  data;
+    private String data;
 
     @ApiModelProperty(value = "扩展信息", example = "111")
     private Object more;
