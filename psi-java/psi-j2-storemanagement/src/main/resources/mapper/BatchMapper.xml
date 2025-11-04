@@ -3,7 +3,7 @@
 <mapper namespace="com.zeroone.star.storemanagement.mapper.BatchMapper">
 
     <select id="getExistingBatchNos" resultType="java.lang.String">
-        SELECT number FROM is_batch
+        SELECT number FROM batch
         WHERE number IN
         <foreach collection="batchNos" item="batchNo" open="(" separator="," close=")">
             #{batchNo}
@@ -12,7 +12,7 @@
 
     <select id="getBatchStocks" resultType="java.util.Map">
         SELECT number as batchNo, goods as goodsId, warehouse as warehouseId, nums
-        FROM is_batch
+        FROM batch
         WHERE (number, goods, warehouse) IN
         <foreach collection="batchNos" item="batchNo" index="index" open="(" separator="," close=")">
             (#{batchNo}, #{goodsIds[${index}]}, #{warehouseIds[${index}]})

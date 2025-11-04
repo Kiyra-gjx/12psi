@@ -34,6 +34,6 @@ public interface BatchInfoMapper extends BaseMapper<BatchInfoDO> {
      * @param swapInfoId 换货单ID
      * @return 删除的批次信息数量
      */
-    @Delete("delete from is_batch_info where info = #{swapInfoId}")
+    @Delete("delete from batch_info where info = #{swapInfoId}")
     int deleteBySwapInfoId(String swapInfoId);
 }

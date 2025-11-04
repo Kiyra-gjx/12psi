@@ -2,9 +2,9 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.SwapMapper">
     <update id="updateSwap">
-        UPDATE is_swap
+        UPDATE swap
         <set>
-            <if test="swap.time != null">time = 1761840000,</if>
+            <if test="swap.time != null">time = #{swap.time},</if>
             <if test="swap.number != null and swap.number != ''">number = #{swap.number},</if>
             <if test="swap.total != null">total = #{swap.total},</if>
             <if test="swap.cost != null">cost = #{swap.cost},</if>
@@ -17,7 +17,7 @@
     </update>
 
     <update id="auditBatchStatus">
-        UPDATE is_swap
+        UPDATE swap
         SET examine = #{operation}
         WHERE id IN
         <foreach collection="pidList" item="pid" open="(" separator="," close=")">
@@ -26,7 +26,7 @@
     </update>
 
     <delete id="deleteByIdList">
-        DELETE FROM is_swap
+        DELETE FROM swap
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
               #{id}
@@ -36,7 +36,7 @@
     <select id="getTransferListDTOList"
             resultType="com.zeroone.star.project.dto.j2.store.TransferListDTO">
         select id,frame, time, number, total, cost, people, examine, cse, user, data
-        from is_swap
+        from swap
         where id in
         <foreach collection="idList" item="id" open="(" separator="," close=")">
             #{id}
@@ -45,7 +45,7 @@
 
     <select id="getStatusByIds" resultType="java.util.Map">
         SELECT id, CAST(examine AS SIGNED) as status
-        FROM is_swap
+        FROM swap
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
@@ -53,7 +53,7 @@
     </select>
 
     <delete id="deleteBatchIds">
-        DELETE FROM is_swap
+        DELETE FROM swap
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}

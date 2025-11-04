@@ -24,13 +24,13 @@ public interface CostMapper extends BaseMapper<CostDO> {
     /**
      * 根据调拨单ID查询费用列表
      */
-    @Select("SELECT id, type, class, iet, money, data, settle, state FROM is_cost WHERE class = #{transferId} AND type = 'swap'")
+    @Select("SELECT id, type, class, iet, money, data, settle, state FROM cost WHERE class = #{transferId} AND type = 'swap'")
     List<CostDO> findByTransferId(@Param("transferId") String transferId);
 
     /**
      * 根据ID删除费用
      */
-    @Delete("DELETE FROM is_cost WHERE id = #{id}")
+    @Delete("DELETE FROM cost WHERE id = #{id}")
     void deleteById(@Param("id") String id);
 
     /**
@@ -46,14 +46,13 @@ public interface CostMapper extends BaseMapper<CostDO> {
     /**
      * 判断费用是否存在
      */
-    @Select("SELECT EXISTS(SELECT 1 FROM is_cost WHERE id = #{id})")
+    @Select("SELECT EXISTS(SELECT 1 FROM cost WHERE id = #{id})")
     boolean isExist(String id);
 
     /**
      * 根据调拨单ID删除对应的费用记录
      * @param transferId 调拨单ID (对应cls字段)
-     * @return 删除的记录数
      */
-    @Delete("DELETE FROM is_cost WHERE class = #{transferId} AND type = 'swap'")
-    int deleteByTransferId(String transferId);
+    @Delete("DELETE FROM cost WHERE class = #{transferId} AND type = 'swap'")
+    void deleteByTransferId(String transferId);
 }

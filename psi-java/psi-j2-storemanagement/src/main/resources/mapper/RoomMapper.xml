@@ -20,7 +20,7 @@
 
     <select id="getRoomStocks" resultType="java.util.Map">
         SELECT goods, warehouse, nums
-        FROM is_room
+        FROM room
         WHERE (goods, warehouse) IN
         <foreach collection="goodsIds" item="goodsId" index="index" open="(" separator="," close=")">
             (#{goodsId}, #{warehouseIds[${index}]})

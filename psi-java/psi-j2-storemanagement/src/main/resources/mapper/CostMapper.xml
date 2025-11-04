@@ -10,11 +10,11 @@
     </insert>
 
     <update id="updateById" parameterType="com.zeroone.star.storemanagement.entity.CostDO">
-        UPDATE is_cost
+        UPDATE cost
         <set>
             <if test="type != null">type = #{type},</if>
             <if test="cls != null">class = #{cls},</if>
-            <if test="time != null">time = 1761840000,</if>
+            <if test="time != null">time = #{time},</if>
             <if test="iet != null">iet = #{iet},</if>
             <if test="money != null">money = #{money},</if>
             <if test="data != null">data = #{data},</if>
@@ -25,7 +25,7 @@
     </update>
 
     <insert id="insert" parameterType="com.zeroone.star.storemanagement.entity.CostDO">
-        INSERT INTO is_cost (id, type, class, time, iet, money, data, settle, state)
-        VALUES (#{id}, #{type}, #{cls}, 1761840000, #{iet}, #{money}, #{data}, #{settle}, #{state})
+        INSERT INTO cost (id, type, class, time, iet, money, data, settle, state)
+        VALUES (#{id}, #{type}, #{cls}, #{time}, #{iet}, #{money}, #{data}, #{settle}, #{state})
     </insert>
 </mapper>

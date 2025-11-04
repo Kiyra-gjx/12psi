@@ -175,12 +175,6 @@ public class TransferServiceImpl implements ITransferService {
             }
         }
 
-        // // 4. 将 LocalDate 转换为时间戳
-        // Integer timestamp = null;
-        // if (transferTime != null) {
-        //     timestamp = (int) (transferTime.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli() / 1000);
-        // }
-
         // 4. 新增或更新费用
         for (TransferDetailDTO.costInfo costInfo : costInfos) {
             CostDO costDO = new CostDO();
@@ -481,7 +475,6 @@ public class TransferServiceImpl implements ITransferService {
 
         // 4.记录批次入库流水
         String toBatchId = batchMapper.getBatchId(batchNo, goodsId, toWarehouse);
-        // 修改 classId 为自增（参考数据库）
         BatchInfoDO batchInfoIn = createBatchInfo(generateUniqueId(), toBatchId, "swapEnter", generateClassId(),
                 swapInfoId, 1, nums);
         if (toBatchId != null) {

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zeroone.star.storemanagement.mapper.SwapInfoMapper">
     <select id="getPidListByIds" resultType="java.lang.String">
-        SELECT pid FROM is_swap_info WHERE id IN
+        SELECT pid FROM swap_info WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
@@ -11,19 +11,19 @@
     <select id="getTransferDetailListDTO"
             resultType="com.zeroone.star.project.dto.j2.store.TransferDetailListDTO">
         select i.id,i.pid,i.goods,g.name,g.number,g.spec,i.attr,i.warehouse,i.storehouse,i.price,i.nums,i.total,i.data,s.time,s.number as swapNumber,s.total as swapTotal,s.cost,s.people,s.data as swapData
-        from is_swap_info i
+        from swap_info i
         join swap s on s.id = i.pid
         join goods g on g.id = i.goods
         where i.id = #{id}
     </select>
 
     <update id="updateSwap">
-        UPDATE is_swap_info
+        UPDATE swap_info
         <set>
             <if test="warehouse != null and warehouse != ''">warehouse = #{warehouse},</if>
             <if test="storehouse != null and storehouse != ''">storehouse = #{storehouse},</if>
             <if test="batch != null and batch != ''">batch = #{batch},</if>
-            <if test="mfd != null">mfd = 1704067200,</if>
+            <if test="mfd != null">mfd = #{mfd},</if>
             <if test="price != null">price = #{price},</if>
             <if test="nums != null">nums = #{nums},</if>
             <if test="total != null">total = #{total},</if>
@@ -33,7 +33,7 @@
     </update>
 
     <delete id="deleteByIdList">
-        DELETE FROM is_swap_info
+        DELETE FROM swap_info
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
@@ -43,8 +43,8 @@
     <select id="getBatchTransferStatus" resultType="java.util.Map">
         SELECT si.id, si.pid, CAST(s.examine AS SIGNED) as status, si.warehouse, si.storehouse, si.batch,
         si.goods, si.nums, si.price
-        FROM is_swap_info si
-        JOIN is_swap s ON si.pid = s.id
+        FROM swap_info si
+        JOIN swap s ON si.pid = s.id
         WHERE si.id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
@@ -52,8 +52,8 @@
     </select>
 
     <select id="getBatchTransferDetail" resultType="com.zeroone.star.storemanagement.entity.SwapInfoDO">
-        SELECT id, pid, goods, warehouse, storehouse, batch, nums, price, FROM_UNIXTIME(mfd / 1000, '%Y-%m-%d') AS mfd, total, data
-        FROM is_swap_info
+        SELECT id, pid, goods, warehouse, storehouse, batch, nums, price, mfd, total, data
+        FROM swap_info
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
@@ -61,7 +61,7 @@
     </select>
 
     <select id="getSwapByIds" resultType="java.lang.String">
-        SELECT pid FROM is_swap_info
+        SELECT pid FROM swap_info
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}
@@ -69,7 +69,7 @@
     </select>
 
     <select id="getExistsCountByIds" resultType="java.lang.Integer">
-        SELECT COUNT(*) FROM is_swap_info
+        SELECT COUNT(*) FROM swap_info
         WHERE id IN
         <foreach collection="ids" item="id" open="(" separator="," close=")">
             #{id}

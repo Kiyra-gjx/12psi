@@ -17,7 +17,7 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
     /**
      * 根据id查询到调拨单的id
      */
-    @Select("SELECT pid FROM is_swap_info WHERE id = #{id}")
+    @Select("SELECT pid FROM swap_info WHERE id = #{id}")
     String getSwapById(@Param("id") String id);
 
     /**
@@ -32,19 +32,10 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
 
     ArrayList<TransferDetailListDTO> getTransferDetailListDTO(@Param("id") String id);
 
-    // /**
-    //  * 根据调拨单的id查询调拨单详情
-    //  */
-    // // @Select("SELECT * FROM is_swap_info WHERE id = #{id}")
-    // @Select("SELECT id, pid, goods, attr, unit, warehouse, storehouse, batch, " +
-    //         "FROM_UNIXTIME(mfd) as mfd, price, nums, serial, total, data " +
-    //         "FROM is_swap_info WHERE id = #{id}")
-    // SwapInfoDO getTransferDetail(String id);
-
     /**
      * 根据id查询商品属性
      */
-    @Select("SELECT attr FROM is_swap_info WHERE id = #{goodsId}")
+    @Select("SELECT attr FROM swap_info WHERE id = #{goodsId}")
     String getAttrById(String goodsId);
 
     /**
