@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -157,7 +158,7 @@ public class TransferServiceImpl implements ITransferService {
     /**
      * 处理单据费用
      */
-    private void handleTransferCosts(String transferId, List<TransferDetailDTO.costInfo> costInfos, LocalDate transferTime) {
+    private void handleTransferCosts(String transferId, List<TransferDetailDTO.costInfo> costInfos, Date transferTime) {
         // 1. 获取现有的费用列表
         List<CostDO> existingCosts = costMapper.findByTransferId(transferId);
 
@@ -181,7 +182,7 @@ public class TransferServiceImpl implements ITransferService {
             costDO.setId(costInfo.getId());
             costDO.setType("swap");  // 类型为调拨单
             costDO.setCls(transferId);   // 关联调拨单ID
-            costDO.setTime(transferTime);
+            costDO.setTime(transferTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
             costDO.setIet(costInfo.getIet());  // 支出类别
             costDO.setMoney(costInfo.getMoney());  // 金额
             costDO.setData(costInfo.getData());    // 备注

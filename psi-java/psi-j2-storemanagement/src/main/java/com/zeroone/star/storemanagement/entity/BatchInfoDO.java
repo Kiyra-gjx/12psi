@@ -6,7 +6,7 @@ import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
-@TableName("is_batch_info")
+@TableName("batch_info")
 public class BatchInfoDO {
 
     private String id;

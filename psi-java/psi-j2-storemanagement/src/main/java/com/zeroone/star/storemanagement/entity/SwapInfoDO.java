@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Date;
 
 @Data
-@TableName("is_swap_info")
+@TableName("swap_info")
 public class SwapInfoDO {
 
     private String id;
@@ -26,7 +26,7 @@ public class SwapInfoDO {
 
     private String batch;
 
-    private LocalDate mfd;
+    private Date mfd;
 
     private BigDecimal price;
 

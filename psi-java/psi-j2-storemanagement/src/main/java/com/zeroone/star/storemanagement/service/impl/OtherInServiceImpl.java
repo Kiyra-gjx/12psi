@@ -37,7 +37,6 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.annotation.Resource;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -78,7 +77,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
 
     @Resource
     ServeInfoMapper serveInfoMapper;
-    
+
     @Resource
     OtherInListMapper otherInListMapper;
 
@@ -141,7 +140,7 @@ public class OtherInServiceImpl extends ServiceImpl<OtherInMapper, EntryDO>  imp
             BeanUtils.copyProperties(costDTO, cost);
             cost.setCls(otherInListDetailDTO.getId());
             cost.setType("entry");
-            cost.setTime(LocalDate.from(entry.getTime()));
+            cost.setTime(entry.getTime());
             cost.setSettle(BigDecimal.valueOf(0.0000));
             cost.setState(0);
             cost.setId(String.valueOf(snowflake.nextId()%100000000));

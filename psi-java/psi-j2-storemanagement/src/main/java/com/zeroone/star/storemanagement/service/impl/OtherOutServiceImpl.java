@@ -223,7 +223,7 @@ public class OtherOutServiceImpl extends ServiceImpl<OtherOutMapper, ExtryDO> im
             BeanUtils.copyProperties(costDTO, cost);
             cost.setCls(otherOutListDTO.getId());
             cost.setType("extry");
-            // cost.setTime(extry.getTime());
+            cost.setTime(extry.getTime());
             cost.setSettle(BigDecimal.valueOf(0.0000));
             cost.setState(0);
             cost.setId((++maxId).toString());

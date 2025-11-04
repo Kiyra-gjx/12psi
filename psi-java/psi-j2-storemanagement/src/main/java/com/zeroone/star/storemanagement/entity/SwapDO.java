@@ -5,18 +5,17 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Date;
 
 @TableName("swap")
 @Data
-@TableName("is_swap")
 public class SwapDO {
 
     private String id;
 
     private String frame;
 
-    private LocalDate time;
+    private Date time;
 
     private String number;
 

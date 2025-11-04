@@ -5,7 +5,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -33,7 +33,7 @@ public class TransferDetailDTO {
     public static class ClassInfo {
         @JsonFormat(pattern = "yyyy-M-d")
         @ApiModelProperty(value = "单据日期", example = "2025-10-31")
-        private LocalDate time;
+        private Date time;
 
         @ApiModelProperty(value = "单据编号", example = "DBD2510312206576")
         private String number;
@@ -105,7 +105,7 @@ public class TransferDetailDTO {
 
         @JsonFormat(pattern = "yyyy-M-d")
         @ApiModelProperty(value = "生产日期", example = "2025-9-23")
-        private LocalDate mfd;
+        private Date mfd;
 
         @ApiModelProperty(value = "成本", example = "2")
         private BigDecimal price;
