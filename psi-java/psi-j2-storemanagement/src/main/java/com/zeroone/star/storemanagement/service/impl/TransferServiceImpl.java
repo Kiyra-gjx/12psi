@@ -475,14 +475,13 @@ public class TransferServiceImpl implements ITransferService {
                                          String toWarehouse, BigDecimal nums, String swapInfoId) {
         // 1.减少源仓库的批次库存
         int updateSource = batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums.negate());
-        if (updateSource <= 0) {
+        if (updateSource < 0) {
             log.error("减少源仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, fromWarehouse);
             return false;
         }
 
         // 2.记录批次出库流水
         String fromBatchId = batchMapper.getBatchId(batchNo, goodsId, fromWarehouse);
-        // 修改 classId 为自增（参考数据库）
         BatchInfoDO batchInfoOut = createBatchInfo(generateUniqueId(), fromBatchId, "swapOut", generateClassId(),
                 swapInfoId, 0, nums);
         if (fromBatchId != null) {
@@ -494,7 +493,7 @@ public class TransferServiceImpl implements ITransferService {
         if (targetStock != null) {
             // 目标仓库已存在该批次，增加库存
             int updateTarget = batchMapper.updateBatchStock(batchNo, goodsId, toWarehouse, nums);
-            if (updateTarget <= 0) {
+            if (updateTarget < 0) {
                 log.error("增加目标仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
                 batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
@@ -522,7 +521,6 @@ public class TransferServiceImpl implements ITransferService {
         BatchInfoDO batchInfoIn = createBatchInfo(generateUniqueId(), toBatchId, "swapEnter", generateClassId(),
                 swapInfoId, 1, nums);
         if (toBatchId != null) {
-
             batchInfoMapper.insert(batchInfoIn);
         }
 
@@ -536,14 +534,13 @@ public class TransferServiceImpl implements ITransferService {
                                         BigDecimal nums, String swapInfoId, BigDecimal price) {
         // 1.减少源仓库总库存
         int updateSourceRoom = roomMapper.updateRoomStock(goodsId, fromWarehouse, nums.negate());
-        if (updateSourceRoom <= 0) {
+        if (updateSourceRoom < 0) {
             log.error("减少源仓库总库存失败，商品: {}，仓库: {}", goodsId, fromWarehouse);
             return false;
         }
 
         // 2.记录仓库出库流水
         String fromRoomId = roomMapper.getRoomId(goodsId, fromWarehouse);
-        // 修改 classId 为自增（参考数据库，且非全局）
         RoomInfoDO roomInfoOut = createRoomInfo(generateUniqueId(), fromRoomId, "swapOut", generateClassId(),
                 swapInfoId, LocalDateTime.now(), 0, price, nums);
         if (fromRoomId != null) {
@@ -555,7 +552,7 @@ public class TransferServiceImpl implements ITransferService {
         if (targetRoom != null) {
             // 目标仓库已存在该商品，增加库存
             int updateTargetRoom = roomMapper.updateRoomStock(goodsId, toWarehouse, nums);
-            if (updateTargetRoom <= 0) {
+            if (updateTargetRoom < 0) {
                 log.error("增加目标仓库总库存失败，商品: {}，仓库: {}", goodsId, toWarehouse);
                 // 回滚源仓库的库存减少
                 roomMapper.updateRoomStock(goodsId, fromWarehouse, nums);
@@ -598,13 +595,13 @@ public class TransferServiceImpl implements ITransferService {
         String swapInfoId = transfer.getId();
 
         try {
-            // 1.处理批次库存还原（反向调拨）
+            // 1.处理批次库存还原（反向调拨 - 源仓库与目标仓库调换）
             boolean batchSuccess = processBatchUnaudit(batchNo, goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
             if (!batchSuccess) {
                 return false;
             }
 
-            // 2.处理仓库总库存还原（反向调拨）
+            // 2.处理仓库总库存还原（反向调拨 - 源仓库与目标仓库调换）
             boolean roomSuccess = processRoomUnaudit(goodsId, toWarehouse, fromWarehouse, nums, swapInfoId);
             if (!roomSuccess) {
                 // 回滚批次库存
@@ -627,20 +624,22 @@ public class TransferServiceImpl implements ITransferService {
      */
     private boolean processBatchUnaudit(String batchNo, String goodsId, String fromWarehouse,
                                         String toWarehouse, BigDecimal nums, String swapInfoId) {
+        // 源仓库与目标仓库已调换
+
         // 1.删除批次流水记录
         int deleteBatchInfoCount = batchInfoMapper.deleteBySwapInfoId(swapInfoId);
         log.info("删除批次流水记录，调拨单ID: {}，删除记录数: {}", swapInfoId, deleteBatchInfoCount);
 
         // 2.减少源仓库的批次库存（反审核时从原调入仓库减少）
         int updateSource = batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums.negate());
-        if (updateSource <= 0) {
+        if (updateSource < 0) {
             log.error("减少源仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, fromWarehouse);
             return false;
         }
 
         // 3.增加目标仓库的批次库存（反审核时加到原调出仓库）
         int updateTarget = batchMapper.updateBatchStock(batchNo, goodsId, toWarehouse, nums);
-        if (updateTarget <= 0) {
+        if (updateTarget < 0) {
             log.error("增加目标仓库批次库存失败，批次: {}，商品: {}，仓库: {}", batchNo, goodsId, toWarehouse);
             // 回滚源仓库的库存减少
             batchMapper.updateBatchStock(batchNo, goodsId, fromWarehouse, nums);
@@ -655,20 +654,22 @@ public class TransferServiceImpl implements ITransferService {
      */
     private boolean processRoomUnaudit(String goodsId, String fromWarehouse, String toWarehouse,
                                        BigDecimal nums, String swapInfoId) {
+        // 源仓库与目标仓库已调换
+
         // 1.删除仓库流水记录
         int deleteRoomInfoCount = roomInfoMapper.deleteBySwapInfoId(swapInfoId);
         log.info("删除仓库流水记录，调拨单ID: {}，删除记录数: {}", swapInfoId, deleteRoomInfoCount);
 
         // 2.减少源仓库总库存（反审核时从原调入仓库减少）
         int updateSourceRoom = roomMapper.updateRoomStock(goodsId, fromWarehouse, nums.negate());
-        if (updateSourceRoom <= 0) {
+        if (updateSourceRoom < 0) {
             log.error("减少源仓库总库存失败，商品: {}，仓库: {}", goodsId, fromWarehouse);
             return false;
         }
 
         // 3.增加目标仓库总库存（反审核时加到原调出仓库）
         int updateTargetRoom = roomMapper.updateRoomStock(goodsId, toWarehouse, nums);
-        if (updateTargetRoom <= 0) {
+        if (updateTargetRoom < 0) {
             log.error("增加目标仓库总库存失败，商品: {}，仓库: {}", goodsId, toWarehouse);
             // 回滚源仓库的库存减少
             roomMapper.updateRoomStock(goodsId, fromWarehouse, nums);
