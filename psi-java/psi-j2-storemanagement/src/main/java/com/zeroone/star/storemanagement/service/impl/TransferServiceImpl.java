@@ -31,10 +31,12 @@ public class TransferServiceImpl implements ITransferService {
     private final BatchMapper batchMapper;
     private final BatchInfoMapper batchInfoMapper;
     private final CostMapper costMapper;
+    private final LogMapper logMapper;
 
     public TransferServiceImpl(SwapMapper swapMapper, SwapInfoMapper swapInfoMapper,
                                RoomMapper roomMapper, RoomInfoMapper roomInfoMapper,
-                               BatchMapper batchMapper, BatchInfoMapper batchInfoMapper, CostMapper costMapper) {
+                               BatchMapper batchMapper, BatchInfoMapper batchInfoMapper,
+                               CostMapper costMapper, LogMapper logMapper) {
         this.swapMapper = swapMapper;
         this.swapInfoMapper = swapInfoMapper;
         this.roomMapper = roomMapper;
@@ -42,6 +44,7 @@ public class TransferServiceImpl implements ITransferService {
         this.batchMapper = batchMapper;
         this.batchInfoMapper = batchInfoMapper;
         this.costMapper = costMapper;
+        this.logMapper = logMapper;
     }
 
     private String generateUniqueId() {
@@ -147,6 +150,14 @@ public class TransferServiceImpl implements ITransferService {
                 return JsonVO.fail("更新调拨单失败");
             }
 
+            // 记录日志操作
+            LogDO logDO = new LogDO();
+            logDO.setId(generateUniqueId());
+            logDO.setTime(LocalDateTime.now());
+            logDO.setUser("1");
+            logDO.setInfo("修改调拨单" + dto.getClassInfo().getNumber());
+            logMapper.insert(logDO);
+
             return JsonVO.success(dto.getInfo().getId());
 
         } catch (Exception e) {
@@ -216,6 +227,12 @@ public class TransferServiceImpl implements ITransferService {
             }
             if (ids == null || ids.isEmpty()) {
                 return JsonVO.fail("请选择要" + (operation == 1 ? "审核" : "反审核") + "的调拨单");
+            }
+
+            // 批量查询调拨单的number
+            List<String> numbers = swapInfoMapper.getBatchTransferNumbers(ids);
+            if (numbers.isEmpty()) {
+                return JsonVO.fail("调拨单不存在");
             }
 
             // 1. 批量查询调拨单基础信息
@@ -327,6 +344,21 @@ public class TransferServiceImpl implements ITransferService {
             // 9. 批量更新状态
             if (!processedPids.isEmpty()) {
                 swapMapper.auditBatchStatus(processedPids, operation);
+            }
+
+            // 批量成功日志
+            if (!numbers.isEmpty()) {
+                String operationType = operation == 1 ? "审核调拨单" : "反审核调拨单";
+                String info = "[" + String.join("|", numbers) + "]";
+
+                LogDO logDO = new LogDO();
+                logDO.setId(generateUniqueId());
+                logDO.setTime(LocalDateTime.now());
+                logDO.setUser("1");
+                logDO.setInfo(operationType + info);
+                logMapper.insert(logDO);
+
+                log.info("记录操作日志: {} {}", operationType, info);
             }
 
             return JsonVO.success(ids.toString());
@@ -684,8 +716,13 @@ public class TransferServiceImpl implements ITransferService {
             // 转换ID类型
             List<String> idStrs = ids.stream().map(String::valueOf).collect(Collectors.toList());
 
-            // 批量获取主表ID
+            // 批量获取主表 ID 和 number
             List<String> pidList = swapInfoMapper.getSwapByIds(idStrs);
+            List<String> numbers = swapInfoMapper.getBatchTransferNumbers(idStrs);
+
+            if (numbers.isEmpty()) {
+                return JsonVO.fail("调拨单不存在");
+            }
 
             // 批量查询状态
             List<Map<String, Object>> statusList = swapMapper.getStatusByIds(pidList);
@@ -713,6 +750,18 @@ public class TransferServiceImpl implements ITransferService {
             for (String pid : pidList) {
                 costMapper.deleteByTransferId(pid);
             }
+
+            // 记录单条日志
+            String info = "[" + String.join("|", numbers) + "]";
+
+            LogDO logDO = new LogDO();
+            logDO.setId(generateUniqueId());
+            logDO.setTime(LocalDateTime.now());
+            logDO.setUser("1");
+            logDO.setInfo("删除调拨单" + info);
+            logMapper.insert(logDO);
+
+            log.info("记录删除日志: 删除调拨单{}", info);
 
             log.info("删除调拨单成功: 详情记录 {} 条, 主表记录 {} 条", deleteInfoCount, deleteMainCount);
             return JsonVO.success(ids.toString());

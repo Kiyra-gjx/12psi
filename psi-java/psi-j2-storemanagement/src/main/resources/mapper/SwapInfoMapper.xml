@@ -76,4 +76,13 @@
         </foreach>
     </select>
 
+    <select id="getBatchTransferNumbers" resultType="java.lang.String">
+        SELECT s.number FROM swap s
+        JOIN swap_info si ON s.id = si.pid
+        WHERE s.id IN
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
 </mapper>

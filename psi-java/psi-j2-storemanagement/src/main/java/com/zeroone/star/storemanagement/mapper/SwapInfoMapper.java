@@ -63,4 +63,9 @@ public interface SwapInfoMapper extends BaseMapper<SwapInfoDO> {
      * 批量检查调拨单是否存在
      */
     int getExistsCountByIds(@Param("ids") List<String> ids);
+
+    /**
+     * 批量获取调拨单对应的编号
+     */
+    List<String> getBatchTransferNumbers(@Param("ids") List<String> ids);
 }
