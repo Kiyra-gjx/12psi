@@ -22,8 +22,8 @@
         SELECT goods, warehouse, nums
         FROM room
         WHERE (goods, warehouse) IN
-        <foreach collection="goodsIds" item="goodsId" index="index" open="(" separator="," close=")">
-            (#{goodsId}, #{warehouseIds[${index}]})
+        <foreach collection="paramList" item="param" open="(" separator="," close=")">
+            (#{param.goodsId}, #{param.warehouseId})
         </foreach>
     </select>
 </mapper>

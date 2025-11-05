@@ -3,6 +3,7 @@ package com.zeroone.star.storemanagement.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.project.dto.j2.store.WarehouseStockDTO;
 import com.zeroone.star.storemanagement.entity.RoomDO;
+import com.zeroone.star.storemanagement.service.impl.TransferServiceImpl;
 import org.apache.ibatis.annotations.*;
 
 import java.math.BigDecimal;
@@ -44,6 +45,5 @@ public interface RoomMapper extends BaseMapper<RoomDO> {
      * 批量检查仓库库存
      */
     @MapKey("goodsId")
-    List<Map<String, Object>> getRoomStocks(@Param("goodsIds") List<String> goodsIds,
-                                            @Param("warehouseIds") List<String> warehouseIds);
+    List<Map<String, Object>> getRoomStocks(@Param("paramList")List<TransferServiceImpl.StockQueryParam> paramList);
 }

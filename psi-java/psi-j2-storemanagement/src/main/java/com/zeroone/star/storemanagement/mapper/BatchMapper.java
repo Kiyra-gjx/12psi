@@ -2,6 +2,7 @@ package com.zeroone.star.storemanagement.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zeroone.star.storemanagement.entity.BatchDO;
+import com.zeroone.star.storemanagement.service.impl.TransferServiceImpl;
 import org.apache.ibatis.annotations.*;
 
 import java.math.BigDecimal;
@@ -48,7 +49,5 @@ public interface BatchMapper extends BaseMapper<BatchDO> {
      * 批量查询批次库存
      */
     @MapKey("batchNo")
-    List<Map<String, Object>> getBatchStocks(@Param("batchNos") List<String> batchNos,
-                                             @Param("goodsIds") List<String> goodsIds,
-                                             @Param("warehouseIds") List<String> warehouseIds);
+    List<Map<String, Object>> getBatchStocks(@Param("paramList") List<TransferServiceImpl.StockQueryParam> paramList);
 }

@@ -229,12 +229,6 @@ public class TransferServiceImpl implements ITransferService {
                 return JsonVO.fail("请选择要" + (operation == 1 ? "审核" : "反审核") + "的调拨单");
             }
 
-            // 批量查询调拨单的number
-            List<String> numbers = swapInfoMapper.getBatchTransferNumbers(ids);
-            if (numbers.isEmpty()) {
-                return JsonVO.fail("调拨单不存在");
-            }
-
             // 1. 批量查询调拨单基础信息
             List<Map<String, Object>> statusList = swapInfoMapper.getBatchTransferStatus(ids);
             Map<String, TransferBatchData> transferMap = new HashMap<>();
@@ -254,13 +248,10 @@ public class TransferServiceImpl implements ITransferService {
                 return JsonVO.fail("以下调拨单不存在: " + String.join(", ", notFoundIds));
             }
 
-            // 3. 批量查询调拨单详情
-            List<SwapInfoDO> detailList = swapInfoMapper.getBatchTransferDetail(ids);
-            for (SwapInfoDO detail : detailList) {
-                TransferBatchData data = transferMap.get(detail.getId());
-                if (data != null) {
-                    data.setDetail(detail);
-                }
+            // 3. 批量查询调拨单的number
+            List<String> numbers = swapInfoMapper.getBatchTransferNumbers(ids);
+            if (numbers.isEmpty()) {
+                return JsonVO.fail("调拨单不存在");
             }
 
             // 4. 状态验证
@@ -268,7 +259,6 @@ public class TransferServiceImpl implements ITransferService {
             for (TransferBatchData data : transferMap.values()) {
                 if ((data.getStatus() ^ operation) != 1) {
                     data.setValid(false);
-                    data.setErrorMsg("状态转换异常");
                     statusErrorIds.add(data.getId());
                 }
             }
@@ -281,7 +271,6 @@ public class TransferServiceImpl implements ITransferService {
             for (TransferBatchData data : transferMap.values()) {
                 if (data.getDetail().getWarehouse().equals(data.getDetail().getStorehouse())) {
                     data.setValid(false);
-                    data.setErrorMsg("调出调入仓库相同");
                     warehouseErrorIds.add(data.getId());
                 }
             }
@@ -301,7 +290,6 @@ public class TransferServiceImpl implements ITransferService {
             for (TransferBatchData data : transferMap.values()) {
                 if (!existingBatchSet.contains(data.getDetail().getBatch())) {
                     data.setValid(false);
-                    data.setErrorMsg("批次不存在");
                     batchErrorIds.add(data.getId());
                 }
             }
@@ -337,7 +325,7 @@ public class TransferServiceImpl implements ITransferService {
                     }
                 } catch (Exception e) {
                     log.error("处理调拨单失败，ID: {}", data.getId(), e);
-                    // 继续处理其他单据
+                    return JsonVO.fail("处理调拨单失败，ID: " + data.getId());
                 }
             }
 
@@ -376,18 +364,21 @@ public class TransferServiceImpl implements ITransferService {
         List<String> errorIds = new ArrayList<>();
 
         // 准备批量查询参数
-        List<String> batchNos = new ArrayList<>();
-        List<String> goodsIds = new ArrayList<>();
-        List<String> warehouseIds = new ArrayList<>();
+        List<StockQueryParam> batchStockParams = new ArrayList<>();
+        List<StockQueryParam> roomStockParams = new ArrayList<>();
 
         for (TransferBatchData data : transfers) {
-            batchNos.add(data.getDetail().getBatch());
-            goodsIds.add(data.getDetail().getGoods());
-            warehouseIds.add(data.getDetail().getWarehouse());
+            batchStockParams.add(new StockQueryParam(
+                    data.getDetail().getBatch(),
+                    data.getDetail().getGoods(),
+                    data.getDetail().getWarehouse()));
+            roomStockParams.add(new StockQueryParam(
+                    data.getDetail().getGoods(),
+                    data.getDetail().getWarehouse()));
         }
 
         // 批量查询批次库存
-        List<Map<String, Object>> batchStocks = batchMapper.getBatchStocks(batchNos, goodsIds, warehouseIds);
+        List<Map<String, Object>> batchStocks = batchMapper.getBatchStocks(batchStockParams);
         Map<String, BigDecimal> batchStockMap = new HashMap<>();
         for (Map<String, Object> stock : batchStocks) {
             String key = stock.get("batchNo") + "_" + stock.get("goodsId") + "_" + stock.get("warehouseId");
@@ -395,7 +386,7 @@ public class TransferServiceImpl implements ITransferService {
         }
 
         // 批量查询仓库库存
-        List<Map<String, Object>> roomStocks = roomMapper.getRoomStocks(goodsIds, warehouseIds);
+        List<Map<String, Object>> roomStocks = roomMapper.getRoomStocks(roomStockParams);
         Map<String, BigDecimal> roomStockMap = new HashMap<>();
         for (Map<String, Object> stock : roomStocks) {
             String key = stock.get("goods") + "_" + stock.get("warehouse");
@@ -418,6 +409,26 @@ public class TransferServiceImpl implements ITransferService {
         }
 
         return errorIds;
+    }
+
+    @Data
+    public static class StockQueryParam {
+        private String batchNo;
+        private String goodsId;
+        private String warehouseId;
+
+        // 批次库存构造函数
+        public StockQueryParam(String batchNo, String goods, String warehouse) {
+            this.batchNo = batchNo;
+            this.goodsId = goods;
+            this.warehouseId = warehouse;
+        }
+
+        // 仓库库存构造函数
+        public StockQueryParam(String goods, String warehouse) {
+            this.goodsId = goods;
+            this.warehouseId = warehouse;
+        }
     }
 
     /**
@@ -795,7 +806,6 @@ public class TransferServiceImpl implements ITransferService {
         private Integer status;
         private SwapInfoDO detail;
         private boolean valid = true;
-        private String errorMsg;
 
         public TransferBatchData(String id, String pid, Integer status) {
             this.id = id;
