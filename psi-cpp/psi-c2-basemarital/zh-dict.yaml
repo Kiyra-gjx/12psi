@@ -1,0 +1,242 @@
+goods:
+ tag: 商品管理
+ query-all:
+  summary: 获取商品列表（条件+分页）
+ query-one:
+  summary: 获取指定商品详情
+ add:
+  summary: 新增商品
+ modify:
+  summary: 修改指定商品
+ delete:
+  summary: 删除指定商品（支持批量）
+ export:
+  summary: 导出数据
+ specs:
+  summary: 获取商品选择列表
+ field:
+  id: ID
+  name: 商品名称
+  py: 商品拼音
+  number: 商品编号
+  specification_model: 规格型号
+  goods_unit: 商品单位
+  term: 商品条款
+  type: 商品类型
+  kinds: 商品分类
+  memo: 商品备注
+  model: 商品型号
+  brand: 商品品牌
+  unit: 商品单位
+  price: 采购价格
+  sale_price: 销售价格
+  bar_code: 商品条码
+  capacity: 库存阈值
+  comment: 备注信息
+  spec: 商品型号
+  code: 商品条码
+  category: 商品类别
+  data: 商品备注信息
+  buy: 采购价格
+  sell: 销售价格
+  location: 商品货位
+  stock: 库存阈值
+  imgs: 商品图像
+  details: 图文详细
+  units: 多单位配置
+  strategy: 折扣策略
+  serial: 序列产品
+  validity: 有效期
+  protect: 保质期
+  threshold: 预警阈值
+  more: 扩展信息
+
+cus:
+ tag: 客户管理
+ query-all:
+  summary: 获取客户列表（条件+分页）
+ ImportCusfile: 
+  summary: 批量导入客户-快乐五香蛋
+ DownloadTemFile:
+  summary: 下载导入模板
+ DownloadFileName:
+  summary: file/客户导入模板.xlsx
+ DownloadCusFile:
+  summary: 导出客户
+ query-one:
+  summary: 获取指定客户详情
+ add:
+  summary: 新增客户
+ modify:
+  summary: 修改指定客户
+ delete:
+  summary: 删除指定客户（支持批量）
+ field:
+  id: ID
+  name: 客户名称
+  number: 客户编号
+  category: 客户类别
+  grade: 客户等级
+  contact_person: 联系人员
+  telephone: 联系电话
+  username: 所属用户
+  memo: 备注信息
+  py: 拼音信息
+  frame: 所属组织
+  user: 所属用户
+  bank: 开户银行
+  data: 备注信息
+  account: 银行账号
+  contacts: 联系资料
+  balance: 应收款余额
+  more: 扩展信息
+  address: 联系地址
+  tax: 纳税号码
+  
+
+good:
+ tag: 商品管理
+ delete:
+  summary: 删除商品(支持批量)
+
+goodsfile:
+ upload:
+  summary: 导入数据
+ download:
+  summary: 下载模版
+ field:
+  filename: 文件名
+  ft: 文件类型编码
+  st: 文件存储类型编码
+  remark: 备注
+  file: 文件数据
+  id: 文件唯一标识id
+  path: 文件存储路径
+  status: 数据状态
+  ftn: 文件类型名称
+  stn: 文件存储类型名称
+
+file:
+ field:
+  img-url: 图片地址
+  img-alt: 图片文字描述
+  img-href: 图片链接地址
+
+ware:
+ tag: 仓库管理
+ get:
+  summary: 获取仓库列表（条件+分页）
+  name: 
+   summary: 获取仓库名称列表
+ query-detail: 
+  summary: 获取指定仓库详情
+ add:
+  summary: 添加仓库
+ update:
+  summary: 修改指定仓库
+ remove: 
+  summary: 删除指定仓库
+ field:
+   id: ID
+   name: 仓库名称
+   number: 仓库编号
+   frame: 所属组织
+   contacts: 联系人员
+   tel: 联系电话
+   add: 仓库地址
+   data: 备注信息
+
+funds:
+ tag: 资金账户
+ get:
+  summary: 获取账户列表（条件+分页）
+ field:
+  name: 账户名称
+  number: 账户编号
+  frame: 所属组织
+  time: 余额日期
+  balance: 账户余额
+  data: 备注信息
+  getDetail: 获取账户指定详情
+  AccountID: id
+  addAccount: 新增账户
+  modify: 修改指定账户
+  num: 账户编号
+  initial: 期初余额
+  
+
+sup:
+ tag: 供应商管理
+ addSupplier: 添加供应商
+ updateSupplier: 修改指定供应商
+ query-all:
+  summary: 获取供应商列表（条件+分页）
+ query-one:
+  summary: 获取指定供应商详情
+ add:
+  summary: 新增供应商
+ modify:
+  summary: 修改指定供应商
+ delete:
+  summary: 删除指定供应商（支持批量）
+ import:
+  summary: 导入供应商
+ export:
+  summary: 导出供应商
+ query_all:
+  summary: 查询供应商
+ detail:
+  list: 获取指定供应商详情
+ field:
+  id: ID
+  name: 供应商名称
+  number: 供应商编号
+  py: 拼音信息
+  category: 供应商类别
+  more: 扩展信息
+  rate: 增值税税率
+  bank: 开户银行
+  account: 银行账号
+  tax: 纳税号码
+  balance: 应付款余额
+  frame: 所属组织
+  user: 所属用户
+  data: 备注信息
+  contacts: 联系资料
+  filename: 文件名
+  ft: 文件类型编码
+  st: 文件存储类型编码
+  remark: 备注
+  file: 文件数据
+  path: 文件存储路径
+  status: 数据状态
+  ftn: 文件类型名称
+  stn: 文件存储类型名称
+
+fund:
+ delete:
+  summary: 删除账户
+
+
+
+Customer:
+        field:
+            name: 客户名称
+            number: 客户编号
+            frame : 所属组织
+            user :  所属用户
+            category : 客户类别
+            grade : 客户等级
+            bank : 开户银行
+            account : 银行账号
+            tax : 税号账户
+            data : 备注信息
+            contacts: 联系资料
+            id: 数据库内序号
+            py: 拼音
+            more: 扩展信息
+            balance: 应收款余额
+        get:
+            add : 新增客户接口
+            get: 获取用户详情接口
+            title: 客户管理

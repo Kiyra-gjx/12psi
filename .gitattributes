@@ -1,0 +1,7 @@
+psi-cpp/lib-oatpp/lib64/debug/oatpp-swagger.lib filter=lfs diff=lfs merge=lfs -text
+psi-cpp/lib-oatpp/lib64/debug/oatpp-websocket.lib filter=lfs diff=lfs merge=lfs -text
+psi-cpp/lib-oatpp/lib64/release/oatpp-swagger.lib filter=lfs diff=lfs merge=lfs -text
+psi-cpp/lib-oatpp/lib64/release/oatpp-websocket.lib filter=lfs diff=lfs merge=lfs -text
+psi-cpp/lib-common/lib64/debug/ZXing.lib filter=lfs diff=lfs merge=lfs -text
+psi-cpp/lib-common/lib64/release/ZXing.lib filter=lfs diff=lfs merge=lfs -text
+*.lib filter=lfs diff=lfs merge=lfs -text

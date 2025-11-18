@@ -1,0 +1,121 @@
+#pragma once
+#pragma once
+/*
+ Copyright Zero One Star. All rights reserved.
+
+ @Author: awei
+ @Date: 2023/09/18 15:01:29
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+      https://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+*/
+#ifndef _EXREPORTDE_DTO_H_
+#define _EXREPORTDE_DTO_H_
+
+#include "../GlobalInclude.h"
+#include "../do/BuyInfoDO.h"
+#include OATPP_CODEGEN_BEGIN(DTO)
+
+/**
+ * 详细报表基础传输对象（与ExReportDeQUERY字段严格匹配，无id）
+ */
+class ExReportDeAddDTO : public oatpp::DTO
+{
+    DTO_INIT(ExReportDeAddDTO, DTO);
+
+    // 商品名称
+    DTO_FIELD(String, goods);
+    DTO_FIELD_INFO(goods) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.goods");
+    }
+
+    // 辅助属性
+    DTO_FIELD(String, attr);
+    DTO_FIELD_INFO(attr) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.attr");
+    }
+
+    // 单位
+    DTO_FIELD(String, unit);
+    DTO_FIELD_INFO(unit) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.unit");
+    }
+
+    // 仓库
+    DTO_FIELD(String, warehouse);
+    DTO_FIELD_INFO(warehouse) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.warehouse");
+    }
+
+    // 单价
+    DTO_FIELD(String, price);
+    DTO_FIELD_INFO(price) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.price");
+    }
+
+    // 数量
+    DTO_FIELD(String, nums);
+    DTO_FIELD_INFO(nums) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.nums");
+    }
+
+    // 金额
+    DTO_FIELD(String, total);
+    DTO_FIELD_INFO(total) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.total");
+    }
+
+    // 税率(%)
+    DTO_FIELD(String, tax);
+    DTO_FIELD_INFO(tax) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.tax");
+    }
+
+    // 税额
+    DTO_FIELD(String, tat);
+    DTO_FIELD_INFO(tat) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.tat");
+    }
+
+    // 价税合计
+    DTO_FIELD(String, tpt);
+    DTO_FIELD_INFO(tpt) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.tpt");
+    }
+
+    // 备注信息
+    DTO_FIELD(String, data);
+    DTO_FIELD_INFO(data) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.data");
+    }
+};
+
+/**
+ * 详细报表传输对象（含id，继承基础DTO）
+ */
+class ExReportDeDTO : public ExReportDeAddDTO
+{
+    DTO_INIT(ExReportDeDTO, ExReportDeAddDTO);
+
+    // 详情编号（主键，与buy_info表id一致）
+    DTO_FIELD(String, id);
+    DTO_FIELD_INFO(id) {
+        info->description = ZH_WORDS_GETTER("bor_info.field.id");
+    }
+};
+
+class ExReportDePageDTO : public PageDTO<ExReportDeDTO::Wrapper> {
+    DTO_INIT(ExReportDePageDTO, PageDTO<ExReportDeDTO::Wrapper>);
+};
+
+#include OATPP_CODEGEN_END(DTO)
+#endif // !_EXREPORTDE_DTO_H_

@@ -1,0 +1,194 @@
+﻿file:
+ DeEx: 导出详细报表
+ SimEx: 导出简易报表
+ InData: 导入数据
+ tag: 文件示例接口
+ upload: 
+  summary: 单文件上传
+ upload-more:
+  summary: 多文件上传
+ upload-stream:
+  summary: 流上传文件
+ editor-upload-image:
+  summary: editor上传图片示例接口
+ info:
+  summary: 获取文件信息
+ download:
+  summary: 下载文件
+ html:
+  summary: HTML静态页面访问
+ field:
+  id: 文件编号
+  file: 上传的文件
+  filename: 文件名
+  ft: 文件类型编码
+  ftn: 文件类型名称
+  st: 文件保存类型编码
+  stn: 文件保存类型名称
+  remark: 文件描述
+  path: 文件保存路径
+  status: 文件状态编码
+  suffix: 文件后缀
+  img-url: 图片src
+  img-alt: 图片文字描述
+  img-href: 图片链接地址
+bor:
+ field: 
+  frame: 所属组织
+  supplier: 供应商
+  time: 单据时间
+  number: 单据编号
+  total: 单据金额
+  actual: 实际金额
+  arrival: 到货日期
+  examine: 审核状态
+  state: 入库状态
+  people: 关联人员
+  user: 制单人
+  data: 备注信息
+bor_info:
+  good: 商品名称	
+  attr: 辅助属性	
+  unit: 单位	
+  warehouse: 仓库	
+  price: 单价	
+  nums: 数量	
+  handle: 入库数量	
+  discount: 折扣率	
+  dsc: 折扣额	
+  total: 金额	
+  tax: 税率	
+  tat: 税额	
+  tpt: 价税合计	
+  data: 备注信息
+  spec: 规格型号
+purchase:
+ tag: 采购订单
+ list:
+  tag: 获取采购订单列表（条件+分页）
+  number: 单据编号
+  supplier: 供应商
+  people: 关联人员
+  user: 制单人
+  examine: 审核状态
+  state: 入库状态
+  data: 备注信息
+  source: 关联单据
+  frame: 所属组织
+  time: 单据时间
+  total: 单据金额
+  actual: 实际金额
+  arrival: 到货时间
+  logistics: 物流信息
+  file: 单据附件
+  more: 扩展信息
+ detail:
+  tag: 获取指定采购订单详情
+  supplier: 供应商
+  docDate: 单据日期
+  docNo: 单据编号
+  goodsName: 商品名称
+  goodsNo: 商品编号
+  specModel: 规格型号
+  attr: 辅助属性
+  unit: 单位
+  warehouse: 仓库
+  price: 单价
+  qty: 数量
+  inQty: 入库数量
+  docAmount: 单据金额
+  actualAmount: 实际金额
+  relatedPerson: 关联人员
+  arrivalDate: 到货日期
+  logisticsInfo: 物流信息
+  remark: 备注信息
+  id: ID
+  pid: 所属ID
+  goods: 所属商品
+  nums: 数量
+  discount: 折扣率
+  dsc: 折扣额
+  total: 金额
+  tax: 税率
+  tat: 税额
+  tpt: 价税合计
+  data: 备注信息
+  handle: 入库数量
+ data:
+  tag: 获取生成采购单数据 
+purchasedingdan:
+ add:
+  summary: 新增采购订单
+  field:
+   id: ID
+   supplier: 供货商
+   time: 单据时间
+   number: 单据编号
+   total: 单据金额
+   actual: 实际金额
+   people: 关联人员
+   arrival: 到货时间
+   logistics: 物流信息
+   file: 单据附件
+   data: 备注信息
+   examine: 审核状态[0:未审核|1:已审核]
+   state: 入库状态[0:未入库|1:部分入库|2:已入库|3:关闭]
+   user: 制单人
+ delete:
+  summary: 删除采购订单（支持批量）
+  field:
+   id: ID  
+dingdan:
+  tag: 订单管理
+  query-all:
+   summary: 获取采购订单列表（条件+分页）
+  query-one:
+   summary: 获取指定采购订单详情
+  modify:
+   summary: 修改采购订单
+  examine:
+   summary: 审核采购订单(支持批量)	
+   ids: 订单编号列表
+   state: 审核状态(0-未审核，1-已审核)
+  unexamine:
+   summary: 反审核采购订单(支持批量)
+   ids: 订单编号列表
+   state: 审核状态(0-未审核，1-已审核)
+  field:
+   id: 订单编号
+   source: 关联单据
+   frame: 所属组织
+   supplier: 供应商
+   time: 单据时间
+   number: 单据编号
+   total: 单据金额
+   actual: 实际金额
+   people: 关联人员
+   arrival: 到货时间
+   logistics: 物流信息
+   file: 单据附件
+   data: 备注信息
+   more: 扩展信息
+   examine: 审核状态
+   state: 入库状态
+   user: 制单人
+  detail:
+   id: 编号
+   pid: 所属ID
+   goods: 所属商品
+   attr: 辅助属性
+   unit: 单位
+   warehouse: 仓库
+   price: 单价
+   nums: 数量
+   discount: 折扣率
+   dsc: 折扣额
+   total: 金额
+   tax: 税率
+   tat: 税额
+   tpt: 价税合计
+   data: 备注信息
+   handle: 入库数量
+  
+  
+  

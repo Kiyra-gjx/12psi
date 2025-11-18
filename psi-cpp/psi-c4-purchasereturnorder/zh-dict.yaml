@@ -1,0 +1,254 @@
+purchasereturnorder:
+  tag: 采购退货单
+  query-list:
+    summary: 获取采购退货单列表
+  query-detail:
+    summary: 获取指定采购退货单详情
+  main-field:
+    id: 编号
+    source: 关联单据
+    frame: 所属组织
+    supplier: 供应商
+    time: 单据时间
+    number: 单据编号
+    total: 单据金额
+    actual: 实际金额
+    money: 实收金额
+    cost: 单据费用
+    account: 结算账户
+    people: 关联人员
+    logistics: 物流信息
+    file: 单据附件
+    data: 备注信息
+    more: 扩展信息
+    examine: 审核状态
+    nucleus: 核销状态
+    cse: 费用状态
+    invoice: 发票状态
+    check: 核对状态
+    user: 制单人
+  detail-field:
+    id: 编号
+    pid: 所属单据
+    type: 核销类型
+    source: 关联单据
+    time: 单据时间
+    money: 核销金额
+ZH_WORDS:
+  bre:
+    id: "ID"
+    source: "关联单据"
+    frame: "所属组织"
+    supplier: "供应商"
+    time: "单据时间"
+    number: "单据编号"
+    total: "单据金额"
+    actual: "实际金额"
+    money: "实收金额"
+    cost: "单据费用"
+    account: "结算账户"
+    people: "关联人员"
+    logistics: "物流信息"
+    file: "单据附件"
+    data: "备注信息"
+    more: "扩展信息"
+    examine: "审核状态"
+    nucleus: "核销状态"
+    cse: "费用状态"
+    invoice: "发票状态"
+    check: "核对状态"
+    user: "制单人"
+
+  # API 接口注释
+  api:
+    purchase:
+      return:
+        order:
+          query-all:
+            summary: "获取采购退货单列表（条件+分页）"
+            description: "根据条件查询采购退货单列表，支持分页和多种筛选条件"
+          query-one:
+            summary: "获取指定采购退货单详情"
+            description: "根据ID获取单个采购退货单的详细信息"
+          add:
+            summary: "新增采购退货单"
+            description: "创建新的采购退货单"
+          modify:
+            summary: "修改指定采购退货单"
+            description: "更新指定采购退货单的信息"
+          delete:
+            summary: "删除指定采购退货单（支持批量）"
+            description: "删除单个或多个采购退货单"
+purchase:
+  return:
+    order:
+      tag: 新增采购退货单
+      tag2: 删除采购退货单
+      add:
+        summary: 新增采购退货单
+      delete:
+        summary: 删除采购退货单
+
+  # 状态枚举值说明
+  status:
+    examine:
+      "0": "未审核"
+      "1": "已审核"
+    nucleus:
+      "0": "未核销"
+      "1": "部分核销"
+      "2": "已核销"
+    cse:
+      "0": "未结算"
+      "1": "部分结算"
+      "2": "已结算"
+      "3": "无需结算"
+    invoice:
+      "0": "未开票"
+      "1": "部分开票"
+      "2": "已开票"
+      "3": "无需开具"
+    check:
+      "0": "未核对"
+      "1": "已核对"
+
+bre:
+ field: 
+  frame: 所属组织
+  supplier: 供应商
+  time: 单据时间
+  number: 单据编号
+  total: 单据金额
+  actual: 实际金额
+  money: 单据收款
+  money1: 核销金额
+  cost: 单据费用
+  people: 关联人员
+  examine: 审核状态
+
+  nucleus: 核销状态
+  cse: 费用状态
+  invoice: 发票状态
+  check: 核对状态
+  user: 制单人
+  data: 备注信息
+
+
+bre_info:
+ goods: 商品名称	
+ spec: 规格型号
+ attr: 辅助属性	
+ unit: 单位	
+ warehouse: 仓库	
+ price: 单价	
+ nums: 数量	
+ discount: 折扣率
+ dsc: 折扣额	
+ total: 金额	
+ tax: 税率	 
+ tat: 税额	
+ tpt: 价税合计	 
+ data: 备注信息
+returnorder:
+  tag: 采购退货单
+  check: 
+    ids: 采购退货单id
+    status: 采购退货单状态
+    summary: 核对/反核对采购退货单
+  modify: 
+    summary: 修改采购退货单
+  detail:
+    id: 编号
+    pid: 所属ID
+    source: 关联详情|BUY
+    goods: 所属商品
+    attr: 辅助属性
+    unit: 单位
+    warehouse: 仓库
+    batch: 批次号
+    mfd: 生产日期
+    price: 单价
+    nums: 数量
+    serial: 序列号
+    discount: 折扣率
+    dsc: 折扣额
+    total: 金额
+    tax: 税率
+    tat: 税额
+    tpt: 价税合计
+    data: 备注信息
+xin:
+  bre:
+    id: 主键ID
+    source: 关联单据（如采购单）
+    frame: 所属组织
+    supplier: 供应商
+    time: 单据时间
+    number: 单据编号
+    total: 单据金额
+    actual: 实际金额
+    money: 实收金额
+    cost: 单据费用
+    account: 结算账户
+    people: 关联人员
+    logistics: 物流信息（JSON字符串）
+    file: 单据附件（JSON字符串）
+    data: 备注信息
+    more: 扩展信息（JSON字符串）
+    examine: 审核状态 [0:未审核|1:已审核]
+    nucleus: 核销状态 [0:未核销|1:部分核销|2:已核销]
+    cse: 费用状态 [0:未结算|1:部分结算|2:已结算|3:无需结算]
+    invoice: 发票状态 [0:未开票|1:部分开票|2:已开票|3:无需开具]
+    check: 核对状态 [0:未核对|1:已核对]
+    user: 制单人
+    delete:
+      ids: "删除ID列表"
+      reason: "删除原因"
+      operator: "操作人"
+      force: "强制删除"
+      time: "删除时间"
+reviewRetrunOrder:
+ tags: 
+  t1: 审核/反审核采购退货单
+ review:
+  summary: 审核/反审核（支持批量）
+ field:
+  OrderId: 单据编号，多个单据之间用逗号隔开，必填
+  ReviewerId: 审核人ID，必填
+  Remark: 审核备注，选填
+import_order:
+ tag: 导入数据
+ export:
+  summary: 示例报表
+
+excel:
+ sheet:
+  s1: 表1
+ column:
+   A: 供应商
+   B: 单据日期
+   C: 单据编号
+   D: 单据金额
+   E: 实际金额
+   F: 实收金额
+   G: 结算账户
+   H: 关联人员
+   I: 物流信息
+   J: 备注信息
+   K: 商品名称
+   L: 商品名字拼音（首字母）
+   M: 辅助属性
+   N: 单位
+   O: 仓库
+   P: 批次号
+   Q: 生产日期
+   R: 单价
+   S: 数量
+   T: 序列号
+   U: 折扣率(%)
+   V: 折扣额
+   W: 金额
+   X: 税率(%)
+   Y: 税额
+   Z: 价税合计
+   AA: 备注信息

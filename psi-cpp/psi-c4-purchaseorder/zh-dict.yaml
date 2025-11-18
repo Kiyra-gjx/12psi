@@ -1,0 +1,219 @@
+purchaseorder:
+ tag: 采购单
+
+potable:
+ tag: 获取采购单接口
+ is_buy:
+  summary: 分页条件指定采购单报表
+  supplier: 供应商
+  number: 单据编号
+  user: 制单人
+  s_time: 开始时间戳
+  e_time: 结束时间戳
+  time: 单据时间
+  frame: 所属组织
+  total: 单据金额
+  actual: 实际金额
+  money: 实付金额
+  cost: 单据费用
+  people: 关联人物
+  examine: 审核状态(0:未审核,1:已审核)
+  nucleus: 核销状态(0:未核销,1:部分核销,2：已核销)
+  cse: 费用状态(0:未结算,1:部分核算,2：已结算,3:无需核算)
+  invoice: 发票状态(0:未开票,1:部分开票,2：已开票,3:无需开票)
+  check: 核对状态(0:未核对,1:已核对)
+  data: 备注信息
+ is_goods:
+  name: 商品名称
+ is_buy_info:
+  tag: 获取指定采购单详情接口
+  summary: 获取指定采购单详情
+  pid: 所属采购表id
+  attr: 辅助属性
+  unit: 单位
+  warehouse: 仓库
+  price: 单价
+  nums: 数量
+  discount: 折扣率
+  dsc: 折扣额
+  total: 金额
+  data: 备注
+ return_create:
+  tag: 获取生成采购退货单的数据
+  summary: 生成采购退货单 
+order:  
+  tag: 采购单-审核与反审核
+  examine:
+    tag: 采购单-审核与反审核
+    summary: 审核/反审核采购单(支持批量)
+    ids: 订单ID列表
+    status: 审核状态(0-未审核，1-已审核)
+  unexamine:
+    summary: 反审核采购单(支持批量)
+    ids: 订单编号列表
+    state: 审核状态(0-未审核，1-已审核)
+  file:
+    DeEx: 导出详细报表
+    SimEx: 导出简易报表
+    InData: 导入数据
+    tag: 文件示例接口
+    upload: 
+      summary: 单文件上传
+    upload-more:
+      summary: 多文件上传
+    upload-stream:
+      summary: 流上传文件
+    editor-upload-image:
+      summary: editor上传图片示例接口
+    info:
+      summary: 获取文件信息
+    download:
+      summary: 下载文件
+    html:
+      summary: HTML静态页面访问
+    field:
+      id: 文件编号
+      file: 上传的文件
+      filename: 文件名
+      ft: 文件类型编码
+      ftn: 文件类型名称
+      st: 文件保存类型编码
+      stn: 文件保存类型名称
+      remark: 文件描述
+      path: 文件保存路径
+      status: 文件状态编码
+      suffix: 文件后缀
+      img-url: 图片src
+      img-alt: 图片文字描述
+      img-href: 图片链接地址
+        
+dingdan:
+  tag: 订单管理
+  query-all:
+   summary: 获取采购单列表（条件+分页）
+  query-one:
+   summary: 获取指定采购单详情
+  modify:
+   summary: 修改采购单
+  examine:
+   summary: 核对/反核对采购单(支持批量)	
+   ids: 订单编号列表
+   state: 核对状态(0-未核对，1-已核对)
+  field:
+   id: 订单编号
+   source: 关联单据
+   frame: 所属组织
+   supplier: 供应商
+   time: 单据时间
+   number: 单据编号
+   total: 单据金额
+   actual: 实际金额
+   money: 实付金额
+   cost: 单据费用
+   account: 结算账户
+   people: 关联人员
+   logistics: 物流信息
+   file: 单据附件
+   data: 备注信息
+   more: 扩展信息
+   examine: 审核状态
+   nucleus: 核销状态
+   cse: 费用状态
+   invoice: 发票状态
+   check: 核对状态
+   user: 制单人
+  detail:
+   id: 编号
+   supplier: 供应商
+   time: 单据日期
+   number: 单据编号
+   goodsName: 商品名称
+   goodsNo: 商品编号
+   specModel: 规格型号
+   attr: 辅助属性
+   unit: 单位
+   warehouse: 仓库
+   price: 单价
+   qty: 数量
+   inQty: 入库数量
+   docAmount: 单据金额
+   actualAmount: 实际金额
+   relatedPerson: 关联人员
+   arrivalDate: 到货日期
+   logisticsInfo: 物流信息
+   file: 单据附件
+   remark: 备注信息  
+  
+bor:
+  field:
+    id: 详情编号
+    frame: 所属组织
+    supplier: 供应商
+    time: 单据时间
+    number: 单据编号
+    total: 单据金额
+    actual: 实际金额
+    money: 实付金额
+    cost: 单据费用
+    people: 关联人员
+    examine: 审核状态[0:未审核|1:已审核]
+    nucleus: 核销状态[0:未核销|1:部分核销|2:已核销]
+    cse: 费用状态[0:未结算|1:部分结算|2:已结算|3:无需结算]
+    invoice: 发票状态[0:未开票|1:部分开票|2:已开票|3:无需开具]
+    check: 核对状态[0:未核对|1:已核对]
+    user: 制单人
+    data: 备注信息
+    source: 关联单据
+    account: 结算账户
+    logistics: 物流信息
+    file: 单据附件
+    more: 扩展信息
+
+bor_info:
+  field:
+    id: 详情编号
+    goods: 商品名称
+    attr: 辅助属性
+    unit: 单位
+    warehouse: 仓库
+    price: 单价
+    nums: 数量
+    total: 金额
+    tax: 税率(%)
+    tat: 税额
+    tpt: 价税合计
+    data: 备注信息
+js: 
+ buy:
+  ids: 采购单id
+  add: 
+   name: 新增采购单
+   fail: 传入参数不全或格式有误
+   success: 新增成功
+  supplier: 供应商
+  time: 单据时间
+  number: 单据编号
+  total: 单据金额
+  actual: 实际金额
+  money: 实付金额
+  cost: 单据费用
+  account: 结算账户
+  people: 关联人员
+  logistics: 物流信息
+  data: 备注信息
+  delete:
+   name: 删除采购单
+   fail: 未找到该单据，或采购单审核状态异常
+   success: 删除成功
+   partly_success: 部分删除成功
+   audited: 单据已审核,不可删除
+   ids: 删除id列表
+ goods:
+  id: 商品id
+  buy: 单价
+  number: 数量
+ warehouse: 
+  id: 仓库id    
+ tags:
+  t1: 新增采购单    
+  t2: 删除采购单

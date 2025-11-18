@@ -1,0 +1,4 @@
+src/main/resources/config/bootstrap.properties
+src/main/resources/config/bootstrap-dev.properties
+src/main/resources/config/bootstrap-prod.properties
+src/main/resources/config/bootstrap-test.properties

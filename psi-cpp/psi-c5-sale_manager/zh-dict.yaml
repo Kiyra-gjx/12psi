@@ -1,0 +1,230 @@
+summary:
+ saleOrder:
+  queryall: 获取销售订单列表
+  querydetail: 获取指定销售订单详情
+  addsaleorder: 新增销售订单
+  addSO_by_sale: 获取生成销售单数据
+  addPO_by_sale: 获取生成采购订单数据
+  delsaleorder: 删除销售订单（支持批量）
+  modifysaleorder: 修改销售订单
+  review: 审核（支持批量）
+  import: 导入数据
+  exportsimple: 导出简单报表
+  exportdetail: 导出详细报表
+  counterreview: 反审核（支持批量）
+
+ saleReturnOrder:
+  queryall: 获取销售退货单列表（条件+分页）
+  querydetail: 获取指定销售退货单详情
+  addsalereturnorder: 新增销售退货单
+  delsalereturnorder: 删除销售退货单（支持批量）
+  modifysalereturnorder: 修改销售退货单
+  review: 审核（支持批量）
+  import: 导入数据
+  exportsimple: 导出简单报表
+  exportdetail: 导出详细报表
+  counterreview: 反审核（支持批量）
+  check: 核对/反核对（支持批量）
+ 
+
+
+
+
+ sell:
+  queryall: 获取销售单列表
+  querydetail: 获取指定销售单详情
+  modifySellGenerateReturn: 获取生成销售退货单数据
+  addsell: 新增销售单
+  delsell: 删除销售单（支持批量）
+  modify: 修改销售单
+  review: 审核（支持批量）
+  import: 导入数据
+  exportsimple: 导出简单报表
+  exportdetail: 导出详细报表
+  counterreview: 反审核（支持批量）
+  check: 核对/反核对（支持批量）
+  
+
+
+
+# 销售订单部分
+saleOrder:
+ tag: 销售订单
+ field:
+  id: ID
+  frame: 组织
+  customer: 客户
+  time: 单据时间
+  number: 单据编号
+  total: 单据金额
+  actual: 实际金额
+  people: 关联人员
+  arrival: 到货日期
+  logistics: 物流信息
+  file: 单据附件
+  data: 备注信息
+  more: 扩展信息
+  examine: 审核状态[0:未审核|1:已审核]
+  state: 出库状态[0:未出库|1:部分出库|2:已出库|3:关闭]
+  user: 制单人
+  docno: 单据编号
+  price: 单价
+  amount: 数量
+  extraInfo: 备注信息
+
+
+# 销售订单详情部分
+SorInfo:
+ tag: 销售订单详情
+ field:
+  id: ID
+  pid: 所属ID
+  goods: 所属商品
+  attr: 辅助属性
+  unit: 单位
+  warehouse: 仓库 
+  price: 单价
+  nums: 数量
+  discount: 折扣率
+  dsc: 折扣额
+  total: 金额
+  tax: 税率
+  tat: 税额
+  tpt: 价税合计
+  data: 备注信息
+  handle: 出库数量
+  
+
+#退货单部分
+saleReturnOrder:
+ tag: 销售退货单
+ field:
+  listid: 退货单id
+  singleid: 单条商品信息id
+  source: 关联单据|SELL
+  frame: 所属组织
+  customer: 客户
+  time: 单据时间
+  total: 单据金额
+  number: 单据编号
+  actual: 实际金额
+  money: 实付金额
+  cost: 单据费用
+  account: 结算账户
+  people: 关联人员
+  logitics: 物流信息
+  file: 单据附件
+  data: 备注信息
+  more: 扩展信息
+  examine: 审核状态[0:未审核|1:已审核]
+  nucleus: 核销状态[0:未核销|1:部分核销|2:已核销]
+  cse: 费用状态[0:未结算|1:部分解释|2:已结算|3:无需结算]
+  invoice: 发票状态[0:未开票|1:部分开票|2:已开票|3:无需开票]
+  check: 核对状态[0:未核对|1:已核对]
+  user: 制单人
+  type: 规格型号
+  tax: 税率
+  tat: 税额
+  tpt: 税价合计
+  handle: 出库数量
+  begintime: 开始检索的时间
+  endtime: 结束检索的时间
+  items: 商品明细列表
+  ingoods: 传入的单条商品信息
+  outgoods: 传出的单条商品信息
+ sortOrder:
+  time: 时间排序方式(空:不排序|0:降序|1:升序)
+  number: 单据编号排序方式(空:不排序|0:降序|1:升序)
+  total: 单据金额排序方式(空:不排序|0:降序|1:升序)
+  actual: 实际金额排序方式(空:不排序|0:降序|1:升序)
+  money: 单据付款(实付金额)排序方式(空:不排序|0:降序|1:升序)
+  cost: 单据费用排序方式(空:不排序|0:降序|1:升序)
+ checkOrder:
+  false: 参数无效:ID列表为空
+  check: 核对完成
+  uncheck: 反核对完成
+#销售单部分
+sell:
+ tag: 销售单
+ fileld:
+  id: ID
+  source: 关联单据|SOR
+  frame: 组织
+  customer: 客户
+  time: 单据时间
+  number: 单据编号
+  total: 单据金额
+  actual: 实际金额
+  people: 关联人员
+  money: 实收金额
+  cost: 单据费用
+  account: 结算账户
+  logistics: 物流信息
+  file: 单据附件
+  data: 备注信息
+  more: 扩展信息
+  examine: 审核状态[0:未审核|1:已审核]
+  nucleus: 核销状态[0:未核销|1:部分核销|2:已核销]
+  cse: 费用状态[0:未结算|1:部分结算|2:已结算|3:无需结算]
+  invoice: 发票状态[0:未开票|1:部分开票|2:已开票|3:无需开具]
+  check: 核对状态[0:未核对|1:已核对]
+  user: 制单人
+
+# 采购订单部分
+bor:
+ tag: 采购订单
+ field:
+  id: ID
+  source: 关联单据
+  frame: 所属组织
+  supplier: 供应商
+  time: 单据时间
+  number: 单据编号
+  total: 单据金额
+  actual: 实际金额
+  people: 关联人员
+  arrival: 到货时间
+  logistics: 物流信息
+  file: 单据附件
+  data: 备注信息
+  more: 扩展信息
+  examine: 审核状态[0:未审核|1:已审核]
+  state: 入库状态[0:未入库|1:部分入库|2:已入库|3:关闭]
+  user: 制单人
+
+
+
+#商品部分
+goods:
+ field:
+  id: 商品id
+  name: 商品名称
+  py: 拼音信息
+  number: 商品编号
+  spec: 规格型号
+  category: 商品类别
+  brand: 商品品牌
+  unit: 商品单位[*:常规单位|-1:多单位]
+  buy: 采购价格
+  sell: 销售价格
+  code: 商品条码
+  location: 商品货位
+  stock: 库存阈值
+  type: 产品类型[0:常规商品|1:服务商品]
+  data: 备注信息
+  imgs: 商品图像
+  details: 图文详情
+  units: 多单位配置
+  strategy: 折扣策略
+  serial: 序列产品[0:关闭|1:启用]
+  batch: 批次产品[0:关闭|1:启用]
+  validity: 有效期[0:关闭|1:启用]
+  protect: 保质期
+  threshold: 预警阀值
+  more: 扩展信息
+  warehouse: 仓库
+  nums: 数量
+  handle: 出库数量
+  discount: 折扣率
+  dsc: 折扣额
+  total: 金额

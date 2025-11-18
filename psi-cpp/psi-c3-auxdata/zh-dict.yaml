@@ -1,0 +1,96 @@
+# 条码管理
+barcode:
+ apiTag: 条码管理
+ interface:
+  pagequery: 获取条码列表（条件+分页）
+  idquery: 获取指定条码详情
+  add: 新增条码
+  query-pic: 获取指定条码图片
+  modify: 修改指定条码
+  delete: 删除指定条码
+ field:
+  id: 条码ID
+  name: 条码名称
+  content: 条码内容
+  notes: 条码备注
+  type: 条码类型[0:二维码:1一维码]
+#收支类别
+inout-category:
+ field:
+  name: 收支类别名称
+  type: 收支类型
+  sort: 类别排序
+  data: 备注信息
+  id: 编号
+  dto-name: 收支类别名称 (必填, 最大32字符)
+  dto-type: 收支类型 [0:收入:1支出] (必填)
+  dto-sort: 类别排序 (必填)
+  dto-data: 备注信息 (最大256字符)
+  query-name: 收支类别名称 (用于模糊匹配)
+  query-type: 收支类型 [0:收入:1支出] (用于筛选)
+ api-tag: 收支类别
+ create: 新增收支类别
+ update: 修改指定类别
+ delete: 删除指定类别
+ get-names:
+  summary: 获取收支类别名称列表（条件）
+ get-page:
+  summary: 获取收支类别列表（条件+分页）
+ get-by-id:
+  summary: 获取指定类别详情
+goods-category:
+  tags: 商品类别接口
+  get:
+    tree:
+      summary: 获取商品类别名称树
+goodsCategory:
+  tags:
+    t1: 商品类别管理
+  query-by-name:
+    summary: 按名字查询商品类别
+  get:
+    summary: 获取商品类别列表(条件)
+    tree:
+      summary: 获取商品类别树   
+    tree-by-id:
+      summary: 获取商品类别名称树
+    
+  query-by-id:
+    summary: 获取指定类别详细
+  export:
+    summary: excel导出商品类别树(实际没实现)
+  post:
+    summary: 新增商品类别
+  put:
+    summary: 修改指定类别
+  deleteById:
+    summary: 删除指定类别
+  field:
+    pid: 所属类别
+    id: ID主键
+    name: 类别名称
+    parentId: 父类别ID
+    sort: 类别排序
+    data: 备注信息
+
+attachment: 
+ tags:
+  t1: 附件管理
+ modify:
+  summary: 修改附件
+ remove:
+  summary: 删除附件
+ query:
+   summary: 获取附件列表（条件+分页）
+ add:
+   summary: 上传附件
+field:
+  name: 文件名称
+  id: 唯一标识
+  file_type: 文件类型，值对应字典表value
+  save_type: 文件存储方式，值对应字典表value
+  save_path: 文件存储路径，不要将服务器域名和端口存储到数据库
+  remark: 备注
+  status: 数据状态 0 未使用 1使用中
+  tags:
+   t1: 附件管理
